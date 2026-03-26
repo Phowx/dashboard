@@ -1,11 +1,9 @@
 from fastapi import APIRouter
 from pydantic import BaseModel
-from app.services.prometheus import PrometheusService
 import psutil
-import time
+import socket
 
 router = APIRouter()
-prometheus = PrometheusService()
 
 class SystemInfo(BaseModel):
     hostname: str
@@ -28,7 +26,7 @@ memory_history = []
 async def get_system_info():
     global cpu_history, memory_history
     
-    cpu_percent = psutil.cpu_percent(interval=1)
+    cpu_percent = psutil.cpu_percent(interval=0.1)
     memory = psutil.virtual_memory()
     disk = psutil.disk_usage('/')
     net_io = psutil.net_io_counters()
@@ -42,7 +40,7 @@ async def get_system_info():
         memory_history = memory_history[-60:]
     
     return SystemInfo(
-        hostname=prometheus.get_hostname(),
+        hostname=socket.gethostname(),
         cpu_percent=cpu_percent,
         memory_percent=memory.percent,
         memory_total=memory.total,
