@@ -1,0 +1,18 @@
+services:
+  backend:
+    build: ./backend
+    container_name: dashboard_backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped
+    environment:
+      - PROMETHEUS_URL=http://prometheus:9090
+
+  frontend:
+    build: ./frontend
+    container_name: dashboard_frontend
+    ports:
+      - "5173:5173"
+    restart: unless-stopped
