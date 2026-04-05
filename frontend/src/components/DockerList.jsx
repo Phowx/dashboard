@@ -241,12 +241,6 @@ function DockerList() {
         <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
           <div>
             <span className="section-kicker">CONTAINERS</span>
-            <div className="mt-3 flex items-center gap-3">
-              <div className="signal-icon" style={{ color: 'var(--accent-cyan)' }}>
-                <Container className="h-4 w-4" />
-              </div>
-              <h2 className="surface-title">Docker Fleet</h2>
-            </div>
           </div>
 
           <m.button

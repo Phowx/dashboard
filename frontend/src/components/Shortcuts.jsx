@@ -352,12 +352,6 @@ export default function Shortcuts() {
       <div className="mb-5 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <span className="section-kicker">LAUNCHPAD</span>
-          <div className="mt-3 flex items-center gap-3">
-            <div className="signal-icon" style={{ color: 'var(--accent-yellow)' }}>
-              <LayoutGrid className="h-4 w-4" />
-            </div>
-            <h2 className="surface-title">Shortcuts</h2>
-          </div>
         </div>
 
         <m.button whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }} onClick={openAddModal} className="btn-primary self-start" type="button">

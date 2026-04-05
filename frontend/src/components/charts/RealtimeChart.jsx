@@ -11,12 +11,8 @@ import {
 
 export default function RealtimeChart({ data }) {
   return (
-    <div className="glass-card h-full p-4 sm:p-5 xl:p-6">
-      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <span className="section-kicker">SIGNAL WINDOW</span>
-          <h2 className="surface-title mt-2">Realtime Load</h2>
-        </div>
+    <div className="glass-card h-full p-4 sm:p-4 xl:p-5">
+      <div className="mb-3 flex justify-end">
         <div className="flex flex-wrap gap-2">
           <span className="status-pill">
             <span className="h-2 w-2 rounded-full" style={{ background: 'var(--accent-cyan)' }} />
@@ -29,7 +25,7 @@ export default function RealtimeChart({ data }) {
         </div>
       </div>
 
-      <div className="h-64 sm:h-[18.5rem]">
+      <div className="h-48 sm:h-56">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={data} margin={{ top: 10, right: 0, bottom: 0, left: -18 }}>
             <defs>

@@ -84,7 +84,6 @@ function DashboardApp() {
                 </div>
                 <div className="page-title-wrap">
                   <span className="section-kicker">PRIVATE INFRASTRUCTURE</span>
-                  <p className="header-title">Server Dashboard</p>
                 </div>
               </div>
 
@@ -150,7 +149,7 @@ function DashboardApp() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.45, delay: 0.16 }}
-            className="col-span-12 xl:col-span-8 2xl:col-span-8"
+            className="col-span-12 xl:col-span-9 2xl:col-span-9"
           >
             <SystemMonitor />
           </m.section>
@@ -159,7 +158,7 @@ function DashboardApp() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.45, delay: 0.22 }}
-            className="col-span-12 h-full xl:col-span-4 2xl:col-span-4 xl:self-stretch"
+            className="col-span-12 h-full xl:col-span-3 2xl:col-span-3 xl:self-stretch"
           >
             <Suspense
               fallback={

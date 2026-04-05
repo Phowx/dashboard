@@ -26,7 +26,7 @@ function formatBytes(bytes) {
 function MetricCard({ icon: Icon, label, value, unit, subLabel, color, progress }) {
   return (
     <m.div
-      className="glass-card metric-card h-full p-4"
+      className="glass-card metric-card h-full p-3.5 sm:p-4"
       initial={{ opacity: 0, scale: 0.96 }}
       animate={{ opacity: 1, scale: 1 }}
     >
@@ -72,16 +72,13 @@ function NetworkStats({ network }) {
 
   return (
     <m.div
-      className="glass-card metric-card h-full p-4"
+      className="glass-card metric-card h-full p-3.5 sm:p-4"
       initial={{ opacity: 0, scale: 0.96 }}
       animate={{ opacity: 1, scale: 1 }}
     >
       <div className="flex items-start justify-between gap-3">
         <div>
           <span className="section-kicker">NETWORK</span>
-          <div className="mt-3 text-2xl font-semibold display-type" style={{ color: 'var(--text-primary)' }}>
-            Throughput
-          </div>
         </div>
         <div className="signal-icon" style={{ color: 'var(--accent-cyan)' }}>
           <Wifi className="h-4 w-4" />
@@ -113,20 +110,15 @@ function NetworkStats({ network }) {
   );
 }
 
-function ProcessTable({ sectionLabel, title, data, metricKey, icon: Icon, color }) {
+function ProcessTable({ sectionLabel, data, metricKey, icon: Icon, color }) {
   return (
-    <div className="glass-card p-4 h-full">
-      <div className="mb-4 flex items-center justify-between gap-3">
+    <div className="glass-card p-3.5 sm:p-4 h-full">
+      <div className="mb-3 flex items-center justify-between gap-3">
         <div className="flex items-center gap-3">
           <div className="signal-icon" style={{ color }}>
             <Icon className="h-4 w-4" />
           </div>
-          <div>
-            <span className="section-kicker">{sectionLabel}</span>
-            <h3 className="mt-2 text-xl display-type" style={{ color: 'var(--text-primary)' }}>
-              {title}
-            </h3>
-          </div>
+          <span className="section-kicker">{sectionLabel}</span>
         </div>
         <span className="status-pill">TOP 5</span>
       </div>
@@ -239,24 +231,12 @@ function SystemMonitor() {
 
   return (
     <div className="space-y-3">
-      <div className="flex items-center justify-between gap-3">
-        <div>
-          <span className="section-kicker">SYSTEM TELEMETRY</span>
-          <h2 className="surface-title mt-2">Host Overview</h2>
-        </div>
-        <span className="status-pill hidden sm:inline-flex">HOST</span>
-      </div>
-
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-12">
         <div className="xl:col-span-8">
           <Suspense
             fallback={
               <div className="glass-card h-full min-h-[320px] p-4 sm:p-5 xl:p-6">
-                <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-                  <div>
-                    <span className="section-kicker">SIGNAL WINDOW</span>
-                    <h2 className="surface-title mt-2">Realtime Load</h2>
-                  </div>
+                <div className="mb-3 flex justify-end">
                   <div className="loading-orb" />
                 </div>
                 <div className="mt-8 grid gap-3">
@@ -307,7 +287,6 @@ function SystemMonitor() {
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
         <ProcessTable
           sectionLabel="CPU"
-          title="Top CPU Processes"
           metricKey="cpu"
           data={metrics.cpuProcesses || []}
           icon={Cpu}
@@ -315,7 +294,6 @@ function SystemMonitor() {
         />
         <ProcessTable
           sectionLabel="MEMORY"
-          title="Memory Usage"
           metricKey="memory"
           data={metrics.memoryProcesses || []}
           icon={MemoryStick}
