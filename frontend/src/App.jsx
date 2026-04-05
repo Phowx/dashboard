@@ -149,11 +149,13 @@ function DashboardApp() {
       >
         <div className="mx-auto max-w-[1480px]">
           <div className="dashboard-toolbar">
-            <div className="toolbar-brand">
-              <div className="brand-mark">
-                <DashboardMark />
+            <div className="toolbar-brand-lane">
+              <div className="toolbar-brand">
+                <div className="brand-mark">
+                  <DashboardMark />
+                </div>
+                <span className="section-kicker">DASHBOARD</span>
               </div>
-              <span className="section-kicker">DASHBOARD</span>
             </div>
 
             <div className="toolbar-controls">

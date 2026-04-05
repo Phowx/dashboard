@@ -86,21 +86,6 @@ function ShortcutCard({ shortcut, onClick, onEdit, onDelete, index, onDragStart,
       </m.button>
 
       <div className="shortcut-card-actions">
-        <m.button
-          whileHover={{ scale: 1.08 }}
-          whileTap={{ scale: 0.94 }}
-          onPointerDown={event => {
-            event.preventDefault();
-            event.stopPropagation();
-            dragControls.start(event);
-          }}
-          onClick={event => event.stopPropagation()}
-          className="shortcut-drag-handle"
-          type="button"
-          aria-label="Reorder shortcut"
-        >
-          <GripVertical className="h-3.5 w-3.5" />
-        </m.button>
         <div className="shortcut-card-secondary-actions">
           <m.button
             whileHover={{ scale: 1.08 }}
@@ -129,6 +114,21 @@ function ShortcutCard({ shortcut, onClick, onEdit, onDelete, index, onDragStart,
             <Trash2 className="h-3.5 w-3.5" />
           </m.button>
         </div>
+        <m.button
+          whileHover={{ scale: 1.08 }}
+          whileTap={{ scale: 0.94 }}
+          onPointerDown={event => {
+            event.preventDefault();
+            event.stopPropagation();
+            dragControls.start(event);
+          }}
+          onClick={event => event.stopPropagation()}
+          className="shortcut-drag-handle"
+          type="button"
+          aria-label="Reorder shortcut"
+        >
+          <GripVertical className="h-3.5 w-3.5" />
+        </m.button>
       </div>
     </Reorder.Item>
   );

@@ -150,9 +150,15 @@ body::after {
 
 .dashboard-toolbar {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
   align-items: center;
-  gap: 1.15rem;
+  gap: 1.25rem;
+}
+
+.toolbar-brand-lane {
+  grid-column: span 9;
+  display: flex;
+  align-items: center;
 }
 
 .brand-mark {
@@ -235,12 +241,13 @@ body::after {
 }
 
 .toolbar-controls {
+  grid-column: span 3;
   display: inline-flex;
   align-items: center;
   justify-content: flex-end;
   gap: 0.7rem;
   min-width: 0;
-  justify-self: end;
+  width: 100%;
 }
 
 .section-kicker,
@@ -941,6 +948,11 @@ body::after {
 @media (max-width: 767px) {
   .dashboard-toolbar {
     grid-template-columns: 1fr;
+  }
+
+  .toolbar-brand-lane,
+  .toolbar-controls {
+    grid-column: auto;
   }
 
   .toolbar-controls {
