@@ -481,9 +481,9 @@ body::after {
 }
 
 .network-speed-list {
-  margin-top: 1.2rem;
+  margin-top: 0.8rem;
   display: grid;
-  gap: 0.88rem;
+  gap: 0.76rem;
 }
 
 .network-speed-row {
@@ -502,6 +502,7 @@ body::after {
 }
 
 .network-summary {
+  margin-top: 0.72rem;
   white-space: nowrap;
   text-align: left;
 }
