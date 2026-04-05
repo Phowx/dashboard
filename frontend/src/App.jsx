@@ -231,8 +231,8 @@ function DashboardApp() {
 
       <main className="relative pb-10 pt-4">
         <div className="mx-auto max-w-[1480px] px-4 xl:px-6">
-          <div className="grid grid-cols-12 items-start gap-4 xl:gap-5">
-            <div className="col-span-12 min-w-0 grid gap-4 min-[1380px]:col-span-9 xl:gap-5">
+          <div className="grid items-start gap-4 xl:gap-5 min-[1380px]:grid-cols-[minmax(0,1fr)_280px]">
+            <div className="min-w-0 grid gap-4 xl:gap-5">
               <m.section
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -264,7 +264,7 @@ function DashboardApp() {
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.45, delay: 0.22 }}
-              className="col-span-12 min-w-0 min-[1380px]:col-span-3 min-[1380px]:self-start"
+              className="min-w-0 min-[1380px]:self-start"
             >
               <Suspense
                 fallback={

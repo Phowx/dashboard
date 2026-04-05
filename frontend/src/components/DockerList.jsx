@@ -39,8 +39,8 @@ function StatusBadge({ state, compact = false }) {
 
   return (
     <span
-      className={`inline-flex items-center rounded-full mono-type text-[10px] uppercase tracking-[0.18em] ${
-        compact ? 'justify-center px-2 py-2' : 'gap-2 px-2.5 py-1'
+      className={`inline-flex rounded-full mono-type text-[10px] uppercase tracking-[0.18em] ${
+        compact ? 'h-7 w-7 items-center justify-center p-0' : 'items-center gap-2 px-2.5 py-1'
       }`}
       style={{ background: config.bg, color: config.color }}
       title={config.label}
@@ -235,7 +235,26 @@ function DockerList() {
     return String(ports)
       .split(',')
       .map(entry => entry.trim())
-      .filter(Boolean);
+      .filter(Boolean)
+      .sort((entryA, entryB) => {
+        const parseEntry = entry => {
+          const [mapping = '', protocol = 'tcp'] = entry.split('/');
+          const numbers = mapping.match(/\d+/g)?.map(Number) ?? [];
+          const publicPort = numbers[0] ?? Number.MAX_SAFE_INTEGER;
+          const privatePort = numbers[1] ?? publicPort;
+          const protocolOrder = protocol === 'tcp' ? 0 : protocol === 'udp' ? 1 : 2;
+
+          return { publicPort, privatePort, protocolOrder, text: entry };
+        };
+
+        const a = parseEntry(entryA);
+        const b = parseEntry(entryB);
+
+        if (a.publicPort !== b.publicPort) return a.publicPort - b.publicPort;
+        if (a.privatePort !== b.privatePort) return a.privatePort - b.privatePort;
+        if (a.protocolOrder !== b.protocolOrder) return a.protocolOrder - b.protocolOrder;
+        return a.text.localeCompare(b.text);
+      });
   };
 
   const stats = {
@@ -425,11 +444,11 @@ function DockerList() {
                 className="mono-type text-[10px] uppercase tracking-[0.18em]"
                 style={{ color: 'var(--text-muted)' }}
               >
-                <th className="w-[66px] px-3 py-3 text-left font-medium">State</th>
-                <th className="w-[148px] px-3 py-3 text-left font-medium">Stack</th>
-                <th className="w-[168px] px-3 py-3 text-left font-medium">Container</th>
-                <th className="hidden w-[180px] px-3 py-3 text-left font-medium md:table-cell">Image</th>
-                <th className="w-[158px] px-3 py-3 text-left font-medium">Ports</th>
+                <th className="w-[56px] px-3 py-3 text-left font-medium">State</th>
+                <th className="w-[172px] px-3 py-3 text-left font-medium">Stack</th>
+                <th className="w-[154px] px-3 py-3 text-left font-medium">Container</th>
+                <th className="hidden w-[168px] px-3 py-3 text-left font-medium md:table-cell">Image</th>
+                <th className="w-[142px] px-3 py-3 text-left font-medium">Ports</th>
                 <th className="w-[78px] px-3 py-3 text-right font-medium">CPU</th>
                 <th className="w-[86px] px-3 py-3 text-right font-medium">Memory</th>
                 <th className="w-[118px] px-3 py-3 text-center font-medium">Actions</th>
@@ -438,7 +457,7 @@ function DockerList() {
               <tbody className="divide-y" style={{ divideColor: 'var(--border-color)' }}>
                 {sortedContainers.map(container => (
                   <tr key={container.id} className="transition-colors duration-200">
-                    <td className="px-3 py-4 align-top">
+                    <td className="px-3 py-4 align-middle">
                       <StatusBadge state={container.state} compact />
                     </td>
                     <td className="px-3 py-4">
