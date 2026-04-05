@@ -1,25 +1,40 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import {
+  Activity,
+  Cloud,
   Command,
+  Database,
   Edit2,
+  Folder,
   Globe,
   GripVertical,
+  HardDrive,
   LayoutGrid,
   Link,
   Play,
   Plus,
   Settings,
+  Shield,
+  Server,
   Terminal,
   Trash2,
+  Upload,
   X,
 } from 'lucide-react';
 import { AnimatePresence, Reorder, m, useDragControls } from 'framer-motion';
 
 const ICONS = {
+  activity: Activity,
+  cloud: Cloud,
   globe: Globe,
+  database: Database,
+  folder: Folder,
+  hardDrive: HardDrive,
   settings: Settings,
   layout: LayoutGrid,
+  server: Server,
+  shield: Shield,
   terminal: Terminal,
   command: Command,
   play: Play,
@@ -27,9 +42,16 @@ const ICONS = {
 };
 
 const ICON_OPTIONS = [
+  { key: 'server', icon: Server, label: 'Server' },
+  { key: 'database', icon: Database, label: 'Database' },
+  { key: 'cloud', icon: Cloud, label: 'Cloud' },
+  { key: 'hardDrive', icon: HardDrive, label: 'Storage' },
+  { key: 'activity', icon: Activity, label: 'Activity' },
+  { key: 'shield', icon: Shield, label: 'Shield' },
   { key: 'globe', icon: Globe, label: 'Globe' },
   { key: 'settings', icon: Settings, label: 'Settings' },
   { key: 'layout', icon: LayoutGrid, label: 'Layout' },
+  { key: 'folder', icon: Folder, label: 'Folder' },
   { key: 'terminal', icon: Terminal, label: 'Terminal' },
   { key: 'command', icon: Command, label: 'Command' },
   { key: 'play', icon: Play, label: 'Play' },
@@ -46,8 +68,47 @@ function getShortcutPreview(shortcut) {
     .replace(/\/$/, '');
 }
 
-function ShortcutCard({ shortcut, onClick, onEdit, onDelete, index, onDragStart, onDragEnd, editMode }) {
+function getIconMode(shortcut) {
+  if (shortcut.iconMode === 'url' || shortcut.iconMode === 'upload') {
+    return shortcut.iconMode;
+  }
+
+  if (shortcut.iconUrl) {
+    return String(shortcut.iconUrl).startsWith('data:') ? 'upload' : 'url';
+  }
+
+  return 'preset';
+}
+
+function getIconSrc(shortcut) {
+  const mode = getIconMode(shortcut);
+  return mode === 'url' || mode === 'upload' ? shortcut.iconUrl || '' : '';
+}
+
+function ShortcutIcon({ shortcut, className = '', iconClassName = 'h-5 w-5 text-white' }) {
+  const [hasError, setHasError] = useState(false);
   const Icon = ICONS[shortcut.icon] || Globe;
+  const iconSrc = getIconSrc(shortcut);
+  const shouldUseImage = Boolean(iconSrc) && !hasError;
+
+  return (
+    <div className={`shortcut-icon-wrap ${shouldUseImage ? 'shortcut-icon-wrap-image' : ''} ${className}`.trim()}>
+      {shouldUseImage ? (
+        <img
+          src={iconSrc}
+          alt=""
+          className="shortcut-icon-image"
+          loading="lazy"
+          onError={() => setHasError(true)}
+        />
+      ) : (
+        <Icon className={iconClassName} />
+      )}
+    </div>
+  );
+}
+
+function ShortcutCard({ shortcut, onClick, onEdit, onDelete, index, onDragStart, onDragEnd, editMode }) {
   const dragControls = useDragControls();
 
   return (
@@ -74,9 +135,7 @@ function ShortcutCard({ shortcut, onClick, onEdit, onDelete, index, onDragStart,
       >
         <div className="shortcut-card-top">
           <div className="flex min-w-0 items-center gap-3">
-            <div className="shortcut-icon-wrap">
-              <Icon className="h-5 w-5 text-white" />
-            </div>
+            <ShortcutIcon shortcut={shortcut} />
             <div className="shortcut-card-copy min-w-0 flex-1">
               <p className="shortcut-name">{shortcut.name}</p>
               <p className="shortcut-value" title={getShortcutPreview(shortcut)}>{getShortcutPreview(shortcut)}</p>
@@ -143,7 +202,6 @@ function MobileShortcutTile({
   onDragEnd,
   editMode,
 }) {
-  const Icon = ICONS[shortcut.icon] || Globe;
   const dragControls = useDragControls();
 
   return (
@@ -167,9 +225,7 @@ function MobileShortcutTile({
         className={`glass-card shortcut-mobile-tile w-full text-center ${editMode ? 'shortcut-mobile-tile-editing' : ''}`}
         type="button"
       >
-        <div className="shortcut-icon-wrap shortcut-mobile-icon">
-          <Icon className="h-4 w-4 text-white" />
-        </div>
+        <ShortcutIcon shortcut={shortcut} className="shortcut-mobile-icon" iconClassName="h-4 w-4 text-white" />
         <p className="shortcut-mobile-label">{shortcut.name}</p>
       </m.button>
 
@@ -209,7 +265,30 @@ function MobileShortcutTile({
 }
 
 function ShortcutModal({ isOpen, onClose, onSubmit, formData, setFormData, isEditing }) {
+  const fileInputRef = useRef(null);
+  const previewShortcut = {
+    icon: formData.icon,
+    iconMode: formData.iconMode,
+    iconUrl: formData.iconUrl,
+  };
+
   if (!isOpen) return null;
+
+  const handleCustomIconUpload = event => {
+    const [file] = event.target.files || [];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = loadEvent => {
+      setFormData({
+        ...formData,
+        iconMode: 'upload',
+        iconUrl: String(loadEvent.target?.result || ''),
+      });
+    };
+    reader.readAsDataURL(file);
+    event.target.value = '';
+  };
 
   return createPortal(
     <AnimatePresence>
@@ -255,24 +334,113 @@ function ShortcutModal({ isOpen, onClose, onSubmit, formData, setFormData, isEdi
 
               <div>
                 <label className="section-kicker mb-2 block">Icon</label>
-                <div className="grid grid-cols-7 gap-2">
-                  {ICON_OPTIONS.map(({ key, icon: Icon }) => (
-                    <m.button
-                      key={key}
-                      type="button"
-                      whileHover={{ scale: 1.08 }}
-                      whileTap={{ scale: 0.94 }}
-                      onClick={() => setFormData({ ...formData, icon: key })}
-                      className="flex items-center justify-center rounded-2xl border p-2.5 transition-all"
-                      style={{
-                        background: formData.icon === key ? 'rgba(77, 180, 200, 0.14)' : 'rgba(255, 255, 255, 0.03)',
-                        borderColor: formData.icon === key ? 'rgba(77, 180, 200, 0.4)' : 'var(--border-color)',
-                        color: formData.icon === key ? 'var(--accent-cyan)' : 'var(--text-muted)',
-                      }}
-                    >
-                      <Icon className="h-4 w-4" />
-                    </m.button>
-                  ))}
+                <div className="shortcut-icon-editor">
+                  <div className="shortcut-icon-preview-panel">
+                    <ShortcutIcon shortcut={previewShortcut} className="shortcut-icon-preview" iconClassName="h-6 w-6 text-white" />
+                    <div className="shortcut-icon-preview-copy">
+                      <span className="section-kicker">Preview</span>
+                      <p className="shortcut-icon-preview-note">
+                        {formData.iconMode === 'preset'
+                          ? 'Using built-in icon'
+                          : formData.iconMode === 'url'
+                            ? 'Using image link'
+                            : 'Using uploaded image'}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-2">
+                    {[
+                      { key: 'preset', label: 'Preset' },
+                      { key: 'url', label: 'Link' },
+                      { key: 'upload', label: 'Upload' },
+                    ].map(option => (
+                      <m.button
+                        key={option.key}
+                        type="button"
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => setFormData({ ...formData, iconMode: option.key })}
+                        className="flex-1 rounded-2xl border px-3 py-2.5 text-xs font-medium transition-all"
+                        style={{
+                          background: formData.iconMode === option.key ? 'rgba(77, 180, 200, 0.14)' : 'rgba(255, 255, 255, 0.03)',
+                          borderColor: formData.iconMode === option.key ? 'rgba(77, 180, 200, 0.4)' : 'var(--border-color)',
+                          color: formData.iconMode === option.key ? 'var(--accent-cyan)' : 'var(--text-secondary)',
+                        }}
+                      >
+                        {option.label}
+                      </m.button>
+                    ))}
+                  </div>
+
+                  {formData.iconMode === 'preset' ? (
+                    <div className="grid grid-cols-6 gap-2">
+                      {ICON_OPTIONS.map(({ key, icon: Icon }) => (
+                        <m.button
+                          key={key}
+                          type="button"
+                          whileHover={{ scale: 1.08 }}
+                          whileTap={{ scale: 0.94 }}
+                          onClick={() => setFormData({ ...formData, icon: key })}
+                          className="flex items-center justify-center rounded-2xl border p-2.5 transition-all"
+                          style={{
+                            background: formData.icon === key ? 'rgba(77, 180, 200, 0.14)' : 'rgba(255, 255, 255, 0.03)',
+                            borderColor: formData.icon === key ? 'rgba(77, 180, 200, 0.4)' : 'var(--border-color)',
+                            color: formData.icon === key ? 'var(--accent-cyan)' : 'var(--text-muted)',
+                          }}
+                          title={key}
+                        >
+                          <Icon className="h-4 w-4" />
+                        </m.button>
+                      ))}
+                    </div>
+                  ) : null}
+
+                  {formData.iconMode === 'url' ? (
+                    <div>
+                      <label className="section-kicker mb-2 block">Image URL</label>
+                      <input
+                        type="url"
+                        value={formData.iconUrl}
+                        onChange={event => setFormData({ ...formData, iconUrl: event.target.value })}
+                        className="input-field w-full text-sm"
+                        placeholder="https://example.com/icon.png"
+                      />
+                    </div>
+                  ) : null}
+
+                  {formData.iconMode === 'upload' ? (
+                    <div className="space-y-3">
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={handleCustomIconUpload}
+                      />
+                      <div className="flex gap-2">
+                        <m.button
+                          type="button"
+                          whileTap={{ scale: 0.98 }}
+                          onClick={() => fileInputRef.current?.click()}
+                          className="btn-secondary flex-1"
+                        >
+                          <Upload className="h-4 w-4" />
+                          Choose Image
+                        </m.button>
+                        <m.button
+                          type="button"
+                          whileTap={{ scale: 0.98 }}
+                          onClick={() => setFormData({ ...formData, iconUrl: '' })}
+                          className="btn-secondary px-4"
+                        >
+                          <X className="h-4 w-4" />
+                        </m.button>
+                      </div>
+                      <p className="shortcut-icon-preview-note">
+                        {formData.iconUrl ? 'Uploaded image ready.' : 'PNG, JPG, SVG all work.'}
+                      </p>
+                    </div>
+                  ) : null}
                 </div>
               </div>
 
@@ -330,18 +498,22 @@ function ShortcutModal({ isOpen, onClose, onSubmit, formData, setFormData, isEdi
 }
 
 export default function Shortcuts() {
+  const createEmptyFormData = () => ({
+    name: '',
+    icon: 'globe',
+    iconMode: 'preset',
+    iconUrl: '',
+    type: 'url',
+    value: '',
+  });
+
   const [shortcuts, setShortcuts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [draggingId, setDraggingId] = useState(null);
   const [editMode, setEditMode] = useState(false);
-  const [formData, setFormData] = useState({
-    name: '',
-    icon: 'globe',
-    type: 'url',
-    value: '',
-  });
+  const [formData, setFormData] = useState(createEmptyFormData);
   const shortcutsRef = useRef([]);
   const lastSavedOrderRef = useRef('');
 
@@ -399,6 +571,19 @@ export default function Shortcuts() {
   const handleSubmit = async event => {
     event.preventDefault();
 
+    const payload = {
+      ...formData,
+      name: formData.name.trim(),
+      value: formData.value.trim(),
+      icon: formData.icon || 'globe',
+      iconMode: formData.iconMode || 'preset',
+      iconUrl: formData.iconMode === 'preset' ? '' : formData.iconUrl.trim(),
+    };
+
+    if (payload.iconMode !== 'preset' && !payload.iconUrl) {
+      return;
+    }
+
     try {
       const url = editingId ? `/api/shortcuts/${editingId}` : '/api/shortcuts';
       const method = editingId ? 'PUT' : 'POST';
@@ -406,7 +591,7 @@ export default function Shortcuts() {
       const response = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(payload),
       });
 
       if (response.ok) {
@@ -444,7 +629,7 @@ export default function Shortcuts() {
 
   const openAddModal = () => {
     setEditingId(null);
-    setFormData({ name: '', icon: 'globe', type: 'url', value: '' });
+    setFormData(createEmptyFormData());
     setModalOpen(true);
   };
 
@@ -453,6 +638,8 @@ export default function Shortcuts() {
     setFormData({
       name: shortcut.name,
       icon: shortcut.icon,
+      iconMode: getIconMode(shortcut),
+      iconUrl: shortcut.iconUrl || '',
       type: shortcut.type,
       value: shortcut.value,
     });
@@ -462,7 +649,7 @@ export default function Shortcuts() {
   const closeModal = () => {
     setModalOpen(false);
     setEditingId(null);
-    setFormData({ name: '', icon: 'globe', type: 'url', value: '' });
+    setFormData(createEmptyFormData());
   };
 
   const handleReorderEnd = () => {
