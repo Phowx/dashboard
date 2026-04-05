@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import {
   Command,
   Edit2,
   Globe,
+  GripVertical,
   LayoutGrid,
   Link,
   Play,
@@ -13,7 +14,7 @@ import {
   Trash2,
   X,
 } from 'lucide-react';
-import { AnimatePresence, m } from 'framer-motion';
+import { AnimatePresence, Reorder, m, useDragControls } from 'framer-motion';
 
 const ICONS = {
   globe: Globe,
@@ -45,17 +46,24 @@ function getShortcutPreview(shortcut) {
     .replace(/\/$/, '');
 }
 
-function ShortcutCard({ shortcut, onClick, onEdit, onDelete, index }) {
+function ShortcutCard({ shortcut, onClick, onEdit, onDelete, index, onDragStart, onDragEnd }) {
   const Icon = ICONS[shortcut.icon] || Globe;
+  const dragControls = useDragControls();
 
   return (
-    <m.div
+    <Reorder.Item
+      value={shortcut}
+      dragListener={false}
+      dragControls={dragControls}
+      onDragStart={() => onDragStart(shortcut.id)}
+      onDragEnd={onDragEnd}
       initial={{ opacity: 0, scale: 0.9, y: 12 }}
       animate={{ opacity: 1, scale: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.9, y: 12 }}
       transition={{ delay: index * 0.04 }}
       layout
-      className="group relative"
+      whileDrag={{ scale: 1.02, zIndex: 12 }}
+      className="shortcut-sort-item group relative list-none"
     >
       <m.button
         whileHover={{ y: -4, scale: 1.02 }}
@@ -77,7 +85,22 @@ function ShortcutCard({ shortcut, onClick, onEdit, onDelete, index }) {
         </div>
       </m.button>
 
-      <div className="absolute right-3 top-3 flex gap-1.5 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+      <div className="shortcut-card-actions">
+        <m.button
+          whileHover={{ scale: 1.08 }}
+          whileTap={{ scale: 0.94 }}
+          onPointerDown={event => {
+            event.preventDefault();
+            event.stopPropagation();
+            dragControls.start(event);
+          }}
+          onClick={event => event.stopPropagation()}
+          className="shortcut-drag-handle"
+          type="button"
+          aria-label="Reorder shortcut"
+        >
+          <GripVertical className="h-3.5 w-3.5" />
+        </m.button>
         <m.button
           whileHover={{ scale: 1.08 }}
           whileTap={{ scale: 0.94 }}
@@ -113,7 +136,7 @@ function ShortcutCard({ shortcut, onClick, onEdit, onDelete, index }) {
           <Trash2 className="h-3.5 w-3.5" />
         </m.button>
       </div>
-    </m.div>
+    </Reorder.Item>
   );
 }
 
@@ -243,12 +266,19 @@ export default function Shortcuts() {
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
+  const [draggingId, setDraggingId] = useState(null);
   const [formData, setFormData] = useState({
     name: '',
     icon: 'globe',
     type: 'url',
     value: '',
   });
+  const shortcutsRef = useRef([]);
+  const lastSavedOrderRef = useRef('');
+
+  useEffect(() => {
+    shortcutsRef.current = shortcuts;
+  }, [shortcuts]);
 
   useEffect(() => {
     fetchShortcuts();
@@ -258,11 +288,42 @@ export default function Shortcuts() {
     try {
       const response = await fetch('/api/shortcuts');
       const data = await response.json();
-      setShortcuts(data);
+      const orderedShortcuts = [...data].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+      lastSavedOrderRef.current = orderedShortcuts.map(shortcut => shortcut.id).join('|');
+      setShortcuts(orderedShortcuts);
     } catch (error) {
       console.error('Failed to fetch shortcuts:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const persistShortcutOrder = async (nextShortcuts) => {
+    const ids = nextShortcuts.map(shortcut => shortcut.id);
+    const signature = ids.join('|');
+
+    if (!ids.length || signature === lastSavedOrderRef.current) {
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/shortcuts/reorder', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ids }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to reorder shortcuts');
+      }
+
+      const data = await response.json();
+      const orderedShortcuts = [...data].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+      lastSavedOrderRef.current = orderedShortcuts.map(shortcut => shortcut.id).join('|');
+      setShortcuts(orderedShortcuts);
+    } catch (error) {
+      console.error('Failed to reorder shortcuts:', error);
+      fetchShortcuts();
     }
   };
 
@@ -335,6 +396,11 @@ export default function Shortcuts() {
     setFormData({ name: '', icon: 'globe', type: 'url', value: '' });
   };
 
+  const handleReorderEnd = () => {
+    setDraggingId(null);
+    persistShortcutOrder(shortcutsRef.current);
+  };
+
   if (loading) {
     return (
       <div className="glass-card flex h-40 items-center justify-center">
@@ -365,20 +431,32 @@ export default function Shortcuts() {
 
       <div className="shortcut-column flex flex-1 flex-col">
         {shortcuts.length > 0 ? (
-          <div className="grid grid-cols-1 gap-3 content-start">
+          <Reorder.Group
+            axis="y"
+            values={shortcuts}
+            onReorder={setShortcuts}
+            className="shortcut-reorder-list"
+          >
             <AnimatePresence>
               {shortcuts.map((shortcut, index) => (
                 <ShortcutCard
                   key={shortcut.id}
                   shortcut={shortcut}
                   index={index}
-                  onClick={() => handleShortcutClick(shortcut)}
+                  onClick={() => {
+                    if (draggingId) {
+                      return;
+                    }
+                    handleShortcutClick(shortcut);
+                  }}
                   onEdit={openEditModal}
                   onDelete={handleDelete}
+                  onDragStart={setDraggingId}
+                  onDragEnd={handleReorderEnd}
                 />
               ))}
             </AnimatePresence>
-          </div>
+          </Reorder.Group>
         ) : (
           <m.div className="flex flex-1 flex-col items-center justify-center py-10 text-center" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
             <div

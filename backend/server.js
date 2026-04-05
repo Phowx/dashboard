@@ -54,6 +54,38 @@ function ensureDataFile() {
   fs.writeFileSync(DATA_FILE, JSON.stringify({ shortcuts: [] }, null, 2));
 }
 
+function normalizeShortcutList(shortcuts = []) {
+  return [...shortcuts]
+    .map((shortcut, index) => ({
+      ...shortcut,
+      order: Number.isFinite(Number(shortcut.order)) ? Number(shortcut.order) : index
+    }))
+    .sort((a, b) => a.order - b.order || String(a.id).localeCompare(String(b.id)))
+    .map((shortcut, index) => ({
+      ...shortcut,
+      order: index
+    }));
+}
+
+function readShortcutsData() {
+  ensureDataFile();
+  const data = JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
+  const normalizedShortcuts = normalizeShortcutList(data.shortcuts || []);
+
+  if (JSON.stringify(data.shortcuts || []) !== JSON.stringify(normalizedShortcuts)) {
+    fs.writeFileSync(DATA_FILE, JSON.stringify({ shortcuts: normalizedShortcuts }, null, 2));
+  }
+
+  return { shortcuts: normalizedShortcuts };
+}
+
+function writeShortcutsData(shortcuts) {
+  const normalizedShortcuts = normalizeShortcutList(shortcuts);
+  const data = { shortcuts: normalizedShortcuts };
+  fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
+  return data;
+}
+
 function getNetworkUrls(port) {
   const interfaces = os.networkInterfaces();
   const urls = [];
@@ -286,7 +318,7 @@ app.post('/api/docker/containers/:id/:action', async (req, res) => {
 
 app.get('/api/shortcuts', (req, res) => {
   try {
-    const data = JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
+    const data = readShortcutsData();
     res.json(data.shortcuts);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -295,14 +327,14 @@ app.get('/api/shortcuts', (req, res) => {
 
 app.post('/api/shortcuts', (req, res) => {
   try {
-    const data = JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
+    const data = readShortcutsData();
     const newShortcut = {
       id: Date.now().toString(),
+      order: data.shortcuts.length,
       ...req.body
     };
-    data.shortcuts.push(newShortcut);
-    fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
-    res.json(newShortcut);
+    const nextData = writeShortcutsData([...data.shortcuts, newShortcut]);
+    res.json(nextData.shortcuts.find(shortcut => shortcut.id === newShortcut.id));
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -310,13 +342,48 @@ app.post('/api/shortcuts', (req, res) => {
 
 app.put('/api/shortcuts/:id', (req, res) => {
   try {
-    const data = JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
+    const data = readShortcutsData();
     const index = data.shortcuts.findIndex(s => s.id === req.params.id);
     if (index === -1) return res.status(404).json({ error: 'Not found' });
 
-    data.shortcuts[index] = { ...data.shortcuts[index], ...req.body };
-    fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
-    res.json(data.shortcuts[index]);
+    const currentShortcut = data.shortcuts[index];
+    const updatedShortcut = {
+      ...currentShortcut,
+      ...req.body,
+      id: currentShortcut.id,
+      order: currentShortcut.order
+    };
+    const nextShortcuts = [...data.shortcuts];
+    nextShortcuts[index] = updatedShortcut;
+    const nextData = writeShortcutsData(nextShortcuts);
+    res.json(nextData.shortcuts[index]);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post('/api/shortcuts/reorder', (req, res) => {
+  try {
+    const { ids } = req.body;
+
+    if (!Array.isArray(ids)) {
+      return res.status(400).json({ error: 'ids must be an array' });
+    }
+
+    const data = readShortcutsData();
+    const shortcutMap = new Map(data.shortcuts.map(shortcut => [shortcut.id, shortcut]));
+
+    if (ids.length !== data.shortcuts.length || ids.some(id => !shortcutMap.has(id))) {
+      return res.status(400).json({ error: 'Shortcut list mismatch' });
+    }
+
+    const reorderedShortcuts = ids.map((id, index) => ({
+      ...shortcutMap.get(id),
+      order: index
+    }));
+
+    const nextData = writeShortcutsData(reorderedShortcuts);
+    res.json(nextData.shortcuts);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -324,9 +391,8 @@ app.put('/api/shortcuts/:id', (req, res) => {
 
 app.delete('/api/shortcuts/:id', (req, res) => {
   try {
-    const data = JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
-    data.shortcuts = data.shortcuts.filter(s => s.id !== req.params.id);
-    fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
+    const data = readShortcutsData();
+    writeShortcutsData(data.shortcuts.filter(s => s.id !== req.params.id));
     res.json({ success: true });
   } catch (error) {
     res.status(500).json({ error: error.message });

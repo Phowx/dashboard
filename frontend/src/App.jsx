@@ -1,9 +1,11 @@
-import React, { lazy, Suspense, useEffect, useState } from 'react';
+import React, { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import {
-  Activity,
+  Check,
   Clock3,
-  Moon,
+  Monitor,
+  MoonStar,
   Sun,
+  SunMedium,
   Wifi,
   WifiOff,
 } from 'lucide-react';
@@ -14,6 +16,14 @@ import { LiveMetricsProvider, useLiveMetrics } from './context/LiveMetricsContex
 const DockerList = lazy(() => import('./components/DockerList'));
 const Shortcuts = lazy(() => import('./components/Shortcuts'));
 const THEME_STORAGE_KEY = 'dashboard-theme-v2';
+
+function getSystemTheme() {
+  if (typeof window === 'undefined') {
+    return 'dark';
+  }
+
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+}
 
 function formatUptimeCompact(seconds) {
   if (!seconds || seconds < 1) return '--';
@@ -49,29 +59,85 @@ function SectionFallback({ title, description, minHeight = 'min-h-[260px]' }) {
   );
 }
 
+function DashboardMark() {
+  return (
+    <span className="dashboard-glyph" aria-hidden>
+      <span className="dashboard-glyph-cell dashboard-glyph-cell-primary" />
+      <span className="dashboard-glyph-cell dashboard-glyph-cell-secondary" />
+      <span className="dashboard-glyph-cell dashboard-glyph-cell-wide" />
+    </span>
+  );
+}
+
 function DashboardApp() {
-  const [theme, setTheme] = useState(() => {
+  const [themePreference, setThemePreference] = useState(() => {
     if (typeof window !== 'undefined') {
-      return localStorage.getItem(THEME_STORAGE_KEY) || 'dark';
+      return localStorage.getItem(THEME_STORAGE_KEY) || 'system';
     }
-    return 'dark';
+    return 'system';
   });
+  const [systemTheme, setSystemTheme] = useState(getSystemTheme);
+  const [themeMenuOpen, setThemeMenuOpen] = useState(false);
   const { wsStatus, liveMetrics } = useLiveMetrics();
+  const themeMenuRef = useRef(null);
 
   const uptime = liveMetrics?.uptime || 0;
+  const resolvedTheme = themePreference === 'system' ? systemTheme : themePreference;
 
   useEffect(() => {
-    if (theme === 'light') {
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const handleThemeChange = event => {
+      setSystemTheme(event.matches ? 'dark' : 'light');
+    };
+
+    setSystemTheme(mediaQuery.matches ? 'dark' : 'light');
+
+    if (typeof mediaQuery.addEventListener === 'function') {
+      mediaQuery.addEventListener('change', handleThemeChange);
+      return () => mediaQuery.removeEventListener('change', handleThemeChange);
+    }
+
+    mediaQuery.addListener(handleThemeChange);
+    return () => mediaQuery.removeListener(handleThemeChange);
+  }, []);
+
+  useEffect(() => {
+    if (resolvedTheme === 'light') {
       document.documentElement.classList.add('light');
     } else {
       document.documentElement.classList.remove('light');
     }
-    localStorage.setItem(THEME_STORAGE_KEY, theme);
-  }, [theme]);
 
-  const toggleTheme = () => {
-    setTheme(prev => (prev === 'dark' ? 'light' : 'dark'));
-  };
+    document.documentElement.dataset.themePreference = themePreference;
+    localStorage.setItem(THEME_STORAGE_KEY, themePreference);
+  }, [resolvedTheme, themePreference]);
+
+  useEffect(() => {
+    if (!themeMenuOpen) {
+      return undefined;
+    }
+
+    const handlePointerDown = event => {
+      if (themeMenuRef.current && !themeMenuRef.current.contains(event.target)) {
+        setThemeMenuOpen(false);
+      }
+    };
+
+    document.addEventListener('pointerdown', handlePointerDown);
+    return () => document.removeEventListener('pointerdown', handlePointerDown);
+  }, [themeMenuOpen]);
+
+  const themeButtonIcon = themePreference === 'system'
+    ? <Monitor className="h-3.5 w-3.5" />
+    : resolvedTheme === 'light'
+      ? <Sun className="h-3.5 w-3.5" />
+      : <MoonStar className="h-3.5 w-3.5" />;
+
+  const themeOptions = [
+    { value: 'light', label: 'Light', icon: SunMedium },
+    { value: 'dark', label: 'Dark', icon: MoonStar },
+    { value: 'system', label: 'Auto', icon: Monitor },
+  ];
 
   return (
     <div className="dashboard-shell min-h-screen">
@@ -86,7 +152,7 @@ function DashboardApp() {
             <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
               <div className="toolbar-brand">
                 <div className="brand-mark">
-                  <Activity className="h-5 w-5 text-white" />
+                  <DashboardMark />
                 </div>
                 <span className="section-kicker">DASHBOARD</span>
               </div>
@@ -105,38 +171,58 @@ function DashboardApp() {
                   )}
                 </div>
 
-                <m.button
-                  whileHover={{ scale: 1.04 }}
-                  whileTap={{ scale: 0.96 }}
-                  onClick={toggleTheme}
-                  className="status-pill toolbar-icon-pill transition-colors"
-                  aria-label="Toggle theme"
-                  type="button"
-                >
-                  <AnimatePresence mode="wait">
-                    {theme === 'dark' ? (
+                <div className="theme-switcher" ref={themeMenuRef}>
+                  <m.button
+                    whileHover={{ scale: 1.04 }}
+                    whileTap={{ scale: 0.96 }}
+                    onClick={() => setThemeMenuOpen(prev => !prev)}
+                    className="status-pill toolbar-icon-pill transition-colors"
+                    aria-label="Open theme menu"
+                    type="button"
+                  >
+                    <AnimatePresence mode="wait">
                       <m.span
-                        key="sun"
-                        initial={{ rotate: -60, opacity: 0 }}
+                        key={themePreference}
+                        initial={{ rotate: -30, opacity: 0 }}
                         animate={{ rotate: 0, opacity: 1 }}
-                        exit={{ rotate: 60, opacity: 0 }}
+                        exit={{ rotate: 30, opacity: 0 }}
                         transition={{ duration: 0.2 }}
                       >
-                        <Sun className="h-3.5 w-3.5" />
+                        {themeButtonIcon}
                       </m.span>
-                    ) : (
-                      <m.span
-                        key="moon"
-                        initial={{ rotate: 60, opacity: 0 }}
-                        animate={{ rotate: 0, opacity: 1 }}
-                        exit={{ rotate: -60, opacity: 0 }}
-                        transition={{ duration: 0.2 }}
+                    </AnimatePresence>
+                  </m.button>
+
+                  <AnimatePresence>
+                    {themeMenuOpen ? (
+                      <m.div
+                        initial={{ opacity: 0, y: -6, scale: 0.96 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: -6, scale: 0.96 }}
+                        transition={{ duration: 0.18 }}
+                        className="theme-menu"
                       >
-                        <Moon className="h-3.5 w-3.5" />
-                      </m.span>
-                    )}
+                        {themeOptions.map(({ value, label, icon: Icon }) => (
+                          <button
+                            key={value}
+                            type="button"
+                            className={`theme-menu-item${themePreference === value ? ' theme-menu-item-active' : ''}`}
+                            onClick={() => {
+                              setThemePreference(value);
+                              setThemeMenuOpen(false);
+                            }}
+                          >
+                            <span className="theme-menu-item-meta">
+                              <Icon className="h-3.5 w-3.5" />
+                              <span>{label}</span>
+                            </span>
+                            {themePreference === value ? <Check className="h-3.5 w-3.5" /> : null}
+                          </button>
+                        ))}
+                      </m.div>
+                    ) : null}
                   </AnimatePresence>
-                </m.button>
+                </div>
               </div>
             </div>
           </div>
