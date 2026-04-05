@@ -101,40 +101,34 @@ function ShortcutCard({ shortcut, onClick, onEdit, onDelete, index, onDragStart,
         >
           <GripVertical className="h-3.5 w-3.5" />
         </m.button>
-        <m.button
-          whileHover={{ scale: 1.08 }}
-          whileTap={{ scale: 0.94 }}
-          onClick={event => {
-            event.stopPropagation();
-            onEdit(shortcut);
-          }}
-          className="inline-flex h-8 w-8 items-center justify-center rounded-full border"
-          style={{
-            borderColor: 'var(--border-color)',
-            background: 'rgba(255, 255, 255, 0.06)',
-            color: 'var(--text-primary)',
-          }}
-          type="button"
-        >
-          <Edit2 className="h-3.5 w-3.5" />
-        </m.button>
-        <m.button
-          whileHover={{ scale: 1.08 }}
-          whileTap={{ scale: 0.94 }}
-          onClick={event => {
-            event.stopPropagation();
-            onDelete(shortcut.id);
-          }}
-          className="inline-flex h-8 w-8 items-center justify-center rounded-full border"
-          style={{
-            borderColor: 'rgba(240, 122, 99, 0.28)',
-            background: 'rgba(240, 122, 99, 0.08)',
-            color: 'var(--accent-red)',
-          }}
-          type="button"
-        >
-          <Trash2 className="h-3.5 w-3.5" />
-        </m.button>
+        <div className="shortcut-card-secondary-actions">
+          <m.button
+            whileHover={{ scale: 1.08 }}
+            whileTap={{ scale: 0.94 }}
+            onClick={event => {
+              event.stopPropagation();
+              onEdit(shortcut);
+            }}
+            className="shortcut-card-action-button"
+            type="button"
+            aria-label={`Edit ${shortcut.name}`}
+          >
+            <Edit2 className="h-3.5 w-3.5" />
+          </m.button>
+          <m.button
+            whileHover={{ scale: 1.08 }}
+            whileTap={{ scale: 0.94 }}
+            onClick={event => {
+              event.stopPropagation();
+              onDelete(shortcut.id);
+            }}
+            className="shortcut-card-action-button shortcut-card-action-button-danger"
+            type="button"
+            aria-label={`Delete ${shortcut.name}`}
+          >
+            <Trash2 className="h-3.5 w-3.5" />
+          </m.button>
+        </div>
       </div>
     </Reorder.Item>
   );

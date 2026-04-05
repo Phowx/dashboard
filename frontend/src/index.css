@@ -225,11 +225,13 @@ body::after {
   display: inline-flex;
   align-items: center;
   gap: 0.85rem;
+  width: fit-content;
   min-width: 176px;
   padding: 0.36rem 0.7rem 0.36rem 0.36rem;
   border: 1px solid var(--border-color);
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.04);
+  justify-self: start;
 }
 
 .toolbar-controls {
@@ -238,6 +240,7 @@ body::after {
   justify-content: flex-end;
   gap: 0.7rem;
   min-width: 0;
+  justify-self: end;
 }
 
 .section-kicker,
@@ -521,27 +524,56 @@ body::after {
   border: 1px solid var(--border-color);
   border-radius: 24px;
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 38%),
-    var(--bg-panel);
-  backdrop-filter: blur(18px);
-  box-shadow: var(--shadow-panel);
+    linear-gradient(180deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.018) 34%, rgba(255, 255, 255, 0.01) 100%),
+    linear-gradient(145deg, rgba(13, 19, 24, 0.78), rgba(8, 12, 16, 0.54));
+  backdrop-filter: blur(22px) saturate(128%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 18px 40px rgba(0, 0, 0, 0.2);
   transition:
     transform 0.2s ease,
     border-color 0.2s ease,
-    box-shadow 0.2s ease;
+    box-shadow 0.2s ease,
+    background 0.2s ease;
 }
 
 .glass-card::before {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 26%);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035), transparent 24%),
+    radial-gradient(circle at top left, rgba(255, 255, 255, 0.03), transparent 30%);
   pointer-events: none;
 }
 
 .glass-card:hover {
   transform: translateY(-1px);
   border-color: var(--border-strong);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 22px 46px rgba(0, 0, 0, 0.24);
+}
+
+.light .glass-card {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.62), rgba(255, 255, 255, 0.3) 34%, rgba(255, 255, 255, 0.22) 100%),
+    linear-gradient(145deg, rgba(246, 249, 245, 0.68), rgba(230, 236, 232, 0.46));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.72),
+    0 18px 34px rgba(28, 38, 42, 0.08);
+}
+
+.light .glass-card::before {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.34), transparent 24%),
+    radial-gradient(circle at top left, rgba(255, 255, 255, 0.24), transparent 32%);
+}
+
+.light .glass-card:hover {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.78),
+    0 22px 40px rgba(28, 38, 42, 0.1);
 }
 
 .surface-title {
@@ -854,6 +886,23 @@ body::after {
   gap: 0.36rem;
 }
 
+.shortcut-card-secondary-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.36rem;
+  opacity: 0;
+  transform: translateX(6px);
+  pointer-events: none;
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.shortcut-sort-item:hover .shortcut-card-secondary-actions,
+.shortcut-sort-item:focus-within .shortcut-card-secondary-actions {
+  opacity: 1;
+  transform: translateX(0);
+  pointer-events: auto;
+}
+
 .shortcut-drag-handle {
   display: inline-flex;
   height: 1.75rem;
@@ -869,6 +918,24 @@ body::after {
 
 .shortcut-drag-handle:active {
   cursor: grabbing;
+}
+
+.shortcut-card-action-button {
+  display: inline-flex;
+  height: 1.75rem;
+  width: 1.75rem;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border-color);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
+}
+
+.shortcut-card-action-button-danger {
+  border-color: rgba(240, 122, 99, 0.28);
+  background: rgba(240, 122, 99, 0.08);
+  color: var(--accent-red);
 }
 
 @media (max-width: 767px) {
@@ -889,6 +956,12 @@ body::after {
     position: static;
     margin-top: 0.2rem;
     justify-content: flex-end;
+  }
+
+  .shortcut-card-secondary-actions {
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
   }
 }
 
