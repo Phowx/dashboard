@@ -148,81 +148,81 @@ function DashboardApp() {
         className="relative z-10 pt-4"
       >
         <div className="mx-auto max-w-[1480px] px-4 xl:px-6">
-          <div className="dashboard-toolbar">
-            <div className="toolbar-brand-lane">
-              <div className="toolbar-brand">
+          <div className="glass-card dashboard-toolbar-shell">
+            <div className="dashboard-toolbar">
+              <div className="toolbar-branding">
                 <div className="brand-mark">
                   <DashboardMark />
                 </div>
                 <span className="section-kicker">DASHBOARD</span>
               </div>
-            </div>
 
-            <div className="toolbar-controls">
-              <div className="status-pill toolbar-pill">
-                <Clock3 className="h-3.5 w-3.5" />
-                <strong>{formatUptimeCompact(uptime)}</strong>
-              </div>
+              <div className="toolbar-controls">
+                <div className="status-pill toolbar-pill">
+                  <Clock3 className="h-3.5 w-3.5" />
+                  <strong>{formatUptimeCompact(uptime)}</strong>
+                </div>
 
-              <div className="status-pill toolbar-icon-pill" aria-label={wsStatus === 'connected' ? 'Connected' : 'Reconnecting'}>
-                {wsStatus === 'connected' ? (
-                  <Wifi className="h-3.5 w-3.5 live-indicator" style={{ color: 'var(--accent-green)' }} />
-                ) : (
-                  <WifiOff className="h-3.5 w-3.5" style={{ color: 'var(--accent-red)' }} />
-                )}
-              </div>
+                <div className="status-pill toolbar-icon-pill" aria-label={wsStatus === 'connected' ? 'Connected' : 'Reconnecting'}>
+                  {wsStatus === 'connected' ? (
+                    <Wifi className="h-3.5 w-3.5 live-indicator" style={{ color: 'var(--accent-green)' }} />
+                  ) : (
+                    <WifiOff className="h-3.5 w-3.5" style={{ color: 'var(--accent-red)' }} />
+                  )}
+                </div>
 
-              <div className="theme-switcher" ref={themeMenuRef}>
-                <m.button
-                  whileHover={{ scale: 1.04 }}
-                  whileTap={{ scale: 0.96 }}
-                  onClick={() => setThemeMenuOpen(prev => !prev)}
-                  className="status-pill toolbar-icon-pill transition-colors"
-                  aria-label="Open theme menu"
-                  type="button"
-                >
-                  <AnimatePresence mode="wait">
-                    <m.span
-                      key={themePreference}
-                      initial={{ rotate: -30, opacity: 0 }}
-                      animate={{ rotate: 0, opacity: 1 }}
-                      exit={{ rotate: 30, opacity: 0 }}
-                      transition={{ duration: 0.2 }}
-                    >
-                      {themeButtonIcon}
-                    </m.span>
+                <div className="theme-switcher" ref={themeMenuRef}>
+                  <m.button
+                    whileHover={{ scale: 1.04 }}
+                    whileTap={{ scale: 0.96 }}
+                    onClick={() => setThemeMenuOpen(prev => !prev)}
+                    className="status-pill toolbar-icon-pill transition-colors"
+                    aria-label="Open theme menu"
+                    type="button"
+                  >
+                    <AnimatePresence mode="wait">
+                      <m.span
+                        key={themePreference}
+                        initial={{ rotate: -30, opacity: 0 }}
+                        animate={{ rotate: 0, opacity: 1 }}
+                        exit={{ rotate: 30, opacity: 0 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        {themeButtonIcon}
+                      </m.span>
+                    </AnimatePresence>
+                  </m.button>
+
+                  <AnimatePresence>
+                    {themeMenuOpen ? (
+                      <m.div
+                        initial={{ opacity: 0, y: -6, scale: 0.96 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: -6, scale: 0.96 }}
+                        transition={{ duration: 0.18 }}
+                        className="theme-menu"
+                      >
+                        {themeOptions.map(({ value, label, icon: Icon }) => (
+                          <button
+                            key={value}
+                            type="button"
+                            className={`theme-menu-item${themePreference === value ? ' theme-menu-item-active' : ''}`}
+                            onClick={() => {
+                              setThemePreference(value);
+                              setThemeMenuOpen(false);
+                            }}
+                          >
+                            <span className="theme-menu-item-meta">
+                              <Icon className="h-3.5 w-3.5" />
+                              <span>{label}</span>
+                            </span>
+                            {themePreference === value ? <Check className="h-3.5 w-3.5" /> : null}
+                          </button>
+                        ))}
+                      </m.div>
+                    ) : null}
                   </AnimatePresence>
-                </m.button>
-
-                <AnimatePresence>
-                  {themeMenuOpen ? (
-                    <m.div
-                      initial={{ opacity: 0, y: -6, scale: 0.96 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, y: -6, scale: 0.96 }}
-                      transition={{ duration: 0.18 }}
-                      className="theme-menu"
-                    >
-                      {themeOptions.map(({ value, label, icon: Icon }) => (
-                        <button
-                          key={value}
-                          type="button"
-                          className={`theme-menu-item${themePreference === value ? ' theme-menu-item-active' : ''}`}
-                          onClick={() => {
-                            setThemePreference(value);
-                            setThemeMenuOpen(false);
-                          }}
-                        >
-                          <span className="theme-menu-item-meta">
-                            <Icon className="h-3.5 w-3.5" />
-                            <span>{label}</span>
-                          </span>
-                          {themePreference === value ? <Check className="h-3.5 w-3.5" /> : null}
-                        </button>
-                      ))}
-                    </m.div>
-                  ) : null}
-                </AnimatePresence>
+                </div>
               </div>
             </div>
           </div>

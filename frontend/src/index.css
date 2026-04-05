@@ -180,19 +180,22 @@ body::after {
 }
 
 .dashboard-toolbar {
-  display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
-  align-items: center;
-  gap: 1.25rem;
-}
-
-.toolbar-brand-lane {
-  grid-column: span 9;
   display: flex;
   align-items: center;
-  min-width: 0;
+  justify-content: space-between;
+  gap: 1rem;
   min-height: 66px;
-  padding: 0.48rem 0;
+}
+
+.dashboard-toolbar-shell {
+  padding: 0.58rem 0.7rem;
+}
+
+.toolbar-branding {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  min-width: 0;
 }
 
 .brand-mark {
@@ -261,25 +264,6 @@ body::after {
   background: linear-gradient(180deg, rgba(185, 121, 34, 0.92), rgba(185, 121, 34, 0.68));
 }
 
-.toolbar-brand {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.85rem;
-  position: relative;
-  isolation: isolate;
-  overflow: hidden;
-  width: fit-content;
-  min-width: 176px;
-  padding: 0.36rem 0.7rem 0.36rem 0.36rem;
-  border: 1px solid var(--liquid-border);
-  border-radius: 999px;
-  background: var(--liquid-surface);
-  backdrop-filter: var(--liquid-backdrop);
-  box-shadow: var(--liquid-shadow);
-  justify-self: start;
-}
-
-.toolbar-brand::before,
 .status-pill::before,
 .signal-icon::before,
 .shortcut-icon-wrap::before {
@@ -292,7 +276,6 @@ body::after {
   pointer-events: none;
 }
 
-.toolbar-brand::after,
 .status-pill::after,
 .signal-icon::after,
 .shortcut-icon-wrap::after {
@@ -360,15 +343,12 @@ body::after {
 }
 
 .toolbar-controls {
-  grid-column: span 3;
   display: inline-flex;
   align-items: center;
   justify-content: flex-end;
   gap: 0.7rem;
   min-width: 0;
-  width: 100%;
-  min-height: 66px;
-  padding: 0.48rem 0;
+  flex-wrap: wrap;
 }
 
 .section-kicker,
@@ -447,7 +427,6 @@ body::after {
   z-index: 20;
 }
 
-.toolbar-brand > *,
 .status-pill > *,
 .theme-menu > *,
 .glass-card > *,
@@ -1258,24 +1237,15 @@ body::after {
 
 @media (max-width: 767px) {
   .dashboard-toolbar {
-    grid-template-columns: minmax(0, 1fr) auto;
     gap: 0.7rem;
   }
 
-  .toolbar-brand-lane,
-  .toolbar-controls {
-    grid-column: auto;
-    min-height: auto;
+  .dashboard-toolbar-shell {
+    padding: 0.5rem 0.58rem;
   }
 
-  .toolbar-brand-lane {
-    padding: 0.24rem 0;
-  }
-
-  .toolbar-brand {
-    min-width: 132px;
+  .toolbar-branding {
     gap: 0.55rem;
-    padding: 0.28rem 0.58rem 0.28rem 0.28rem;
   }
 
   .brand-mark {
@@ -1309,7 +1279,6 @@ body::after {
     justify-content: flex-end;
     flex-wrap: nowrap;
     gap: 0.45rem;
-    width: auto;
   }
 
   .shortcut-panel-header {
