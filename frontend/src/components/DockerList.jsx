@@ -22,15 +22,6 @@ const STACK_TONES = [
   { color: '#7aa6ff', bg: 'rgba(122, 166, 255, 0.14)', border: 'rgba(122, 166, 255, 0.28)' },
 ];
 
-function getStackTone(stackName) {
-  if (!stackName) {
-    return null;
-  }
-
-  const hash = [...stackName].reduce((sum, char) => sum + char.charCodeAt(0), 0);
-  return STACK_TONES[hash % STACK_TONES.length];
-}
-
 function StatusBadge({ state }) {
   const getStatusConfig = () => {
     switch (state) {
@@ -256,6 +247,16 @@ function DockerList() {
     return serviceA.localeCompare(serviceB);
   });
 
+  const stackToneMap = sortedContainers.reduce((map, container) => {
+    if (!container.composeProject || map[container.composeProject]) {
+      return map;
+    }
+
+    const nextIndex = Object.keys(map).length % STACK_TONES.length;
+    map[container.composeProject] = STACK_TONES[nextIndex];
+    return map;
+  }, {});
+
   if (loading) {
     return (
       <div className="glass-card flex h-40 items-center justify-center">
@@ -319,7 +320,7 @@ function DockerList() {
             {sortedContainers.map(container => (
               <div key={container.id} className="glass-card p-4">
                 {container.composeProject && (() => {
-                  const stackTone = getStackTone(container.composeProject);
+                  const stackTone = stackToneMap[container.composeProject];
                   return (
                     <div className="mb-3">
                       <span
@@ -339,7 +340,7 @@ function DockerList() {
                   <div className="min-w-0">
                     <div className="flex items-center gap-2">
                       {container.composeProject && (() => {
-                        const stackTone = getStackTone(container.composeProject);
+                        const stackTone = stackToneMap[container.composeProject];
                         return (
                           <Layers className="h-3.5 w-3.5 shrink-0" style={{ color: stackTone?.color || 'var(--accent-cyan)' }} />
                         );
@@ -432,7 +433,7 @@ function DockerList() {
                       <div className="min-w-0 flex items-center gap-2">
                         {container.composeProject ? (
                           (() => {
-                            const stackTone = getStackTone(container.composeProject);
+                            const stackTone = stackToneMap[container.composeProject];
                             return (
                               <>
                                 <Layers className="h-3.5 w-3.5 shrink-0" style={{ color: stackTone.color }} />
