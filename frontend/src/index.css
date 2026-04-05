@@ -1059,10 +1059,21 @@ body::after {
   background: rgba(255, 255, 255, 0.04);
   color: var(--text-muted);
   cursor: grab;
+  opacity: 0;
+  transform: translateX(6px);
+  pointer-events: none;
+  transition: opacity 0.18s ease, transform 0.18s ease, color 0.18s ease, border-color 0.18s ease;
 }
 
 .shortcut-drag-handle:active {
   cursor: grabbing;
+}
+
+.shortcut-sort-item:hover .shortcut-drag-handle,
+.shortcut-sort-item:focus-within .shortcut-drag-handle {
+  opacity: 1;
+  transform: translateX(0);
+  pointer-events: auto;
 }
 
 .shortcut-card-action-button {
@@ -1168,6 +1179,12 @@ body::after {
   .shortcut-card-action-button {
     width: 1.45rem;
     height: 1.45rem;
+  }
+
+  .shortcut-drag-handle {
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
   }
 
   .shortcut-drag-handle svg,
