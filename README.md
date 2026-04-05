@@ -42,3 +42,48 @@ cd ../frontend && npm install
 cd backend && node server.js
 cd ../frontend && npm run dev
 ```
+
+## 生产部署
+
+生产环境使用后端直接托管 `frontend/dist`，所以部署时需要先构建前端，然后只启动后端服务。
+
+### 1. 安装依赖并构建
+
+```bash
+npm run install:all
+npm run build
+```
+
+### 2. 使用 systemd 托管
+
+仓库里提供了示例服务文件 [deploy/systemd/dashboard.service](deploy/systemd/dashboard.service) 和启动脚本 [scripts/run-dashboard.sh](scripts/run-dashboard.sh)。
+
+建议部署目录示例：`/opt/dashboard`
+
+1. 把仓库放到服务器目录，例如 `/opt/dashboard`
+2. 根据实际情况修改 `deploy/systemd/dashboard.service` 里的：
+   - `User`
+   - `Group`
+   - `WorkingDirectory`
+   - `ExecStart`
+3. 复制服务文件到 systemd：
+
+```bash
+sudo cp deploy/systemd/dashboard.service /etc/systemd/system/dashboard.service
+sudo systemctl daemon-reload
+sudo systemctl enable --now dashboard
+```
+
+### 3. 常用命令
+
+```bash
+sudo systemctl status dashboard
+sudo systemctl restart dashboard
+sudo journalctl -u dashboard -f
+```
+
+### 4. 注意事项
+
+- `scripts/run-dashboard.sh` 会检查 `frontend/dist` 是否存在，如果没有先构建会直接退出。
+- 如果你用 Docker 套接字读取容器状态，运行该服务的用户需要有 Docker 权限。
+- 如果服务器上的 `node` 不在 systemd 的默认 PATH 里，把 `ExecStart` 改成你的 Node 绝对路径，或者直接在脚本里写死。

@@ -1,0 +1,20 @@
+[Unit]
+Description=Private Server Dashboard
+After=network-online.target docker.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=dashboard
+Group=dashboard
+WorkingDirectory=/opt/dashboard
+ExecStart=/opt/dashboard/scripts/run-dashboard.sh
+Restart=always
+RestartSec=5
+Environment=NODE_ENV=production
+
+# If Docker requires additional permissions, add the service user to the docker group:
+# sudo usermod -aG docker dashboard
+
+[Install]
+WantedBy=multi-user.target
