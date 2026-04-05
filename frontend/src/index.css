@@ -673,6 +673,26 @@ body::after {
     0 22px 46px rgba(0, 0, 0, 0.24);
 }
 
+.glass-card.dashboard-toolbar-shell,
+.glass-card.dashboard-toolbar-shell:hover {
+  overflow: visible;
+}
+
+.dashboard-toolbar,
+.toolbar-controls,
+.theme-switcher {
+  position: relative;
+  overflow: visible;
+}
+
+.theme-switcher {
+  z-index: 16;
+}
+
+.theme-menu {
+  z-index: 80;
+}
+
 .surface-title {
   margin: 0;
   font-size: clamp(1.4rem, 1.8vw, 1.95rem);
