@@ -149,10 +149,10 @@ body::after {
 }
 
 .dashboard-toolbar {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
+  gap: 1.15rem;
 }
 
 .brand-mark {
@@ -230,6 +230,14 @@ body::after {
   border: 1px solid var(--border-color);
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.04);
+}
+
+.toolbar-controls {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.7rem;
+  min-width: 0;
 }
 
 .section-kicker,
@@ -669,7 +677,7 @@ body::after {
   min-height: auto;
   flex-direction: column;
   gap: 0.7rem;
-  padding: 0.95rem 3.9rem 0.95rem 0.95rem;
+  padding: 0.95rem 6.7rem 0.95rem 0.95rem;
 }
 
 .shortcut-column {
@@ -839,18 +847,17 @@ body::after {
 
 .shortcut-card-actions {
   position: absolute;
-  right: 0.78rem;
-  top: 50%;
+  right: 0.82rem;
+  top: 0.82rem;
   display: flex;
-  flex-direction: column;
-  gap: 0.42rem;
-  transform: translateY(-50%);
+  align-items: center;
+  gap: 0.36rem;
 }
 
 .shortcut-drag-handle {
   display: inline-flex;
-  height: 1.9rem;
-  width: 1.9rem;
+  height: 1.75rem;
+  width: 1.75rem;
   align-items: center;
   justify-content: center;
   border: 1px solid var(--border-color);
@@ -862,6 +869,27 @@ body::after {
 
 .shortcut-drag-handle:active {
   cursor: grabbing;
+}
+
+@media (max-width: 767px) {
+  .dashboard-toolbar {
+    grid-template-columns: 1fr;
+  }
+
+  .toolbar-controls {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .shortcut-card {
+    padding-right: 0.95rem;
+  }
+
+  .shortcut-card-actions {
+    position: static;
+    margin-top: 0.2rem;
+    justify-content: flex-end;
+  }
 }
 
 .btn-secondary {
