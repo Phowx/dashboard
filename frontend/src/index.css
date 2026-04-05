@@ -240,17 +240,17 @@ body::after {
   width: fit-content;
   min-width: 176px;
   padding: 0.36rem 0.7rem 0.36rem 0.36rem;
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 999px;
   background:
-    radial-gradient(circle at 18% 20%, rgba(255, 255, 255, 0.26), transparent 34%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.045) 46%, rgba(255, 255, 255, 0.018) 100%),
-    rgba(18, 24, 32, 0.18);
-  backdrop-filter: blur(24px) saturate(180%);
+    radial-gradient(circle at 16% 18%, rgba(87, 208, 239, 0.09), transparent 30%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.085), rgba(255, 255, 255, 0.02) 42%, rgba(255, 255, 255, 0.01) 100%),
+    rgba(12, 17, 23, 0.24);
+  backdrop-filter: blur(24px) saturate(165%);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.24),
-    inset 0 -14px 18px rgba(7, 10, 14, 0.08),
-    0 14px 34px rgba(0, 0, 0, 0.12);
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    inset 0 -12px 18px rgba(3, 6, 9, 0.16),
+    0 10px 24px rgba(0, 0, 0, 0.1);
   justify-self: start;
 }
 
@@ -261,9 +261,9 @@ body::after {
   inset: 1px;
   border-radius: inherit;
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.18), transparent 38%),
-    radial-gradient(circle at 14% 18%, rgba(255, 255, 255, 0.2), transparent 34%);
-  opacity: 0.78;
+    linear-gradient(180deg, rgba(255, 255, 255, 0.09), transparent 34%),
+    radial-gradient(circle at 14% 18%, rgba(255, 255, 255, 0.08), transparent 30%);
+  opacity: 0.72;
   pointer-events: none;
 }
 
@@ -276,9 +276,9 @@ body::after {
   top: 7%;
   height: 38%;
   border-radius: 999px;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.03));
-  filter: blur(10px);
-  opacity: 0.78;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.015));
+  filter: blur(12px);
+  opacity: 0.52;
   pointer-events: none;
 }
 
@@ -295,7 +295,7 @@ body::after {
 }
 
 .light .toolbar-brand {
-  border-color: rgba(255, 255, 255, 0.52);
+  border-color: rgba(255, 255, 255, 0.56);
   background:
     radial-gradient(circle at 18% 20%, rgba(255, 255, 255, 0.92), transparent 36%),
     linear-gradient(180deg, rgba(255, 255, 255, 0.78), rgba(255, 255, 255, 0.42) 48%, rgba(255, 255, 255, 0.24) 100%),
@@ -362,16 +362,16 @@ body::after {
 }
 
 .dashboard-toolbar .status-pill {
-  border-color: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.1);
   background:
-    radial-gradient(circle at 18% 20%, rgba(255, 255, 255, 0.24), transparent 34%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.04) 46%, rgba(255, 255, 255, 0.016) 100%),
-    rgba(18, 24, 32, 0.18);
-  backdrop-filter: blur(24px) saturate(180%);
+    radial-gradient(circle at 16% 18%, rgba(255, 180, 84, 0.08), transparent 32%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.085), rgba(255, 255, 255, 0.02) 42%, rgba(255, 255, 255, 0.01) 100%),
+    rgba(12, 17, 23, 0.24);
+  backdrop-filter: blur(24px) saturate(165%);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.24),
-    inset 0 -14px 18px rgba(7, 10, 14, 0.08),
-    0 14px 34px rgba(0, 0, 0, 0.12);
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    inset 0 -12px 18px rgba(3, 6, 9, 0.16),
+    0 10px 24px rgba(0, 0, 0, 0.1);
 }
 
 .light .dashboard-toolbar .status-pill {
@@ -802,7 +802,8 @@ body::after {
   min-height: auto;
   flex-direction: column;
   gap: 0.7rem;
-  padding: 0.95rem 8.9rem 0.95rem 0.95rem;
+  padding: 0.95rem 3.35rem 0.95rem 0.95rem;
+  transition: padding-right 0.18s ease;
 }
 
 .shortcut-column {
@@ -989,6 +990,11 @@ body::after {
   transition: opacity 0.18s ease, transform 0.18s ease;
 }
 
+.shortcut-sort-item:hover .shortcut-card,
+.shortcut-sort-item:focus-within .shortcut-card {
+  padding-right: 6.6rem;
+}
+
 .shortcut-sort-item:hover .shortcut-card-secondary-actions,
 .shortcut-sort-item:focus-within .shortcut-card-secondary-actions {
   opacity: 1;
@@ -1061,6 +1067,11 @@ body::after {
     opacity: 1;
     transform: none;
     pointer-events: auto;
+  }
+
+  .shortcut-sort-item:hover .shortcut-card,
+  .shortcut-sort-item:focus-within .shortcut-card {
+    padding-right: 0.95rem;
   }
 }
 
