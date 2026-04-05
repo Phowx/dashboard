@@ -1,32 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Cpu, HardDrive, MemoryStick, Wifi, ArrowDown, ArrowUp, RefreshCw, Plus, Edit2, Trash2, X, LayoutGrid, Globe, Settings, Terminal, Command, Play, Link } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useEffect } from 'react';
+import { Cpu, HardDrive, MemoryStick, Wifi, ArrowDown, ArrowUp, RefreshCw } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
-
-const getWebSocketUrl = () => {
-  const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-  return `${protocol}//${window.location.host}/ws`;
-};
-
-const ICONS = {
-  globe: Globe,
-  settings: Settings,
-  layout: LayoutGrid,
-  terminal: Terminal,
-  command: Command,
-  play: Play,
-  link: Link,
-};
-
-const ICON_OPTIONS = [
-  { key: 'globe', icon: Globe },
-  { key: 'settings', icon: Settings },
-  { key: 'layout', icon: LayoutGrid },
-  { key: 'terminal', icon: Terminal },
-  { key: 'command', icon: Command },
-  { key: 'play', icon: Play },
-  { key: 'link', icon: Link },
-];
+import { useLiveMetrics } from '../context/LiveMetricsContext';
 
 function MetricCard({ icon: Icon, label, value, unit, subLabel, color }) {
   return (
@@ -191,149 +167,34 @@ function RealtimeChart({ data }) {
   );
 }
 
-function ShortcutModal({ isOpen, onClose, onSubmit, formData, setFormData, isEditing }) {
-  if (!isOpen) return null;
-
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[9999] flex items-center justify-center p-4"
-      style={{ background: 'rgba(0, 0, 0, 0.7)', backdropFilter: 'blur(4px)' }}
-      onClick={onClose}
-    >
-      <motion.div
-        initial={{ opacity: 0, scale: 0.9, y: 20 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.9, y: 20 }}
-        className="glass-card w-full max-w-sm"
-        onClick={e => e.stopPropagation()}
-      >
-        <div className="flex items-center justify-between p-4 border-b" style={{ borderColor: 'var(--border-color)' }}>
-          <h3 className="text-base font-semibold" style={{ color: 'var(--text-primary)' }}>
-            {isEditing ? '编辑' : '添加'}快捷方式
-          </h3>
-          <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }} onClick={onClose} className="p-1.5 rounded-lg" style={{ color: 'var(--text-muted)' }}>
-            <X className="w-4 h-4" />
-          </motion.button>
-        </div>
-
-        <form onSubmit={onSubmit} className="p-4 space-y-4">
-          <div>
-            <label className="block text-xs font-medium mb-1.5" style={{ color: 'var(--text-secondary)' }}>名称</label>
-            <input
-              type="text"
-              value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              className="input-field w-full text-sm"
-              placeholder="例如：GitHub"
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block text-xs font-medium mb-1.5" style={{ color: 'var(--text-secondary)' }}>图标</label>
-            <div className="grid grid-cols-7 gap-1.5">
-              {ICON_OPTIONS.map(({ key, icon: Icon }) => (
-                <motion.button
-                  key={key}
-                  type="button"
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                  onClick={() => setFormData({ ...formData, icon: key })}
-                  className="p-2 rounded-lg border transition-all flex items-center justify-center"
-                  style={{
-                    background: formData.icon === key ? 'var(--accent-blue)' : 'var(--bg-tertiary)',
-                    borderColor: formData.icon === key ? 'var(--accent-blue)' : 'var(--border-color)',
-                    color: formData.icon === key ? 'white' : 'var(--text-muted)'
-                  }}
-                >
-                  <Icon className="w-4 h-4" />
-                </motion.button>
-              ))}
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-xs font-medium mb-1.5" style={{ color: 'var(--text-secondary)' }}>类型</label>
-            <div className="flex gap-2">
-              {['url', 'command'].map((type) => (
-                <motion.button
-                  key={type}
-                  type="button"
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => setFormData({ ...formData, type })}
-                  className="flex-1 py-2 px-3 rounded-lg border text-xs font-medium transition-all"
-                  style={{
-                    background: formData.type === type ? 'var(--accent-blue)' : 'var(--bg-tertiary)',
-                    borderColor: formData.type === type ? 'var(--accent-blue)' : 'var(--border-color)',
-                    color: formData.type === type ? 'white' : 'var(--text-secondary)'
-                  }}
-                >
-                  {type === 'url' ? 'URL' : '命令'}
-                </motion.button>
-              ))}
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-xs font-medium mb-1.5" style={{ color: 'var(--text-secondary)' }}>
-              {formData.type === 'url' ? 'URL 地址' : '命令内容'}
-            </label>
-            <input
-              type="text"
-              value={formData.value}
-              onChange={(e) => setFormData({ ...formData, value: e.target.value })}
-              className="input-field w-full text-sm"
-              placeholder={formData.type === 'url' ? 'https://...' : '输入命令...'}
-              required
-            />
-          </div>
-
-          <div className="flex gap-3 pt-2">
-            <motion.button type="button" whileTap={{ scale: 0.98 }} onClick={onClose} className="btn-secondary flex-1 text-sm">
-              取消
-            </motion.button>
-            <motion.button type="submit" whileTap={{ scale: 0.98 }} className="btn-primary flex-1 text-sm">
-              {isEditing ? '更新' : '创建'}
-            </motion.button>
-          </div>
-        </form>
-      </motion.div>
-    </motion.div>
-  );
-}
-
 function SystemMonitor() {
   const [metrics, setMetrics] = useState(null);
   const [loading, setLoading] = useState(true);
   const [chartData, setChartData] = useState([]);
-  const [shortcuts, setShortcuts] = useState([]);
-  const [shortcutLoading, setShortcutLoading] = useState(true);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [editingId, setEditingId] = useState(null);
-  const [formData, setFormData] = useState({ name: '', icon: 'globe', type: 'url', value: '' });
-  const metricsRef = useRef(null);
+  const { liveMetrics } = useLiveMetrics();
 
-  useEffect(() => {
-    metricsRef.current = metrics;
-  }, [metrics]);
+  const appendChartPoint = (timestamp, cpuUsage, memoryPercentage) => {
+    setChartData(prev => {
+      const nextPoint = {
+        time: new Date(timestamp).toLocaleTimeString('zh-CN', {
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit'
+        }),
+        cpu: parseFloat(Number(cpuUsage).toFixed(1)),
+        memory: parseFloat(memoryPercentage)
+      };
+
+      return [...prev, nextPoint].slice(-30);
+    });
+  };
 
   const fetchMetrics = async () => {
     try {
       const response = await fetch('/api/system/metrics');
       const data = await response.json();
       setMetrics(data);
-
-      setChartData(prev => {
-        const newData = [...prev, {
-          time: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
-          cpu: parseFloat(data.cpu.usage.toFixed(1)),
-          memory: parseFloat(data.memory.percentage)
-        }];
-        return newData.slice(-30);
-      });
+      appendChartPoint(new Date().toISOString(), data.cpu.usage, data.memory.percentage);
     } catch (error) {
       console.error('Error fetching metrics:', error);
     } finally {
@@ -341,84 +202,37 @@ function SystemMonitor() {
     }
   };
 
-  const fetchShortcuts = async () => {
-    try {
-      const response = await fetch('/api/shortcuts');
-      const data = await response.json();
-      setShortcuts(data);
-    } catch (error) {
-      console.error('Failed to fetch shortcuts:', error);
-    } finally {
-      setShortcutLoading(false);
-    }
-  };
-
   useEffect(() => {
     fetchMetrics();
-    fetchShortcuts();
-    const interval = setInterval(fetchMetrics, 2000);
+    const interval = setInterval(fetchMetrics, 15000);
     return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
-    const ws = new WebSocket(getWebSocketUrl());
-    ws.onmessage = (event) => {
-      const message = JSON.parse(event.data);
-      if (message.type === 'metrics' && metricsRef.current) {
-        setMetrics(prev => prev ? {
+    if (!liveMetrics) {
+      return;
+    }
+
+    setMetrics(prev => {
+      if (!prev) {
+        return prev;
+      }
+
+      return {
           ...prev,
-          cpu: { ...prev.cpu, usage: message.data.cpu },
-          memory: { ...prev.memory, percentage: message.data.memory.percentage }
-        } : null);
-      }
-    };
-    return () => ws.close();
-  }, []);
+          uptime: liveMetrics.uptime,
+          cpu: { ...prev.cpu, usage: liveMetrics.cpu },
+          memory: {
+            ...prev.memory,
+            percentage: liveMetrics.memory.percentage,
+            used: liveMetrics.memory.used,
+            total: liveMetrics.memory.total
+          }
+      };
+    });
 
-  const handleShortcutSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const url = editingId ? `/api/shortcuts/${editingId}` : '/api/shortcuts';
-      const method = editingId ? 'PUT' : 'POST';
-      const response = await fetch(url, {
-        method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      });
-      if (response.ok) {
-        setModalOpen(false);
-        setEditingId(null);
-        setFormData({ name: '', icon: 'globe', type: 'url', value: '' });
-        fetchShortcuts();
-      }
-    } catch (error) {
-      console.error('Failed to save shortcut:', error);
-    }
-  };
-
-  const handleShortcutDelete = async (id) => {
-    if (!confirm('确定要删除这个快捷方式吗？')) return;
-    try {
-      await fetch(`/api/shortcuts/${id}`, { method: 'DELETE' });
-      fetchShortcuts();
-    } catch (error) {
-      console.error('Failed to delete shortcut:', error);
-    }
-  };
-
-  const handleShortcutClick = (shortcut) => {
-    if (shortcut.type === 'url') {
-      window.open(shortcut.value, '_blank');
-    } else {
-      alert(`命令: ${shortcut.value}`);
-    }
-  };
-
-  const openEditModal = (shortcut) => {
-    setEditingId(shortcut.id);
-    setFormData({ name: shortcut.name, icon: shortcut.icon, type: shortcut.type, value: shortcut.value });
-    setModalOpen(true);
-  };
+    appendChartPoint(liveMetrics.timestamp, liveMetrics.cpu, liveMetrics.memory.percentage);
+  }, [liveMetrics]);
 
   const formatBytes = (bytes) => {
     if (!bytes || bytes === 0) return '0 B';
@@ -484,79 +298,6 @@ function SystemMonitor() {
           color="var(--accent-green)"
         />
       </div>
-
-      <div className="glass-card p-3">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <div className="p-1 rounded" style={{ background: 'rgba(59, 130, 246, 0.15)' }}>
-              <LayoutGrid className="w-3.5 h-3.5" style={{ color: 'var(--accent-blue)' }} />
-            </div>
-            <h3 className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>快捷方式</h3>
-            <span className="text-[10px] px-1.5 py-0.5 rounded" style={{ background: 'var(--bg-tertiary)', color: 'var(--text-muted)' }}>{shortcuts.length}</span>
-          </div>
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => { setEditingId(null); setFormData({ name: '', icon: 'globe', type: 'url', value: '' }); setModalOpen(true); }}
-            className="btn-primary flex items-center gap-1 text-xs py-1 px-2"
-          >
-            <Plus className="w-3 h-3" />
-            添加
-          </motion.button>
-        </div>
-
-        <div className="flex flex-wrap gap-2">
-          <AnimatePresence>
-            {shortcuts.map((shortcut, index) => {
-              const Icon = ICONS[shortcut.icon] || Globe;
-              return (
-                <motion.div
-                  key={shortcut.id}
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.8 }}
-                  className="group relative"
-                >
-                  <motion.div
-                    whileHover={{ scale: 1.05, y: -2 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => handleShortcutClick(shortcut)}
-                    className="glass-card p-3 cursor-pointer flex flex-col items-center gap-2 w-24"
-                  >
-                    <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg, var(--accent-blue), var(--accent-cyan))' }}>
-                      <Icon className="w-5 h-5 text-white" />
-                    </div>
-                    <span className="text-xs font-medium text-center break-all leading-tight" style={{ color: 'var(--text-primary)' }}>{shortcut.name}</span>
-                  </motion.div>
-                  <div className="absolute -top-1 -right-1 flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity z-10">
-                    <motion.button whileHover={{ scale: 1.15 }} whileTap={{ scale: 0.9 }} onClick={(e) => { e.stopPropagation(); openEditModal(shortcut); }} className="w-4 h-4 rounded flex items-center justify-center" style={{ background: 'var(--accent-blue)', color: 'white' }}>
-                      <Edit2 className="w-2.5 h-2.5" />
-                    </motion.button>
-                    <motion.button whileHover={{ scale: 1.15 }} whileTap={{ scale: 0.9 }} onClick={(e) => { e.stopPropagation(); handleShortcutDelete(shortcut.id); }} className="w-4 h-4 rounded flex items-center justify-center" style={{ background: 'var(--accent-red)', color: 'white' }}>
-                      <Trash2 className="w-2.5 h-2.5" />
-                    </motion.button>
-                  </div>
-                </motion.div>
-              );
-            })}
-          </AnimatePresence>
-
-          {shortcuts.length === 0 && !shortcutLoading && (
-            <div className="w-full text-center py-4">
-              <p className="text-xs" style={{ color: 'var(--text-muted)' }}>点击"添加"创建快捷方式</p>
-            </div>
-          )}
-        </div>
-      </div>
-
-      <ShortcutModal
-        isOpen={modalOpen}
-        onClose={() => setModalOpen(false)}
-        onSubmit={handleShortcutSubmit}
-        formData={formData}
-        setFormData={setFormData}
-        isEditing={!!editingId}
-      />
     </div>
   );
 }

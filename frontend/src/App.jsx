@@ -3,21 +3,18 @@ import { Activity, Sun, Moon, Wifi, WifiOff } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import SystemMonitor from './components/SystemMonitor';
 import DockerList from './components/DockerList';
+import Shortcuts from './components/Shortcuts';
+import { LiveMetricsProvider, useLiveMetrics } from './context/LiveMetricsContext';
 
-const getWebSocketUrl = () => {
-  const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-  return `${protocol}//${window.location.host}/ws`;
-};
-
-function App() {
-  const [wsStatus, setWsStatus] = useState('disconnected');
-  const [uptime, setUptime] = useState(0);
+function DashboardApp() {
   const [theme, setTheme] = useState(() => {
     if (typeof window !== 'undefined') {
       return localStorage.getItem('theme') || 'dark';
     }
     return 'dark';
   });
+  const { wsStatus, liveMetrics } = useLiveMetrics();
+  const uptime = liveMetrics?.uptime || 0;
 
   useEffect(() => {
     if (theme === 'light') {
@@ -40,22 +37,6 @@ function App() {
     if (hours > 0) return `${hours}时 ${mins}分`;
     return `${mins}分`;
   };
-
-  useEffect(() => {
-    const ws = new WebSocket(getWebSocketUrl());
-
-    ws.onopen = () => setWsStatus('connected');
-    ws.onmessage = (event) => {
-      const message = JSON.parse(event.data);
-      if (message.type === 'metrics' && message.data.uptime) {
-        setUptime(message.data.uptime);
-      }
-    };
-    ws.onclose = () => setWsStatus('disconnected');
-    ws.onerror = () => setWsStatus('disconnected');
-
-    return () => ws.close();
-  }, []);
 
   return (
     <div className="min-h-screen transition-colors duration-300" style={{ background: 'var(--bg-primary)' }}>
@@ -156,8 +137,24 @@ function App() {
         >
           <DockerList />
         </motion.section>
+
+        <motion.section
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+        >
+          <Shortcuts />
+        </motion.section>
       </main>
     </div>
+  );
+}
+
+function App() {
+  return (
+    <LiveMetricsProvider>
+      <DashboardApp />
+    </LiveMetricsProvider>
   );
 }
 
