@@ -480,39 +480,39 @@ body::after {
   background: rgba(255, 255, 255, 0.025);
 }
 
-.network-row {
-  display: grid;
-  grid-template-columns: 14px minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 0.5rem;
-  border-radius: 18px;
-  padding: 0.58rem 0.72rem;
-}
-
 .network-label {
   font-size: 0.72rem;
   line-height: 1;
   color: var(--text-secondary);
 }
 
-.network-value {
-  font-size: 0.94rem;
-  line-height: 1;
-  color: var(--text-primary);
-  white-space: nowrap;
-  justify-self: end;
-  text-align: right;
+.network-metric-list {
+  margin-top: 0.86rem;
+  display: grid;
+  gap: 0.52rem;
 }
 
-.network-value-compact {
-  font-size: 0.88rem;
+.network-metric-item {
+  display: grid;
+  grid-template-columns: 14px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.48rem;
+}
+
+.network-inline-value {
+  font-family: var(--font-display);
+  font-size: 0.96rem;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: var(--text-primary);
+  white-space: nowrap;
 }
 
 .network-summary {
   font-size: 0.68rem;
   line-height: 1.25;
   white-space: nowrap;
-  text-align: right;
+  text-align: left;
 }
 
 .process-row {
@@ -562,6 +562,13 @@ body::after {
 
 .shortcut-column {
   min-height: 0;
+}
+
+.shortcut-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
 }
 
 .shortcut-card-top,
@@ -616,10 +623,6 @@ body::after {
   white-space: nowrap;
 }
 
-.shortcut-card-top > .status-pill {
-  flex-shrink: 0;
-}
-
 .shortcut-caption {
   margin: 0;
   font-size: 0.84rem;
@@ -667,8 +670,23 @@ body::after {
 }
 
 .shortcut-add-button {
-  width: 46px;
-  padding-inline: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--text-primary);
+  box-shadow: none;
+}
+
+.shortcut-add-button:hover {
+  transform: none;
+  box-shadow: none;
+  color: var(--accent-cyan);
 }
 
 .btn-secondary {

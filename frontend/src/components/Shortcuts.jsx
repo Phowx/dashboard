@@ -348,28 +348,19 @@ export default function Shortcuts() {
 
   return (
     <div className="glass-card flex h-full flex-col p-4 sm:p-5 xl:p-6">
-      <div className="mb-5 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <span className="section-kicker">LAUNCHPAD</span>
-        </div>
+      <div className="shortcut-panel-header">
+        <span className="section-kicker">LAUNCHPAD</span>
 
         <m.button
           whileHover={{ scale: 1.04 }}
           whileTap={{ scale: 0.96 }}
           onClick={openAddModal}
-          className="btn-primary shortcut-add-button self-start"
+          className="shortcut-add-button"
           type="button"
           aria-label="Add link"
         >
           <Plus className="h-3.5 w-3.5" />
         </m.button>
-      </div>
-
-      <div className="mb-4 flex flex-wrap gap-2">
-        <span className="status-pill">
-          <strong>{shortcuts.length}</strong>
-          <span>Saved</span>
-        </span>
       </div>
 
       <div className="shortcut-column flex flex-1 flex-col">

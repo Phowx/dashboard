@@ -63,11 +63,24 @@ function MetricCard({ icon: Icon, label, value, unit, subLabel, color, progress 
 
 function NetworkStats({ network }) {
   const formatSpeed = (bytesPerSec) => {
-    if (!bytesPerSec || bytesPerSec === 0) return '0 B/s';
+    if (!bytesPerSec || bytesPerSec === 0) return '0.0 KB/s';
     const kb = bytesPerSec / 1024;
     const mb = kb / 1024;
     if (mb >= 1) return `${mb.toFixed(1)} MB/s`;
     return `${kb.toFixed(1)} KB/s`;
+  };
+
+  const formatSpeedMetric = (bytesPerSec) => {
+    if (!bytesPerSec || bytesPerSec === 0) return { value: '0.0', unit: 'KB/s' };
+
+    const kb = bytesPerSec / 1024;
+    const mb = kb / 1024;
+
+    if (mb >= 1) {
+      return { value: mb.toFixed(1), unit: 'MB/s' };
+    }
+
+    return { value: kb.toFixed(1), unit: 'KB/s' };
   };
 
   const formatTrafficTotal = bytes => {
@@ -80,34 +93,56 @@ function NetworkStats({ network }) {
     return `${kb.toFixed(0)}K`;
   };
 
+  const totalThroughput = (network?.rx_sec || 0) + (network?.tx_sec || 0);
+  const primaryMetric = formatSpeedMetric(totalThroughput);
+
   return (
     <m.div
       className="glass-card metric-card p-3.5 sm:p-4"
       initial={{ opacity: 0, scale: 0.96 }}
       animate={{ opacity: 1, scale: 1 }}
     >
-      <div className="flex items-center justify-between gap-3">
-        <span className="section-kicker">NETWORK</span>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <span className="section-kicker">NETWORK</span>
+          <div className="mt-3 flex items-end gap-2">
+            <span className="metric-value" style={{ color: 'var(--accent-cyan)' }}>
+              {primaryMetric.value}
+            </span>
+            <span className="metric-unit">{primaryMetric.unit}</span>
+          </div>
+        </div>
         <div className="signal-icon" style={{ color: 'var(--accent-cyan)' }}>
           <Wifi className="h-4 w-4" />
         </div>
       </div>
 
-      <div className="mt-4 space-y-3">
-        <div className="network-row">
+      <div className="metric-track">
+        <div
+          className="metric-fill"
+          style={{
+            width: `${Math.min((totalThroughput / 1024 / 24) * 100, 100)}%`,
+            background: 'var(--accent-cyan)',
+            boxShadow: '0 0 28px var(--accent-cyan)',
+          }}
+        />
+      </div>
+
+      <div className="network-metric-list">
+        <div className="network-metric-item">
           <ArrowDown className="h-3.5 w-3.5" style={{ color: 'var(--accent-green)' }} />
           <span className="network-label">RX</span>
-          <span className="network-value network-value-compact">{formatSpeed(network?.rx_sec)}</span>
+          <span className="network-inline-value">{formatSpeed(network?.rx_sec)}</span>
         </div>
 
-        <div className="network-row">
+        <div className="network-metric-item">
           <ArrowUp className="h-3.5 w-3.5" style={{ color: 'var(--accent-cyan)' }} />
           <span className="network-label">TX</span>
-          <span className="network-value network-value-compact">{formatSpeed(network?.tx_sec)}</span>
+          <span className="network-inline-value">{formatSpeed(network?.tx_sec)}</span>
         </div>
       </div>
 
-      <p className="metric-subcopy network-summary mt-auto pt-3.5">
+      <p className="metric-subcopy network-summary mt-auto">
         I {formatTrafficTotal(network?.rx_bytes)} / O {formatTrafficTotal(network?.tx_bytes)}
       </p>
     </m.div>
