@@ -140,7 +140,7 @@ function ConfirmModal({ isOpen, onClose, onConfirm, containerName, action, isLoa
   );
 }
 
-function ActionButton({ action, onClick, loading, disabled }) {
+function ActionButton({ action, onClick, loading, disabled, compact = false }) {
   const config = {
     start: { icon: Play, color: 'var(--accent-green)', title: 'Start' },
     stop: { icon: Square, color: 'var(--accent-red)', title: 'Stop' },
@@ -148,6 +148,8 @@ function ActionButton({ action, onClick, loading, disabled }) {
   }[action];
 
   const Icon = config.icon;
+  const buttonSize = compact ? 'h-8 w-8' : 'h-9 w-9';
+  const iconSize = compact ? 'h-3 w-3' : 'h-3.5 w-3.5';
 
   return (
     <m.button
@@ -155,7 +157,7 @@ function ActionButton({ action, onClick, loading, disabled }) {
       whileTap={{ scale: 0.94 }}
       onClick={onClick}
       disabled={disabled}
-      className="inline-flex h-9 w-9 items-center justify-center rounded-full border transition-all disabled:opacity-50"
+      className={`inline-flex items-center justify-center rounded-full border transition-all disabled:opacity-50 ${buttonSize}`}
       style={{
         borderColor: 'var(--border-color)',
         background: 'rgba(255, 255, 255, 0.04)',
@@ -164,7 +166,7 @@ function ActionButton({ action, onClick, loading, disabled }) {
       title={config.title}
       type="button"
     >
-      {loading ? <RefreshCw className="h-3.5 w-3.5 animate-spin" /> : <Icon className="h-3.5 w-3.5" />}
+      {loading ? <RefreshCw className={`${iconSize} animate-spin`} /> : <Icon className={iconSize} />}
     </m.button>
   );
 }
@@ -305,7 +307,7 @@ function DockerList() {
             whileHover={{ scale: 1.04 }}
             whileTap={{ scale: 0.96 }}
             onClick={fetchContainers}
-            className="status-pill self-start"
+            className="status-pill hidden self-start md:inline-flex"
             type="button"
           >
             <RefreshCw className="h-3.5 w-3.5" />
@@ -313,7 +315,7 @@ function DockerList() {
           </m.button>
         </div>
 
-        <div className="mt-5 flex flex-wrap gap-2">
+        <div className="mt-5 hidden flex-wrap gap-2 md:flex">
           <span className="status-pill">
             <strong>{stats.total}</strong>
             <span>Total</span>
@@ -329,6 +331,26 @@ function DockerList() {
           <span className="status-pill" style={{ color: 'var(--accent-yellow)' }}>
             <strong>{stats.paused}</strong>
             <span>Paused</span>
+          </span>
+        </div>
+
+        <div className="mt-5 flex items-center gap-2 overflow-x-auto pb-1 md:hidden">
+          <m.button
+            whileTap={{ scale: 0.96 }}
+            onClick={fetchContainers}
+            className="status-pill shrink-0"
+            type="button"
+          >
+            <RefreshCw className="h-3.5 w-3.5" />
+            <span>Refresh</span>
+          </m.button>
+          <span className="status-pill shrink-0" style={{ color: 'var(--accent-green)' }}>
+            <strong>{stats.running}</strong>
+            <span>Running</span>
+          </span>
+          <span className="status-pill shrink-0" style={{ color: 'var(--accent-red)' }}>
+            <strong>{stats.stopped}</strong>
+            <span>Stopped</span>
           </span>
         </div>
       </div>
@@ -347,24 +369,55 @@ function DockerList() {
           <div className="mt-4 grid gap-3 px-3 pb-3 md:hidden">
             {sortedContainers.map(container => (
               <div key={container.id} className="glass-card p-4">
-                {container.composeProject && (() => {
-                  const stackTone = stackToneMap[container.composeProject];
-                  return (
-                    <div className="mb-3">
-                      <span
-                        className="stack-pill"
-                        style={{
-                          color: stackTone.color,
-                          background: stackTone.bg,
-                          borderColor: stackTone.border,
-                        }}
-                      >
-                        {container.composeProject}
-                      </span>
-                    </div>
-                  );
-                })()}
                 <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    {container.composeProject ? (
+                      (() => {
+                        const stackTone = stackToneMap[container.composeProject];
+                        return (
+                          <span
+                            className="stack-pill"
+                            style={{
+                              color: stackTone.color,
+                              background: stackTone.bg,
+                              borderColor: stackTone.border,
+                            }}
+                          >
+                            {container.composeProject}
+                          </span>
+                        );
+                      })()
+                    ) : (
+                      <span className="stack-pill stack-pill-standalone">Standalone</span>
+                    )}
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    {container.state !== 'running' ? (
+                      <ActionButton
+                        action="start"
+                        onClick={() => openConfirm(container, 'start')}
+                        loading={actionLoading === `${container.id}-start`}
+                        compact
+                      />
+                    ) : (
+                      <ActionButton
+                        action="stop"
+                        onClick={() => openConfirm(container, 'stop')}
+                        loading={actionLoading === `${container.id}-stop`}
+                        compact
+                      />
+                    )}
+                    <ActionButton
+                      action="restart"
+                      onClick={() => openConfirm(container, 'restart')}
+                      loading={actionLoading === `${container.id}-restart`}
+                      compact
+                    />
+                  </div>
+                </div>
+
+                <div className="mt-3 flex items-start justify-between gap-3">
                   <div className="min-w-0">
                     <div className="flex items-center gap-2">
                       {container.composeProject && (() => {
@@ -384,7 +437,7 @@ function DockerList() {
                   <StatusBadge state={container.state} />
                 </div>
 
-                <div className="mt-4 grid grid-cols-2 gap-3">
+                <div className="mt-3 grid grid-cols-2 gap-2.5">
                   <div className="mobile-stat-card">
                     <span className="section-kicker">CPU</span>
                     <strong style={{ color: 'var(--accent-cyan)' }}>
@@ -411,27 +464,6 @@ function DockerList() {
                       )}
                     </strong>
                   </div>
-                </div>
-
-                <div className="mt-4 flex items-center justify-end gap-2">
-                  {container.state !== 'running' ? (
-                    <ActionButton
-                      action="start"
-                      onClick={() => openConfirm(container, 'start')}
-                      loading={actionLoading === `${container.id}-start`}
-                    />
-                  ) : (
-                    <ActionButton
-                      action="stop"
-                      onClick={() => openConfirm(container, 'stop')}
-                      loading={actionLoading === `${container.id}-stop`}
-                    />
-                  )}
-                  <ActionButton
-                    action="restart"
-                    onClick={() => openConfirm(container, 'restart')}
-                    loading={actionLoading === `${container.id}-restart`}
-                  />
                 </div>
               </div>
             ))}
