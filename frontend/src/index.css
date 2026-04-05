@@ -858,6 +858,10 @@ body::after {
   min-width: 0;
 }
 
+.shortcut-desktop-list {
+  display: none;
+}
+
 .shortcut-panel-header {
   display: flex;
   align-items: center;
@@ -1068,13 +1072,11 @@ body::after {
   transition: opacity 0.18s ease, transform 0.18s ease;
 }
 
-.shortcut-sort-item:hover .shortcut-card-copy,
-.shortcut-sort-item:focus-within .shortcut-card-copy {
+.shortcut-sort-item-editing .shortcut-card-copy {
   max-width: calc(100% - 7rem);
 }
 
-.shortcut-sort-item:hover .shortcut-card-secondary-actions,
-.shortcut-sort-item:focus-within .shortcut-card-secondary-actions {
+.shortcut-sort-item-editing .shortcut-card-secondary-actions {
   opacity: 1;
   transform: translateX(0);
   pointer-events: auto;
@@ -1101,8 +1103,7 @@ body::after {
   cursor: grabbing;
 }
 
-.shortcut-sort-item:hover .shortcut-drag-handle,
-.shortcut-sort-item:focus-within .shortcut-drag-handle {
+.shortcut-sort-item-editing .shortcut-drag-handle {
   opacity: 1;
   transform: translateX(0);
   pointer-events: auto;
@@ -1200,6 +1201,16 @@ body::after {
 
 .shortcut-mobile-drag:active {
   cursor: grabbing;
+}
+
+@media (min-width: 768px) {
+  .shortcut-desktop-list {
+    display: grid;
+  }
+
+  .shortcut-mobile-grid {
+    display: none;
+  }
 }
 
 @media (max-width: 767px) {

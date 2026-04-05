@@ -46,7 +46,7 @@ function getShortcutPreview(shortcut) {
     .replace(/\/$/, '');
 }
 
-function ShortcutCard({ shortcut, onClick, onEdit, onDelete, index, onDragStart, onDragEnd }) {
+function ShortcutCard({ shortcut, onClick, onEdit, onDelete, index, onDragStart, onDragEnd, editMode }) {
   const Icon = ICONS[shortcut.icon] || Globe;
   const dragControls = useDragControls();
 
@@ -63,7 +63,7 @@ function ShortcutCard({ shortcut, onClick, onEdit, onDelete, index, onDragStart,
       transition={{ delay: index * 0.04 }}
       layout
       whileDrag={{ scale: 1.02, zIndex: 12 }}
-      className="shortcut-sort-item group relative list-none"
+      className={`shortcut-sort-item group relative list-none ${editMode ? 'shortcut-sort-item-editing' : ''}`}
     >
       <m.button
         whileHover={{ y: -4, scale: 1.02 }}
@@ -335,7 +335,7 @@ export default function Shortcuts() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [draggingId, setDraggingId] = useState(null);
-  const [mobileEditMode, setMobileEditMode] = useState(false);
+  const [editMode, setEditMode] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     icon: 'globe',
@@ -488,10 +488,10 @@ export default function Shortcuts() {
         <div className="shortcut-panel-controls">
           <m.button
             whileTap={{ scale: 0.96 }}
-            onClick={() => setMobileEditMode(previous => !previous)}
-            className={`shortcut-edit-toggle md:hidden ${mobileEditMode ? 'shortcut-edit-toggle-active' : ''}`}
+            onClick={() => setEditMode(previous => !previous)}
+            className={`shortcut-edit-toggle ${editMode ? 'shortcut-edit-toggle-active' : ''}`}
             type="button"
-            aria-label={mobileEditMode ? 'Exit edit mode' : 'Enter edit mode'}
+            aria-label={editMode ? 'Exit edit mode' : 'Enter edit mode'}
           >
             <Edit2 className="h-3.5 w-3.5" />
           </m.button>
@@ -516,7 +516,7 @@ export default function Shortcuts() {
               axis="y"
               values={shortcuts}
               onReorder={setShortcuts}
-              className="shortcut-reorder-list hidden md:grid"
+              className="shortcut-reorder-list shortcut-desktop-list"
             >
               <AnimatePresence>
                 {shortcuts.map((shortcut, index) => (
@@ -528,12 +528,17 @@ export default function Shortcuts() {
                       if (draggingId) {
                         return;
                       }
+                      if (editMode) {
+                        openEditModal(shortcut);
+                        return;
+                      }
                       handleShortcutClick(shortcut);
                     }}
                     onEdit={openEditModal}
                     onDelete={handleDelete}
                     onDragStart={setDraggingId}
                     onDragEnd={handleReorderEnd}
+                    editMode={editMode}
                   />
                 ))}
               </AnimatePresence>
@@ -543,7 +548,7 @@ export default function Shortcuts() {
               axis="y"
               values={shortcuts}
               onReorder={setShortcuts}
-              className="shortcut-mobile-grid md:hidden"
+              className="shortcut-mobile-grid"
             >
               <AnimatePresence>
                 {shortcuts.map((shortcut, index) => (
@@ -551,13 +556,13 @@ export default function Shortcuts() {
                     key={`mobile-${shortcut.id}`}
                     shortcut={shortcut}
                     index={index}
-                    editMode={mobileEditMode}
+                    editMode={editMode}
                     onOpen={item => {
                       if (draggingId) {
                         return;
                       }
 
-                      if (mobileEditMode) {
+                      if (editMode) {
                         openEditModal(item);
                         return;
                       }
