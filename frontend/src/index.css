@@ -213,6 +213,19 @@ body::after {
   color: var(--text-primary);
 }
 
+.toolbar-pill {
+  min-width: 110px;
+  justify-content: center;
+}
+
+.toolbar-icon-pill {
+  width: 46px;
+  height: 46px;
+  justify-content: center;
+  padding: 0;
+  gap: 0;
+}
+
 .command-deck {
   position: relative;
   display: grid;
@@ -486,6 +499,16 @@ body::after {
 .network-value {
   font-size: 1.2rem;
   color: var(--text-primary);
+  white-space: nowrap;
+}
+
+.network-value-compact {
+  font-size: 1.06rem;
+}
+
+.network-summary {
+  font-size: 0.76rem;
+  white-space: nowrap;
 }
 
 .process-row {
@@ -574,6 +597,8 @@ body::after {
 }
 
 .shortcut-value {
+  display: block;
+  width: 100%;
   margin: 0.28rem 0 0;
   overflow: hidden;
   color: var(--text-muted);
@@ -680,6 +705,32 @@ body::after {
   background-clip: text;
 }
 
+.chart-tag {
+  padding-inline: 0.8rem;
+}
+
+.stack-pill {
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
+  border: 1px solid rgba(87, 208, 239, 0.2);
+  border-radius: 999px;
+  padding: 0.38rem 0.72rem;
+  background: rgba(87, 208, 239, 0.1);
+  color: var(--accent-cyan);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.stack-pill-standalone {
+  border-color: var(--border-color);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-secondary);
+}
+
 .shimmer-bar,
 .shimmer-panel {
   position: relative;
@@ -749,6 +800,10 @@ tr:hover td {
     grid-template-columns: minmax(0, 1.4fr) minmax(380px, 0.96fr);
     align-items: stretch;
     padding: 1.7rem;
+  }
+
+  .metrics-grid > .metric-card {
+    aspect-ratio: 1 / 1;
   }
 }
 

@@ -15,6 +15,18 @@ const DockerList = lazy(() => import('./components/DockerList'));
 const Shortcuts = lazy(() => import('./components/Shortcuts'));
 const THEME_STORAGE_KEY = 'dashboard-theme-v2';
 
+function formatUptimeCompact(seconds) {
+  if (!seconds || seconds < 1) return '--';
+
+  const days = Math.floor(seconds / 86400);
+  const hours = Math.floor((seconds % 86400) / 3600);
+  const mins = Math.floor((seconds % 3600) / 60);
+
+  if (days > 0) return `${days}d ${hours}h`;
+  if (hours > 0) return `${hours}h ${mins}m`;
+  return `${mins}m`;
+}
+
 function SectionFallback({ title, description, minHeight = 'min-h-[260px]' }) {
   return (
     <div className={`glass-card flex ${minHeight} flex-col justify-between p-5 sm:p-6`}>
@@ -44,10 +56,9 @@ function DashboardApp() {
     }
     return 'dark';
   });
-  const [now, setNow] = useState(() => new Date());
   const { wsStatus, liveMetrics } = useLiveMetrics();
 
-  const cpuUsage = liveMetrics ? `${Number(liveMetrics.cpu).toFixed(1)}%` : '--';
+  const uptime = liveMetrics?.uptime || 0;
 
   useEffect(() => {
     if (theme === 'light') {
@@ -57,11 +68,6 @@ function DashboardApp() {
     }
     localStorage.setItem(THEME_STORAGE_KEY, theme);
   }, [theme]);
-
-  useEffect(() => {
-    const timer = window.setInterval(() => setNow(new Date()), 1000);
-    return () => window.clearInterval(timer);
-  }, []);
 
   const toggleTheme = () => {
     setTheme(prev => (prev === 'dark' ? 'light' : 'dark'));
@@ -88,27 +94,24 @@ function DashboardApp() {
               </div>
 
               <div className="flex flex-wrap items-center gap-2.5">
-                <div className="status-pill">
+                <div className="status-pill toolbar-pill">
                   <Clock3 className="h-3.5 w-3.5" />
-                  <span>{now.toLocaleDateString('en-GB', { month: 'short', day: '2-digit' })}</span>
-                  <strong>{now.toLocaleTimeString('en-GB', { hour12: false })}</strong>
+                  <strong>{formatUptimeCompact(uptime)}</strong>
                 </div>
 
-                <div className="status-pill">
+                <div className="status-pill toolbar-icon-pill" aria-label={wsStatus === 'connected' ? 'Connected' : 'Reconnecting'}>
                   {wsStatus === 'connected' ? (
                     <Wifi className="h-3.5 w-3.5 live-indicator" style={{ color: 'var(--accent-green)' }} />
                   ) : (
                     <WifiOff className="h-3.5 w-3.5" style={{ color: 'var(--accent-red)' }} />
                   )}
-                  <span>{wsStatus === 'connected' ? 'Live Sync' : 'Reconnecting'}</span>
-                  <strong>{wsStatus === 'connected' ? cpuUsage : '--'}</strong>
                 </div>
 
                 <m.button
                   whileHover={{ scale: 1.04 }}
                   whileTap={{ scale: 0.96 }}
                   onClick={toggleTheme}
-                  className="status-pill transition-colors"
+                  className="status-pill toolbar-icon-pill transition-colors"
                   aria-label="Toggle theme"
                   type="button"
                 >
@@ -135,7 +138,6 @@ function DashboardApp() {
                       </m.span>
                     )}
                   </AnimatePresence>
-                  <span>{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
                 </m.button>
               </div>
             </div>

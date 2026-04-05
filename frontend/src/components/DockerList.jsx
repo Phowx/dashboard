@@ -227,6 +227,17 @@ function DockerList() {
     paused: containers.filter(container => container.state === 'paused').length,
   };
 
+  const sortedContainers = [...containers].sort((a, b) => {
+    const stackA = a.composeProject || 'zzz-standalone';
+    const stackB = b.composeProject || 'zzz-standalone';
+    const stackCompare = stackA.localeCompare(stackB);
+    if (stackCompare !== 0) return stackCompare;
+
+    const serviceA = a.composeService || a.name || '';
+    const serviceB = b.composeService || b.name || '';
+    return serviceA.localeCompare(serviceB);
+  });
+
   if (loading) {
     return (
       <div className="glass-card flex h-40 items-center justify-center">
@@ -287,7 +298,7 @@ function DockerList() {
       ) : (
         <>
           <div className="mt-4 grid gap-3 px-3 pb-3 md:hidden">
-            {containers.map(container => (
+            {sortedContainers.map(container => (
               <div key={container.id} className="glass-card p-4">
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
@@ -359,14 +370,15 @@ function DockerList() {
           </div>
 
           <div className="hidden overflow-x-auto px-3 pb-3 sm:px-4 sm:pb-4 xl:px-6 xl:pb-6 md:block">
-            <table className="mt-4 w-full min-w-[920px] overflow-hidden rounded-[24px]">
+            <table className="mt-4 w-full min-w-[1020px] overflow-hidden rounded-[24px]">
             <thead>
               <tr
                 className="mono-type text-[10px] uppercase tracking-[0.18em]"
                 style={{ color: 'var(--text-muted)' }}
               >
                 <th className="px-3 py-3 text-left font-medium">State</th>
-                <th className="px-3 py-3 text-left font-medium">Name</th>
+                <th className="px-3 py-3 text-left font-medium">Stack</th>
+                <th className="px-3 py-3 text-left font-medium">Container</th>
                 <th className="hidden px-3 py-3 text-left font-medium md:table-cell">Image</th>
                 <th className="px-3 py-3 text-left font-medium">Ports</th>
                 <th className="px-3 py-3 text-right font-medium">CPU</th>
@@ -375,25 +387,30 @@ function DockerList() {
               </tr>
             </thead>
               <tbody className="divide-y" style={{ divideColor: 'var(--border-color)' }}>
-                {containers.map(container => (
+                {sortedContainers.map(container => (
                   <tr key={container.id} className="transition-colors duration-200">
                     <td className="px-3 py-4 align-top">
                       <StatusBadge state={container.state} />
                     </td>
                     <td className="px-3 py-4">
-                      <div className="min-w-0">
-                        <div className="flex items-center gap-2">
-                          {container.composeProject && (
+                      <div className="min-w-0 flex items-center gap-2">
+                        {container.composeProject ? (
+                          <>
                             <Layers className="h-3.5 w-3.5 shrink-0" style={{ color: 'var(--accent-cyan)' }} />
-                          )}
-                          <span className="truncate text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
-                            {container.composeProject
-                              ? `${container.composeProject}/${container.composeService || container.name}`
-                              : container.name}
-                          </span>
-                        </div>
-                        <p className="mt-1 text-[11px] mono-type" style={{ color: 'var(--text-muted)' }}>
-                          {container.id}
+                            <span className="stack-pill">{container.composeProject}</span>
+                          </>
+                        ) : (
+                          <span className="stack-pill stack-pill-standalone">Standalone</span>
+                        )}
+                      </div>
+                    </td>
+                    <td className="px-3 py-4">
+                      <div className="min-w-0">
+                        <span className="truncate text-sm font-semibold block" style={{ color: 'var(--text-primary)' }}>
+                          {container.composeService || container.name}
+                        </span>
+                        <p className="mt-1 text-[11px] mono-type truncate" style={{ color: 'var(--text-muted)' }}>
+                          {container.name}
                         </p>
                       </div>
                     </td>

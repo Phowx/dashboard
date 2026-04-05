@@ -69,9 +69,9 @@ function ShortcutCard({ shortcut, onClick, onEdit, onDelete, index }) {
             <div className="shortcut-icon-wrap">
               <Icon className="h-5 w-5 text-white" />
             </div>
-            <div className="min-w-0">
+            <div className="min-w-0 flex-1">
               <p className="shortcut-name">{shortcut.name}</p>
-              <p className="shortcut-value">{getShortcutPreview(shortcut)}</p>
+              <p className="shortcut-value" title={getShortcutPreview(shortcut)}>{getShortcutPreview(shortcut)}</p>
             </div>
           </div>
           <span className="status-pill">{shortcut.type === 'url' ? 'URL' : 'CMD'}</span>

@@ -26,7 +26,7 @@ function formatBytes(bytes) {
 function MetricCard({ icon: Icon, label, value, unit, subLabel, color, progress }) {
   return (
     <m.div
-      className="glass-card metric-card h-full p-3.5 sm:p-4"
+      className="glass-card metric-card p-3.5 sm:p-4"
       initial={{ opacity: 0, scale: 0.96 }}
       animate={{ opacity: 1, scale: 1 }}
     >
@@ -70,9 +70,19 @@ function NetworkStats({ network }) {
     return `${kb.toFixed(1)} KB/s`;
   };
 
+  const formatTrafficTotal = bytes => {
+    if (!bytes || bytes === 0) return '0';
+    const kb = bytes / 1024;
+    const mb = kb / 1024;
+    const gb = mb / 1024;
+    if (gb >= 1) return `${gb.toFixed(1)}G`;
+    if (mb >= 1) return `${mb.toFixed(1)}M`;
+    return `${kb.toFixed(0)}K`;
+  };
+
   return (
     <m.div
-      className="glass-card metric-card h-full p-3.5 sm:p-4"
+      className="glass-card metric-card p-3.5 sm:p-4"
       initial={{ opacity: 0, scale: 0.96 }}
       animate={{ opacity: 1, scale: 1 }}
     >
@@ -91,7 +101,7 @@ function NetworkStats({ network }) {
             <ArrowDown className="h-3.5 w-3.5" style={{ color: 'var(--accent-green)' }} />
             <span className="network-label">RX</span>
           </div>
-          <span className="network-value">{formatSpeed(network?.rx_sec)}</span>
+          <span className="network-value network-value-compact">{formatSpeed(network?.rx_sec)}</span>
         </div>
 
         <div className="network-row">
@@ -99,12 +109,12 @@ function NetworkStats({ network }) {
             <ArrowUp className="h-3.5 w-3.5" style={{ color: 'var(--accent-cyan)' }} />
             <span className="network-label">TX</span>
           </div>
-          <span className="network-value">{formatSpeed(network?.tx_sec)}</span>
+          <span className="network-value network-value-compact">{formatSpeed(network?.tx_sec)}</span>
         </div>
       </div>
 
-      <p className="metric-subcopy mt-auto pt-4">
-        Total {formatBytes(network?.rx_bytes)} in / {formatBytes(network?.tx_bytes)} out
+      <p className="metric-subcopy network-summary mt-auto pt-4">
+        I {formatTrafficTotal(network?.rx_bytes)} / O {formatTrafficTotal(network?.tx_bytes)}
       </p>
     </m.div>
   );
@@ -232,7 +242,7 @@ function SystemMonitor() {
   return (
     <div className="space-y-3">
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-12">
-        <div className="xl:col-span-8">
+        <div className="xl:col-span-8 xl:self-start">
           <Suspense
             fallback={
               <div className="glass-card h-full min-h-[320px] p-4 sm:p-5 xl:p-6">
@@ -252,7 +262,7 @@ function SystemMonitor() {
           </Suspense>
         </div>
 
-        <div className="metrics-grid grid grid-cols-2 gap-4 sm:grid-cols-4 xl:col-span-4 xl:grid-cols-2">
+        <div className="metrics-grid grid grid-cols-2 gap-4 sm:grid-cols-4 xl:col-span-4 xl:grid-cols-2 xl:self-start">
           <MetricCard
             icon={Cpu}
             label="CPU"
