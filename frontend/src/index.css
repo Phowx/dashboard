@@ -1069,7 +1069,8 @@ body::after {
 
 @media (max-width: 767px) {
   .dashboard-toolbar {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.7rem;
   }
 
   .toolbar-brand-lane,
@@ -1078,34 +1079,90 @@ body::after {
     min-height: auto;
   }
 
+  .toolbar-brand-lane {
+    padding: 0.24rem 0;
+  }
+
+  .toolbar-brand {
+    min-width: 132px;
+    gap: 0.55rem;
+    padding: 0.28rem 0.58rem 0.28rem 0.28rem;
+  }
+
+  .brand-mark {
+    height: 36px;
+    width: 36px;
+    border-radius: 11px;
+  }
+
+  .dashboard-glyph {
+    width: 18px;
+    height: 18px;
+    grid-template-columns: repeat(2, 7px);
+    grid-template-rows: repeat(2, 7px);
+    gap: 3px;
+  }
+
+  .toolbar-controls .status-pill {
+    padding: 0.58rem 0.78rem;
+  }
+
+  .toolbar-pill {
+    min-width: auto;
+  }
+
+  .toolbar-icon-pill {
+    width: 40px;
+    height: 40px;
+  }
+
   .toolbar-controls {
-    justify-content: flex-start;
-    flex-wrap: wrap;
+    justify-content: flex-end;
+    flex-wrap: nowrap;
+    gap: 0.45rem;
+    width: auto;
   }
 
   .shortcut-card {
-    padding-right: 0.95rem;
+    padding-right: 5.9rem;
+    min-height: 88px;
   }
 
   .shortcut-card-copy {
-    max-width: 100%;
+    max-width: calc(100% - 5rem);
   }
 
   .shortcut-card-actions {
-    position: static;
-    margin-top: 0.2rem;
+    position: absolute;
+    right: 0.68rem;
+    top: 0.68rem;
+    margin-top: 0;
     justify-content: flex-end;
+    gap: 0.24rem;
   }
 
   .shortcut-card-secondary-actions {
     opacity: 1;
     transform: none;
     pointer-events: auto;
+    gap: 0.24rem;
+  }
+
+  .shortcut-drag-handle,
+  .shortcut-card-action-button {
+    width: 1.45rem;
+    height: 1.45rem;
+  }
+
+  .shortcut-drag-handle svg,
+  .shortcut-card-action-button svg {
+    height: 0.78rem;
+    width: 0.78rem;
   }
 
   .shortcut-sort-item:hover .shortcut-card-copy,
   .shortcut-sort-item:focus-within .shortcut-card-copy {
-    max-width: 100%;
+    max-width: calc(100% - 5rem);
   }
 }
 
@@ -1164,7 +1221,7 @@ body::after {
 }
 
 .chart-frame {
-  min-height: 0;
+  min-height: 220px;
 }
 
 .stack-pill {
@@ -1259,9 +1316,25 @@ tr:hover td {
     align-items: stretch;
     padding: 1.7rem;
   }
+
+  .chart-frame {
+    min-height: 0;
+  }
 }
 
 @media (max-width: 767px) {
+  .chart-panel {
+    padding: 0.95rem;
+  }
+
+  .chart-panel > .mb-3 {
+    margin-bottom: 0.75rem;
+  }
+
+  .chart-frame {
+    min-height: 240px;
+  }
+
   .command-deck {
     padding: 1.15rem;
     border-radius: 26px;
