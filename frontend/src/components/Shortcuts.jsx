@@ -407,7 +407,7 @@ export default function Shortcuts() {
   }
 
   return (
-    <div className="glass-card flex h-full flex-col p-4 sm:p-5 xl:p-6">
+    <div className="glass-card flex h-full min-h-0 flex-col p-4 sm:p-5 xl:p-6">
       <div className="shortcut-panel-header">
         <span className="section-kicker">LAUNCHPAD</span>
 
@@ -423,7 +423,7 @@ export default function Shortcuts() {
         </m.button>
       </div>
 
-      <div className="shortcut-column flex flex-1 flex-col">
+      <div className="shortcut-column flex min-h-0 flex-1 flex-col xl:overflow-y-auto xl:pr-1">
         {shortcuts.length > 0 ? (
           <Reorder.Group
             axis="y"
