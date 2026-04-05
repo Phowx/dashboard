@@ -264,7 +264,7 @@ function DashboardApp() {
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.45, delay: 0.28 }}
-              className="col-span-12"
+              className="col-span-12 xl:col-span-9 2xl:col-span-9"
             >
               <Suspense
                 fallback={

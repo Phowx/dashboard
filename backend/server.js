@@ -18,7 +18,7 @@ const DATA_DIR = path.join(__dirname, 'data');
 const DATA_FILE = path.join(DATA_DIR, 'shortcuts.json');
 const EXAMPLE_DATA_FILE = path.join(DATA_DIR, 'shortcuts.example.json');
 const CACHE_TTL = 2000;
-const ENABLE_PROCESS_TOP = !['0', 'false', 'off', 'no'].includes(String(process.env.ENABLE_PROCESS_TOP || 'true').toLowerCase());
+const ENABLE_PROCESS_TOP = ['1', 'true', 'on', 'yes'].includes(String(process.env.ENABLE_PROCESS_TOP || 'false').toLowerCase());
 
 const SYSTEM_PIDS = new Set([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
 const SYSTEM_PROCS = new Set([
