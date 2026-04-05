@@ -3,6 +3,7 @@ export default {
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
+    "./node_modules/liquid-glass-react/dist/**/*.{js,mjs}",
   ],
   darkMode: 'class',
   theme: {

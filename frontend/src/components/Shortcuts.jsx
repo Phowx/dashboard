@@ -15,6 +15,7 @@ import {
   X,
 } from 'lucide-react';
 import { AnimatePresence, Reorder, m, useDragControls } from 'framer-motion';
+import LiquidSurface from './LiquidSurface';
 
 const ICONS = {
   globe: Globe,
@@ -65,71 +66,72 @@ function ShortcutCard({ shortcut, onClick, onEdit, onDelete, index, onDragStart,
       whileDrag={{ scale: 1.02, zIndex: 12 }}
       className="shortcut-sort-item group relative list-none"
     >
-      <m.button
-        whileHover={{ y: -4, scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
-        onClick={onClick}
-        className="glass-card shortcut-card w-full text-left"
-        type="button"
-      >
-        <div className="shortcut-card-top">
-          <div className="flex min-w-0 items-center gap-3">
-            <div className="shortcut-icon-wrap">
-              <Icon className="h-5 w-5 text-white" />
-            </div>
-            <div className="shortcut-card-copy min-w-0 flex-1">
-              <p className="shortcut-name">{shortcut.name}</p>
-              <p className="shortcut-value" title={getShortcutPreview(shortcut)}>{getShortcutPreview(shortcut)}</p>
+      <LiquidSurface variant="shortcutCard" className="shortcut-card-liquid" contentClassName="shortcut-card-shell">
+        <m.button
+          whileTap={{ scale: 0.98 }}
+          onClick={onClick}
+          className="shortcut-card shortcut-card-button w-full text-left"
+          type="button"
+        >
+          <div className="shortcut-card-top">
+            <div className="flex min-w-0 items-center gap-3">
+              <div className="shortcut-icon-wrap">
+                <Icon className="h-5 w-5 text-white" />
+              </div>
+              <div className="shortcut-card-copy min-w-0 flex-1">
+                <p className="shortcut-name">{shortcut.name}</p>
+                <p className="shortcut-value" title={getShortcutPreview(shortcut)}>{getShortcutPreview(shortcut)}</p>
+              </div>
             </div>
           </div>
-        </div>
-      </m.button>
-
-      <div className="shortcut-card-actions">
-        <div className="shortcut-card-secondary-actions">
-          <m.button
-            whileHover={{ scale: 1.08 }}
-            whileTap={{ scale: 0.94 }}
-            onClick={event => {
-              event.stopPropagation();
-              onEdit(shortcut);
-            }}
-            className="shortcut-card-action-button"
-            type="button"
-            aria-label={`Edit ${shortcut.name}`}
-          >
-            <Edit2 className="h-3.5 w-3.5" />
-          </m.button>
-          <m.button
-            whileHover={{ scale: 1.08 }}
-            whileTap={{ scale: 0.94 }}
-            onClick={event => {
-              event.stopPropagation();
-              onDelete(shortcut.id);
-            }}
-            className="shortcut-card-action-button shortcut-card-action-button-danger"
-            type="button"
-            aria-label={`Delete ${shortcut.name}`}
-          >
-            <Trash2 className="h-3.5 w-3.5" />
-          </m.button>
-        </div>
-        <m.button
-          whileHover={{ scale: 1.08 }}
-          whileTap={{ scale: 0.94 }}
-          onPointerDown={event => {
-            event.preventDefault();
-            event.stopPropagation();
-            dragControls.start(event);
-          }}
-          onClick={event => event.stopPropagation()}
-          className="shortcut-drag-handle"
-          type="button"
-          aria-label="Reorder shortcut"
-        >
-          <GripVertical className="h-3.5 w-3.5" />
         </m.button>
-      </div>
+
+        <div className="shortcut-card-actions">
+          <div className="shortcut-card-secondary-actions">
+            <m.button
+              whileHover={{ scale: 1.08 }}
+              whileTap={{ scale: 0.94 }}
+              onClick={event => {
+                event.stopPropagation();
+                onEdit(shortcut);
+              }}
+              className="shortcut-card-action-button"
+              type="button"
+              aria-label={`Edit ${shortcut.name}`}
+            >
+              <Edit2 className="h-3.5 w-3.5" />
+            </m.button>
+            <m.button
+              whileHover={{ scale: 1.08 }}
+              whileTap={{ scale: 0.94 }}
+              onClick={event => {
+                event.stopPropagation();
+                onDelete(shortcut.id);
+              }}
+              className="shortcut-card-action-button shortcut-card-action-button-danger"
+              type="button"
+              aria-label={`Delete ${shortcut.name}`}
+            >
+              <Trash2 className="h-3.5 w-3.5" />
+            </m.button>
+          </div>
+          <m.button
+            whileHover={{ scale: 1.08 }}
+            whileTap={{ scale: 0.94 }}
+            onPointerDown={event => {
+              event.preventDefault();
+              event.stopPropagation();
+              dragControls.start(event);
+            }}
+            onClick={event => event.stopPropagation()}
+            className="shortcut-drag-handle"
+            type="button"
+            aria-label="Reorder shortcut"
+          >
+            <GripVertical className="h-3.5 w-3.5" />
+          </m.button>
+        </div>
+      </LiquidSurface>
     </Reorder.Item>
   );
 }
@@ -152,102 +154,108 @@ function ShortcutModal({ isOpen, onClose, onSubmit, formData, setFormData, isEdi
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.94, y: 18 }}
           transition={{ type: 'spring', stiffness: 280, damping: 26 }}
-          className="glass-card flex max-h-[90vh] w-full max-w-md flex-col"
+          className="w-full max-w-md"
           onClick={event => event.stopPropagation()}
         >
-          <div className="border-b p-5" style={{ borderColor: 'var(--border-color)' }}>
-            <div className="mb-4 flex items-center justify-between">
-              <span className="section-kicker">SHORTCUT EDITOR</span>
-              <button type="button" onClick={onClose} className="status-pill">
-                <X className="h-3.5 w-3.5" />
-              </button>
-            </div>
-            <h3 className="surface-title text-[1.6rem]">{isEditing ? 'Edit Shortcut' : 'Add Shortcut'}</h3>
-          </div>
-
-          <form onSubmit={onSubmit} className="flex min-h-0 flex-1 flex-col">
-            <div className="flex-1 space-y-4 overflow-y-auto p-5">
-              <div>
-                <label className="section-kicker mb-2 block">Name</label>
-                <input
-                  type="text"
-                  value={formData.name}
-                  onChange={event => setFormData({ ...formData, name: event.target.value })}
-                  className="input-field w-full text-sm"
-                  placeholder="Portainer"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="section-kicker mb-2 block">Icon</label>
-                <div className="grid grid-cols-7 gap-2">
-                  {ICON_OPTIONS.map(({ key, icon: Icon }) => (
-                    <m.button
-                      key={key}
-                      type="button"
-                      whileHover={{ scale: 1.08 }}
-                      whileTap={{ scale: 0.94 }}
-                      onClick={() => setFormData({ ...formData, icon: key })}
-                      className="flex items-center justify-center rounded-2xl border p-2.5 transition-all"
-                      style={{
-                        background: formData.icon === key ? 'rgba(77, 180, 200, 0.14)' : 'rgba(255, 255, 255, 0.03)',
-                        borderColor: formData.icon === key ? 'rgba(77, 180, 200, 0.4)' : 'var(--border-color)',
-                        color: formData.icon === key ? 'var(--accent-cyan)' : 'var(--text-muted)',
-                      }}
-                    >
-                      <Icon className="h-4 w-4" />
-                    </m.button>
-                  ))}
+          <LiquidSurface variant="modal" className="shortcut-modal-liquid" contentClassName="shortcut-modal-shell">
+            <div className="flex max-h-[90vh] w-full flex-col">
+              <div className="border-b p-5" style={{ borderColor: 'var(--border-color)' }}>
+                <div className="mb-4 flex items-center justify-between">
+                  <span className="section-kicker">SHORTCUT EDITOR</span>
+                  <LiquidSurface variant="closeButton" className="modal-close-liquid" contentClassName="modal-close-shell">
+                    <button type="button" onClick={onClose} className="modal-close-button">
+                      <X className="h-3.5 w-3.5" />
+                    </button>
+                  </LiquidSurface>
                 </div>
+                <h3 className="surface-title text-[1.6rem]">{isEditing ? 'Edit Shortcut' : 'Add Shortcut'}</h3>
               </div>
 
-              <div>
-                <label className="section-kicker mb-2 block">Type</label>
-                <div className="flex gap-2">
-                  {['url', 'command'].map(type => (
-                    <m.button
-                      key={type}
-                      type="button"
-                      whileTap={{ scale: 0.98 }}
-                      onClick={() => setFormData({ ...formData, type })}
-                      className="flex-1 rounded-2xl border px-3 py-2.5 text-xs font-medium transition-all"
-                      style={{
-                        background: formData.type === type ? 'rgba(216, 168, 95, 0.14)' : 'rgba(255, 255, 255, 0.03)',
-                        borderColor: formData.type === type ? 'rgba(216, 168, 95, 0.36)' : 'var(--border-color)',
-                        color: formData.type === type ? 'var(--accent-yellow)' : 'var(--text-secondary)',
-                      }}
-                    >
-                      {type === 'url' ? 'URL' : 'Command'}
-                    </m.button>
-                  ))}
+              <form onSubmit={onSubmit} className="flex min-h-0 flex-1 flex-col">
+                <div className="flex-1 space-y-4 overflow-y-auto p-5">
+                  <div>
+                    <label className="section-kicker mb-2 block">Name</label>
+                    <input
+                      type="text"
+                      value={formData.name}
+                      onChange={event => setFormData({ ...formData, name: event.target.value })}
+                      className="input-field w-full text-sm"
+                      placeholder="Portainer"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="section-kicker mb-2 block">Icon</label>
+                    <div className="grid grid-cols-7 gap-2">
+                      {ICON_OPTIONS.map(({ key, icon: Icon }) => (
+                        <m.button
+                          key={key}
+                          type="button"
+                          whileHover={{ scale: 1.08 }}
+                          whileTap={{ scale: 0.94 }}
+                          onClick={() => setFormData({ ...formData, icon: key })}
+                          className="flex items-center justify-center rounded-2xl border p-2.5 transition-all"
+                          style={{
+                            background: formData.icon === key ? 'rgba(77, 180, 200, 0.14)' : 'rgba(255, 255, 255, 0.03)',
+                            borderColor: formData.icon === key ? 'rgba(77, 180, 200, 0.4)' : 'var(--border-color)',
+                            color: formData.icon === key ? 'var(--accent-cyan)' : 'var(--text-muted)',
+                          }}
+                        >
+                          <Icon className="h-4 w-4" />
+                        </m.button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="section-kicker mb-2 block">Type</label>
+                    <div className="flex gap-2">
+                      {['url', 'command'].map(type => (
+                        <m.button
+                          key={type}
+                          type="button"
+                          whileTap={{ scale: 0.98 }}
+                          onClick={() => setFormData({ ...formData, type })}
+                          className="flex-1 rounded-2xl border px-3 py-2.5 text-xs font-medium transition-all"
+                          style={{
+                            background: formData.type === type ? 'rgba(216, 168, 95, 0.14)' : 'rgba(255, 255, 255, 0.03)',
+                            borderColor: formData.type === type ? 'rgba(216, 168, 95, 0.36)' : 'var(--border-color)',
+                            color: formData.type === type ? 'var(--accent-yellow)' : 'var(--text-secondary)',
+                          }}
+                        >
+                          {type === 'url' ? 'URL' : 'Command'}
+                        </m.button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="section-kicker mb-2 block">
+                      {formData.type === 'url' ? 'URL' : 'Command'}
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.value}
+                      onChange={event => setFormData({ ...formData, value: event.target.value })}
+                      className="input-field w-full text-sm"
+                      placeholder={formData.type === 'url' ? 'https://...' : 'Enter command...'}
+                      required
+                    />
+                  </div>
                 </div>
-              </div>
 
-              <div>
-                <label className="section-kicker mb-2 block">
-                  {formData.type === 'url' ? 'URL' : 'Command'}
-                </label>
-                <input
-                  type="text"
-                  value={formData.value}
-                  onChange={event => setFormData({ ...formData, value: event.target.value })}
-                  className="input-field w-full text-sm"
-                  placeholder={formData.type === 'url' ? 'https://...' : 'Enter command...'}
-                  required
-                />
-              </div>
+                <div className="flex gap-3 border-t p-5" style={{ borderColor: 'var(--border-color)' }}>
+                  <m.button whileTap={{ scale: 0.98 }} type="button" onClick={onClose} className="btn-secondary flex-1">
+                    Cancel
+                  </m.button>
+                  <m.button whileTap={{ scale: 0.98 }} type="submit" className="btn-primary flex-1">
+                    {isEditing ? 'Update' : 'Create'}
+                  </m.button>
+                </div>
+              </form>
             </div>
-
-            <div className="flex gap-3 border-t p-5" style={{ borderColor: 'var(--border-color)' }}>
-              <m.button whileTap={{ scale: 0.98 }} type="button" onClick={onClose} className="btn-secondary flex-1">
-                Cancel
-              </m.button>
-              <m.button whileTap={{ scale: 0.98 }} type="submit" className="btn-primary flex-1">
-                {isEditing ? 'Update' : 'Create'}
-              </m.button>
-            </div>
-          </form>
+          </LiquidSurface>
         </m.div>
       </m.div>
     </AnimatePresence>,
@@ -407,64 +415,68 @@ export default function Shortcuts() {
   }
 
   return (
-    <div className="glass-card flex h-full flex-col p-4 sm:p-5 xl:p-6">
-      <div className="shortcut-panel-header">
-        <span className="section-kicker">LAUNCHPAD</span>
+    <>
+      <LiquidSurface variant="launchpadPanel" className="shortcut-panel-liquid" contentClassName="shortcut-panel-inner">
+        <div className="shortcut-panel-header">
+          <span className="section-kicker">LAUNCHPAD</span>
 
-        <m.button
-          whileHover={{ scale: 1.04 }}
-          whileTap={{ scale: 0.96 }}
-          onClick={openAddModal}
-          className="shortcut-add-button"
-          type="button"
-          aria-label="Add link"
-        >
-          <Plus className="h-3.5 w-3.5" />
-        </m.button>
-      </div>
-
-      <div className="shortcut-column flex flex-1 flex-col">
-        {shortcuts.length > 0 ? (
-          <Reorder.Group
-            axis="y"
-            values={shortcuts}
-            onReorder={setShortcuts}
-            className="shortcut-reorder-list"
-          >
-            <AnimatePresence>
-              {shortcuts.map((shortcut, index) => (
-                <ShortcutCard
-                  key={shortcut.id}
-                  shortcut={shortcut}
-                  index={index}
-                  onClick={() => {
-                    if (draggingId) {
-                      return;
-                    }
-                    handleShortcutClick(shortcut);
-                  }}
-                  onEdit={openEditModal}
-                  onDelete={handleDelete}
-                  onDragStart={setDraggingId}
-                  onDragEnd={handleReorderEnd}
-                />
-              ))}
-            </AnimatePresence>
-          </Reorder.Group>
-        ) : (
-          <m.div className="flex flex-1 flex-col items-center justify-center py-10 text-center" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-            <div
-              className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full border"
-              style={{ borderColor: 'var(--border-color)' }}
+          <LiquidSurface variant="addButton" className="shortcut-add-liquid" contentClassName="shortcut-add-shell">
+            <m.button
+              whileHover={{ scale: 1.04 }}
+              whileTap={{ scale: 0.96 }}
+              onClick={openAddModal}
+              className="shortcut-add-button"
+              type="button"
+              aria-label="Add link"
             >
-              <Link className="h-6 w-6" style={{ color: 'var(--text-muted)' }} />
-            </div>
-            <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-              No shortcuts yet
-            </p>
-          </m.div>
-        )}
-      </div>
+              <Plus className="h-3.5 w-3.5" />
+            </m.button>
+          </LiquidSurface>
+        </div>
+
+        <div className="shortcut-column flex flex-1 flex-col">
+          {shortcuts.length > 0 ? (
+            <Reorder.Group
+              axis="y"
+              values={shortcuts}
+              onReorder={setShortcuts}
+              className="shortcut-reorder-list"
+            >
+              <AnimatePresence>
+                {shortcuts.map((shortcut, index) => (
+                  <ShortcutCard
+                    key={shortcut.id}
+                    shortcut={shortcut}
+                    index={index}
+                    onClick={() => {
+                      if (draggingId) {
+                        return;
+                      }
+                      handleShortcutClick(shortcut);
+                    }}
+                    onEdit={openEditModal}
+                    onDelete={handleDelete}
+                    onDragStart={setDraggingId}
+                    onDragEnd={handleReorderEnd}
+                  />
+                ))}
+              </AnimatePresence>
+            </Reorder.Group>
+          ) : (
+            <m.div className="flex flex-1 flex-col items-center justify-center py-10 text-center" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+              <div
+                className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full border"
+                style={{ borderColor: 'var(--border-color)' }}
+              >
+                <Link className="h-6 w-6" style={{ color: 'var(--text-muted)' }} />
+              </div>
+              <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+                No shortcuts yet
+              </p>
+            </m.div>
+          )}
+        </div>
+      </LiquidSurface>
 
       <ShortcutModal
         isOpen={modalOpen}
@@ -474,6 +486,6 @@ export default function Shortcuts() {
         setFormData={setFormData}
         isEditing={!!editingId}
       />
-    </div>
+    </>
   );
 }
