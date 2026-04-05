@@ -148,7 +148,7 @@ function DashboardApp() {
         className="relative z-10 px-4 pt-4 xl:px-6"
       >
         <div className="mx-auto max-w-[1480px]">
-          <div className="chrome-bar px-4 py-3 sm:px-5">
+          <div className="dashboard-toolbar">
             <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
               <div className="toolbar-brand">
                 <div className="brand-mark">
