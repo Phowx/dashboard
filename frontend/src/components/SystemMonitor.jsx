@@ -108,50 +108,6 @@ function NetworkStats({ network }) {
   );
 }
 
-function ProcessTable({ sectionLabel, data, metricKey, icon: Icon, color }) {
-  return (
-    <div className="glass-card p-3 sm:p-3.5 h-full">
-      <div className="mb-2.5 flex items-center justify-between gap-3">
-        <div className="flex items-center gap-3">
-          <div className="signal-icon" style={{ color }}>
-            <Icon className="h-4 w-4" />
-          </div>
-          <span className="section-kicker">{sectionLabel}</span>
-        </div>
-        <span className="status-pill">TOP 5</span>
-      </div>
-
-      <div className="space-y-1.5">
-        {data.map((process, index) => {
-          const value = process[metricKey];
-
-          return (
-            <div key={process.pid} className="process-row">
-              <div className="process-fill" style={{ width: `${Math.min(value, 100)}%`, background: color }} />
-              <div className="relative flex items-center justify-between gap-3">
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-2">
-                    <span className="process-rank">#{index + 1}</span>
-                    <span className="truncate text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
-                      {process.name}
-                    </span>
-                  </div>
-                  <p className="mt-1 text-[11px] mono-type" style={{ color: 'var(--text-muted)' }}>
-                    PID {process.pid}
-                  </p>
-                </div>
-                <span className="process-value" style={{ color }}>
-                  {value.toFixed(1)}%
-                </span>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
-
 function SystemMonitor() {
   const [metrics, setMetrics] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -239,8 +195,7 @@ function SystemMonitor() {
   }
 
   return (
-    <div className="space-y-3">
-      <div className="grid grid-cols-1 gap-4 xl:min-h-[322px] xl:grid-cols-12 xl:items-stretch">
+    <div className="grid grid-cols-1 gap-4 xl:min-h-[304px] xl:grid-cols-12 xl:items-stretch">
         <div className="xl:col-span-8 xl:h-full">
           <Suspense
             fallback={
@@ -289,24 +244,6 @@ function SystemMonitor() {
           <NetworkStats network={metrics.network} />
         </div>
       </div>
-
-      <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
-        <ProcessTable
-          sectionLabel="CPU"
-          metricKey="cpu"
-          data={metrics.cpuProcesses || []}
-          icon={Cpu}
-          color="var(--accent-cyan)"
-        />
-        <ProcessTable
-          sectionLabel="MEMORY"
-          metricKey="memory"
-          data={metrics.memoryProcesses || []}
-          icon={MemoryStick}
-          color="var(--accent-yellow)"
-        />
-      </div>
-    </div>
   );
 }
 

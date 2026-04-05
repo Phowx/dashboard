@@ -18,6 +18,7 @@ const DATA_DIR = path.join(__dirname, 'data');
 const DATA_FILE = path.join(DATA_DIR, 'shortcuts.json');
 const EXAMPLE_DATA_FILE = path.join(DATA_DIR, 'shortcuts.example.json');
 const CACHE_TTL = 2000;
+const ENABLE_PROCESS_TOP = !['0', 'false', 'off', 'no'].includes(String(process.env.ENABLE_PROCESS_TOP || 'true').toLowerCase());
 
 const SYSTEM_PIDS = new Set([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
 const SYSTEM_PROCS = new Set([
@@ -111,39 +112,43 @@ async function getSystemMetrics() {
     si.currentLoad(),
     si.mem(),
     si.fsSize(),
-    si.processes(),
+    ENABLE_PROCESS_TOP ? si.processes() : Promise.resolve(null),
     si.time(),
     si.networkStats()
   ]);
 
-  const filteredProcesses = processes.list.filter(p => {
+  const filteredProcesses = (processes?.list || []).filter(p => {
     if (SYSTEM_PIDS.has(p.pid)) return false;
     if (SYSTEM_PROCS.has(p.name)) return false;
     if (p.name === 'ps') return false;
     return true;
   });
 
-  const cpuProcesses = filteredProcesses
-    .sort((a, b) => b.cpu - a.cpu)
-    .slice(0, 5)
-    .map(p => ({
-      pid: p.pid,
-      name: p.name,
-      cpu: p.cpu,
-      memory: p.mem,
-      memoryRss: p.memRss || 0
-    }));
+  const cpuProcesses = ENABLE_PROCESS_TOP
+    ? filteredProcesses
+      .sort((a, b) => b.cpu - a.cpu)
+      .slice(0, 5)
+      .map(p => ({
+        pid: p.pid,
+        name: p.name,
+        cpu: p.cpu,
+        memory: p.mem,
+        memoryRss: p.memRss || 0
+      }))
+    : [];
 
-  const memoryProcesses = filteredProcesses
-    .sort((a, b) => b.mem - a.mem)
-    .slice(0, 5)
-    .map(p => ({
-      pid: p.pid,
-      name: p.name,
-      cpu: p.cpu,
-      memory: p.mem,
-      memoryRss: p.memRss || 0
-    }));
+  const memoryProcesses = ENABLE_PROCESS_TOP
+    ? filteredProcesses
+      .sort((a, b) => b.mem - a.mem)
+      .slice(0, 5)
+      .map(p => ({
+        pid: p.pid,
+        name: p.name,
+        cpu: p.cpu,
+        memory: p.mem,
+        memoryRss: p.memRss || 0
+      }))
+    : [];
 
   const network = networkStats
     .filter(n => n.iface !== 'lo' && !n.iface.startsWith('veth'))

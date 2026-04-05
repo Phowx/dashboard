@@ -6,7 +6,7 @@
 
 - 查看 CPU、内存、磁盘和网络状态
 - 实时监控 CPU 与内存变化
-- 查看高占用进程
+- 可选采集高占用进程
 - 管理 Docker 容器的启动、停止、重启和删除
 - 维护本地快捷方式入口
 
@@ -100,3 +100,4 @@ sudo journalctl -u dashboard -f
 - `scripts/setup-systemd.sh` 默认会调用 `npm run install:all` 和 `npm run build`。
 - 如果你用 Docker 套接字读取容器状态，运行该服务的用户需要有 Docker 权限。
 - 安装脚本会把当前 `node` 的绝对路径写进 systemd 环境里，尽量避免 PATH 问题。
+- 如果你不需要后端采集 Top 进程，可以在服务环境里设置 `ENABLE_PROCESS_TOP=false`，这样会跳过 `systeminformation.processes()` 这部分采集逻辑。
