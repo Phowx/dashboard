@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { lazy, Suspense, useEffect, useState } from 'react';
 import {
   Activity,
   Clock3,
@@ -10,11 +10,12 @@ import {
   Wifi,
   WifiOff,
 } from 'lucide-react';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, domAnimation, LazyMotion, m } from 'framer-motion';
 import SystemMonitor from './components/SystemMonitor';
-import DockerList from './components/DockerList';
-import Shortcuts from './components/Shortcuts';
 import { LiveMetricsProvider, useLiveMetrics } from './context/LiveMetricsContext';
+
+const DockerList = lazy(() => import('./components/DockerList'));
+const Shortcuts = lazy(() => import('./components/Shortcuts'));
 
 function formatUptime(seconds) {
   const days = Math.floor(seconds / 86400);
@@ -24,6 +25,28 @@ function formatUptime(seconds) {
   if (days > 0) return `${days}天 ${hours}时 ${mins}分`;
   if (hours > 0) return `${hours}时 ${mins}分`;
   return `${mins}分`;
+}
+
+function SectionFallback({ title, description, minHeight = 'min-h-[260px]' }) {
+  return (
+    <div className={`glass-card flex ${minHeight} flex-col justify-between p-5 sm:p-6`}>
+      <div className="space-y-3">
+        <span className="section-kicker">LOADING</span>
+        <div className="h-6 w-40 rounded-full shimmer-bar" />
+        <div className="space-y-2">
+          <div className="h-3 w-full rounded-full shimmer-bar" />
+          <div className="h-3 w-5/6 rounded-full shimmer-bar" />
+        </div>
+      </div>
+      <div className="flex items-end justify-between gap-4">
+        <div>
+          <p className="text-sm" style={{ color: 'var(--text-primary)' }}>{title}</p>
+          <p className="mt-1 text-sm" style={{ color: 'var(--text-secondary)' }}>{description}</p>
+        </div>
+        <div className="loading-orb" />
+      </div>
+    </div>
+  );
 }
 
 function DashboardApp() {
@@ -91,7 +114,7 @@ function DashboardApp() {
 
   return (
     <div className="dashboard-shell min-h-screen">
-      <motion.header
+      <m.header
         initial={{ opacity: 0, y: -24 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.45, ease: 'easeOut' }}
@@ -129,7 +152,7 @@ function DashboardApp() {
                   <strong>{formatUptime(uptime)}</strong>
                 </div>
 
-                <motion.button
+                <m.button
                   whileHover={{ scale: 1.04 }}
                   whileTap={{ scale: 0.96 }}
                   onClick={toggleTheme}
@@ -139,7 +162,7 @@ function DashboardApp() {
                 >
                   <AnimatePresence mode="wait">
                     {theme === 'dark' ? (
-                      <motion.span
+                      <m.span
                         key="sun"
                         initial={{ rotate: -60, opacity: 0 }}
                         animate={{ rotate: 0, opacity: 1 }}
@@ -147,9 +170,9 @@ function DashboardApp() {
                         transition={{ duration: 0.2 }}
                       >
                         <Sun className="h-3.5 w-3.5" />
-                      </motion.span>
+                      </m.span>
                     ) : (
-                      <motion.span
+                      <m.span
                         key="moon"
                         initial={{ rotate: 60, opacity: 0 }}
                         animate={{ rotate: 0, opacity: 1 }}
@@ -157,19 +180,19 @@ function DashboardApp() {
                         transition={{ duration: 0.2 }}
                       >
                         <Moon className="h-3.5 w-3.5" />
-                      </motion.span>
+                      </m.span>
                     )}
                   </AnimatePresence>
                   <span>{theme === 'dark' ? '浅色视图' : '深色视图'}</span>
-                </motion.button>
+                </m.button>
               </div>
             </div>
           </div>
         </div>
-      </motion.header>
+      </m.header>
 
       <main className="relative mx-auto max-w-[1480px] px-4 pb-10 pt-6 xl:px-6">
-        <motion.section
+        <m.section
           initial={{ opacity: 0, y: 18 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.55, delay: 0.08, ease: 'easeOut' }}
@@ -206,7 +229,7 @@ function DashboardApp() {
               const Icon = item.icon;
 
               return (
-                <motion.div
+                <m.div
                   key={item.label}
                   initial={{ opacity: 0, y: 16 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -221,39 +244,59 @@ function DashboardApp() {
                   </div>
                   <div className="signal-value">{item.value}</div>
                   <p className="signal-caption">{item.caption}</p>
-                </motion.div>
+                </m.div>
               );
             })}
           </div>
-        </motion.section>
+        </m.section>
 
         <div className="grid grid-cols-12 gap-4 xl:gap-5">
-          <motion.section
+          <m.section
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.45, delay: 0.16 }}
             className="col-span-12 xl:col-span-8"
           >
             <SystemMonitor />
-          </motion.section>
+          </m.section>
 
-          <motion.section
+          <m.section
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.45, delay: 0.22 }}
             className="col-span-12 xl:col-span-4"
           >
-            <Shortcuts />
-          </motion.section>
+            <Suspense
+              fallback={
+                <SectionFallback
+                  title="快捷入口加载中"
+                  description="正在拆分懒加载区块，先让首屏更快落地。"
+                  minHeight="min-h-[360px]"
+                />
+              }
+            >
+              <Shortcuts />
+            </Suspense>
+          </m.section>
 
-          <motion.section
+          <m.section
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.45, delay: 0.28 }}
             className="col-span-12"
           >
-            <DockerList />
-          </motion.section>
+            <Suspense
+              fallback={
+                <SectionFallback
+                  title="Docker 舱段加载中"
+                  description="容器控制区已拆成独立 chunk，减少首屏主包压力。"
+                  minHeight="min-h-[320px]"
+                />
+              }
+            >
+              <DockerList />
+            </Suspense>
+          </m.section>
         </div>
       </main>
     </div>
@@ -262,9 +305,11 @@ function DashboardApp() {
 
 function App() {
   return (
-    <LiveMetricsProvider>
-      <DashboardApp />
-    </LiveMetricsProvider>
+    <LazyMotion features={domAnimation}>
+      <LiveMetricsProvider>
+        <DashboardApp />
+      </LiveMetricsProvider>
+    </LazyMotion>
   );
 }
 

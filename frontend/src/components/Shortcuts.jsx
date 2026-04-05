@@ -13,7 +13,7 @@ import {
   Trash2,
   X,
 } from 'lucide-react';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, m } from 'framer-motion';
 
 const ICONS = {
   globe: Globe,
@@ -39,7 +39,7 @@ function ShortcutCard({ shortcut, onClick, onEdit, onDelete, index }) {
   const Icon = ICONS[shortcut.icon] || Globe;
 
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0, scale: 0.9, y: 12 }}
       animate={{ opacity: 1, scale: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.9, y: 12 }}
@@ -47,7 +47,7 @@ function ShortcutCard({ shortcut, onClick, onEdit, onDelete, index }) {
       layout
       className="group relative"
     >
-      <motion.button
+      <m.button
         whileHover={{ y: -4, scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
         onClick={onClick}
@@ -67,10 +67,10 @@ function ShortcutCard({ shortcut, onClick, onEdit, onDelete, index }) {
             {shortcut.type === 'url' ? '点击直达服务面板' : '保留一条随手可用的操作命令'}
           </p>
         </div>
-      </motion.button>
+      </m.button>
 
       <div className="absolute right-3 top-3 flex gap-1.5 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-        <motion.button
+        <m.button
           whileHover={{ scale: 1.08 }}
           whileTap={{ scale: 0.94 }}
           onClick={event => {
@@ -86,8 +86,8 @@ function ShortcutCard({ shortcut, onClick, onEdit, onDelete, index }) {
           type="button"
         >
           <Edit2 className="h-3.5 w-3.5" />
-        </motion.button>
-        <motion.button
+        </m.button>
+        <m.button
           whileHover={{ scale: 1.08 }}
           whileTap={{ scale: 0.94 }}
           onClick={event => {
@@ -103,9 +103,9 @@ function ShortcutCard({ shortcut, onClick, onEdit, onDelete, index }) {
           type="button"
         >
           <Trash2 className="h-3.5 w-3.5" />
-        </motion.button>
+        </m.button>
       </div>
-    </motion.div>
+    </m.div>
   );
 }
 
@@ -114,7 +114,7 @@ function ShortcutModal({ isOpen, onClose, onSubmit, formData, setFormData, isEdi
 
   return createPortal(
     <AnimatePresence>
-      <motion.div
+      <m.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
@@ -122,7 +122,7 @@ function ShortcutModal({ isOpen, onClose, onSubmit, formData, setFormData, isEdi
         style={{ background: 'rgba(8, 10, 9, 0.72)', backdropFilter: 'blur(10px)' }}
         onClick={onClose}
       >
-        <motion.div
+        <m.div
           initial={{ opacity: 0, scale: 0.94, y: 18 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.94, y: 18 }}
@@ -158,7 +158,7 @@ function ShortcutModal({ isOpen, onClose, onSubmit, formData, setFormData, isEdi
                 <label className="section-kicker mb-2 block">图标</label>
                 <div className="grid grid-cols-7 gap-2">
                   {ICON_OPTIONS.map(({ key, icon: Icon }) => (
-                    <motion.button
+                    <m.button
                       key={key}
                       type="button"
                       whileHover={{ scale: 1.08 }}
@@ -172,7 +172,7 @@ function ShortcutModal({ isOpen, onClose, onSubmit, formData, setFormData, isEdi
                       }}
                     >
                       <Icon className="h-4 w-4" />
-                    </motion.button>
+                    </m.button>
                   ))}
                 </div>
               </div>
@@ -181,7 +181,7 @@ function ShortcutModal({ isOpen, onClose, onSubmit, formData, setFormData, isEdi
                 <label className="section-kicker mb-2 block">类型</label>
                 <div className="flex gap-2">
                   {['url', 'command'].map(type => (
-                    <motion.button
+                    <m.button
                       key={type}
                       type="button"
                       whileTap={{ scale: 0.98 }}
@@ -194,7 +194,7 @@ function ShortcutModal({ isOpen, onClose, onSubmit, formData, setFormData, isEdi
                       }}
                     >
                       {type === 'url' ? 'URL' : '命令'}
-                    </motion.button>
+                    </m.button>
                   ))}
                 </div>
               </div>
@@ -215,16 +215,16 @@ function ShortcutModal({ isOpen, onClose, onSubmit, formData, setFormData, isEdi
             </div>
 
             <div className="flex gap-3 border-t p-5" style={{ borderColor: 'var(--border-color)' }}>
-              <motion.button whileTap={{ scale: 0.98 }} type="button" onClick={onClose} className="btn-secondary flex-1">
+              <m.button whileTap={{ scale: 0.98 }} type="button" onClick={onClose} className="btn-secondary flex-1">
                 取消
-              </motion.button>
-              <motion.button whileTap={{ scale: 0.98 }} type="submit" className="btn-primary flex-1">
+              </m.button>
+              <m.button whileTap={{ scale: 0.98 }} type="submit" className="btn-primary flex-1">
                 {isEditing ? '更新' : '创建'}
-              </motion.button>
+              </m.button>
             </div>
           </form>
-        </motion.div>
-      </motion.div>
+        </m.div>
+      </m.div>
     </AnimatePresence>,
     document.body
   );
@@ -354,10 +354,10 @@ export default function Shortcuts() {
           </p>
         </div>
 
-        <motion.button whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }} onClick={openAddModal} className="btn-primary self-start" type="button">
+        <m.button whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }} onClick={openAddModal} className="btn-primary self-start" type="button">
           <Plus className="h-3.5 w-3.5" />
           添加入口
-        </motion.button>
+        </m.button>
       </div>
 
       <div className="mb-4 flex flex-wrap gap-2">
@@ -383,7 +383,7 @@ export default function Shortcuts() {
       </div>
 
       {shortcuts.length === 0 && (
-        <motion.div className="py-10 text-center" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+        <m.div className="py-10 text-center" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
           <div
             className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full border"
             style={{ borderColor: 'var(--border-color)' }}
@@ -393,7 +393,7 @@ export default function Shortcuts() {
           <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
             先加一个常用入口，让控制台更像你自己的桌面。
           </p>
-        </motion.div>
+        </m.div>
       )}
 
       <ShortcutModal

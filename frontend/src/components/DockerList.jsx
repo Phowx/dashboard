@@ -11,7 +11,7 @@ import {
   Trash2,
   X,
 } from 'lucide-react';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, m } from 'framer-motion';
 
 function StatusBadge({ state }) {
   const getStatusConfig = () => {
@@ -62,7 +62,7 @@ function ConfirmModal({ isOpen, onClose, onConfirm, containerName, action, isLoa
 
   return createPortal(
     <AnimatePresence>
-      <motion.div
+      <m.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
@@ -70,7 +70,7 @@ function ConfirmModal({ isOpen, onClose, onConfirm, containerName, action, isLoa
         style={{ background: 'rgba(8, 10, 9, 0.72)', backdropFilter: 'blur(10px)' }}
         onClick={onClose}
       >
-        <motion.div
+        <m.div
           initial={{ opacity: 0, scale: 0.94, y: 22 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.94, y: 22 }}
@@ -107,10 +107,10 @@ function ConfirmModal({ isOpen, onClose, onConfirm, containerName, action, isLoa
           </div>
 
           <div className="flex gap-3 p-5">
-            <motion.button whileTap={{ scale: 0.98 }} onClick={onClose} disabled={isLoading} className="btn-secondary flex-1">
+            <m.button whileTap={{ scale: 0.98 }} onClick={onClose} disabled={isLoading} className="btn-secondary flex-1">
               取消
-            </motion.button>
-            <motion.button
+            </m.button>
+            <m.button
               whileTap={{ scale: 0.98 }}
               onClick={onConfirm}
               disabled={isLoading}
@@ -120,10 +120,10 @@ function ConfirmModal({ isOpen, onClose, onConfirm, containerName, action, isLoa
             >
               {isLoading ? <RefreshCw className="h-4 w-4 animate-spin" /> : <Icon className="h-4 w-4" />}
               确认
-            </motion.button>
+            </m.button>
           </div>
-        </motion.div>
-      </motion.div>
+        </m.div>
+      </m.div>
     </AnimatePresence>,
     document.body
   );
@@ -140,7 +140,7 @@ function ActionButton({ action, onClick, loading, disabled }) {
   const Icon = config.icon;
 
   return (
-    <motion.button
+    <m.button
       whileHover={{ scale: 1.08 }}
       whileTap={{ scale: 0.94 }}
       onClick={onClick}
@@ -155,7 +155,7 @@ function ActionButton({ action, onClick, loading, disabled }) {
       type="button"
     >
       {loading ? <RefreshCw className="h-3.5 w-3.5 animate-spin" /> : <Icon className="h-3.5 w-3.5" />}
-    </motion.button>
+    </m.button>
   );
 }
 
@@ -252,7 +252,7 @@ function DockerList() {
             </p>
           </div>
 
-          <motion.button
+          <m.button
             whileHover={{ scale: 1.04 }}
             whileTap={{ scale: 0.96 }}
             onClick={fetchContainers}
@@ -261,7 +261,7 @@ function DockerList() {
           >
             <RefreshCw className="h-3.5 w-3.5" />
             <span>刷新容器</span>
-          </motion.button>
+          </m.button>
         </div>
 
         <div className="mt-5 flex flex-wrap gap-2">
@@ -294,8 +294,81 @@ function DockerList() {
           </p>
         </div>
       ) : (
-        <div className="overflow-x-auto px-3 pb-3 sm:px-4 sm:pb-4 xl:px-6 xl:pb-6">
-          <table className="mt-4 w-full min-w-[920px] overflow-hidden rounded-[24px]">
+        <>
+          <div className="mt-4 grid gap-3 px-3 pb-3 md:hidden">
+            {containers.map(container => (
+              <div key={container.id} className="glass-card p-4">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2">
+                      {container.composeProject && (
+                        <Layers className="h-3.5 w-3.5 shrink-0" style={{ color: 'var(--accent-cyan)' }} />
+                      )}
+                      <span className="truncate text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
+                        {container.composeProject
+                          ? `${container.composeProject}/${container.composeService || container.name}`
+                          : container.name}
+                      </span>
+                    </div>
+                    <p className="mt-1 text-[11px] mono-type" style={{ color: 'var(--text-muted)' }}>
+                      {container.image || '-'}
+                    </p>
+                  </div>
+                  <StatusBadge state={container.state} />
+                </div>
+
+                <div className="mt-4 grid grid-cols-2 gap-3">
+                  <div className="mobile-stat-card">
+                    <span className="section-kicker">CPU</span>
+                    <strong style={{ color: 'var(--accent-cyan)' }}>
+                      {container.stats?.cpuPercent !== null && container.stats?.cpuPercent !== undefined
+                        ? `${container.stats.cpuPercent.toFixed(1)}%`
+                        : '-'}
+                    </strong>
+                  </div>
+                  <div className="mobile-stat-card">
+                    <span className="section-kicker">内存</span>
+                    <strong style={{ color: 'var(--accent-yellow)' }}>{formatBytes(container.stats?.memoryUsage)}</strong>
+                  </div>
+                  <div className="mobile-stat-card col-span-2">
+                    <span className="section-kicker">端口</span>
+                    <strong className="break-all text-left" style={{ color: 'var(--text-primary)' }}>
+                      {container.ports || '-'}
+                    </strong>
+                  </div>
+                </div>
+
+                <div className="mt-4 flex items-center justify-end gap-2">
+                  {container.state !== 'running' ? (
+                    <ActionButton
+                      action="start"
+                      onClick={() => openConfirm(container, 'start')}
+                      loading={actionLoading === `${container.id}-start`}
+                    />
+                  ) : (
+                    <ActionButton
+                      action="stop"
+                      onClick={() => openConfirm(container, 'stop')}
+                      loading={actionLoading === `${container.id}-stop`}
+                    />
+                  )}
+                  <ActionButton
+                    action="restart"
+                    onClick={() => openConfirm(container, 'restart')}
+                    loading={actionLoading === `${container.id}-restart`}
+                  />
+                  <ActionButton
+                    action="remove"
+                    onClick={() => openConfirm(container, 'remove')}
+                    loading={actionLoading === `${container.id}-remove`}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="hidden overflow-x-auto px-3 pb-3 sm:px-4 sm:pb-4 xl:px-6 xl:pb-6 md:block">
+            <table className="mt-4 w-full min-w-[920px] overflow-hidden rounded-[24px]">
             <thead>
               <tr
                 className="mono-type text-[10px] uppercase tracking-[0.18em]"
@@ -310,83 +383,84 @@ function DockerList() {
                 <th className="px-3 py-3 text-center font-medium">操作</th>
               </tr>
             </thead>
-            <tbody className="divide-y" style={{ divideColor: 'var(--border-color)' }}>
-              {containers.map(container => (
-                <tr key={container.id} className="transition-colors duration-200">
-                  <td className="px-3 py-4 align-top">
-                    <StatusBadge state={container.state} />
-                  </td>
-                  <td className="px-3 py-4">
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-2">
-                        {container.composeProject && (
-                          <Layers className="h-3.5 w-3.5 shrink-0" style={{ color: 'var(--accent-cyan)' }} />
-                        )}
-                        <span className="truncate text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
-                          {container.composeProject
-                            ? `${container.composeProject}/${container.composeService || container.name}`
-                            : container.name}
-                        </span>
+              <tbody className="divide-y" style={{ divideColor: 'var(--border-color)' }}>
+                {containers.map(container => (
+                  <tr key={container.id} className="transition-colors duration-200">
+                    <td className="px-3 py-4 align-top">
+                      <StatusBadge state={container.state} />
+                    </td>
+                    <td className="px-3 py-4">
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2">
+                          {container.composeProject && (
+                            <Layers className="h-3.5 w-3.5 shrink-0" style={{ color: 'var(--accent-cyan)' }} />
+                          )}
+                          <span className="truncate text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
+                            {container.composeProject
+                              ? `${container.composeProject}/${container.composeService || container.name}`
+                              : container.name}
+                          </span>
+                        </div>
+                        <p className="mt-1 text-[11px] mono-type" style={{ color: 'var(--text-muted)' }}>
+                          {container.id}
+                        </p>
                       </div>
-                      <p className="mt-1 text-[11px] mono-type" style={{ color: 'var(--text-muted)' }}>
-                        {container.id}
-                      </p>
-                    </div>
-                  </td>
-                  <td className="hidden px-3 py-4 md:table-cell">
-                    <span className="text-xs leading-6" style={{ color: 'var(--text-secondary)' }}>
-                      {container.image || '-'}
-                    </span>
-                  </td>
-                  <td className="px-3 py-4">
-                    <span className="text-xs mono-type" style={{ color: 'var(--text-secondary)' }}>
-                      {container.ports || '-'}
-                    </span>
-                  </td>
-                  <td className="px-3 py-4 text-right">
-                    <span className="text-sm font-semibold" style={{ color: 'var(--accent-cyan)' }}>
-                      {container.stats?.cpuPercent !== null && container.stats?.cpuPercent !== undefined
-                        ? `${container.stats.cpuPercent.toFixed(1)}%`
-                        : '-'}
-                    </span>
-                  </td>
-                  <td className="px-3 py-4 text-right">
-                    <span className="text-sm font-semibold" style={{ color: 'var(--accent-yellow)' }}>
-                      {formatBytes(container.stats?.memoryUsage)}
-                    </span>
-                  </td>
-                  <td className="px-3 py-4">
-                    <div className="flex items-center justify-center gap-2">
-                      {container.state !== 'running' ? (
+                    </td>
+                    <td className="hidden px-3 py-4 md:table-cell">
+                      <span className="text-xs leading-6" style={{ color: 'var(--text-secondary)' }}>
+                        {container.image || '-'}
+                      </span>
+                    </td>
+                    <td className="px-3 py-4">
+                      <span className="text-xs mono-type" style={{ color: 'var(--text-secondary)' }}>
+                        {container.ports || '-'}
+                      </span>
+                    </td>
+                    <td className="px-3 py-4 text-right">
+                      <span className="text-sm font-semibold" style={{ color: 'var(--accent-cyan)' }}>
+                        {container.stats?.cpuPercent !== null && container.stats?.cpuPercent !== undefined
+                          ? `${container.stats.cpuPercent.toFixed(1)}%`
+                          : '-'}
+                      </span>
+                    </td>
+                    <td className="px-3 py-4 text-right">
+                      <span className="text-sm font-semibold" style={{ color: 'var(--accent-yellow)' }}>
+                        {formatBytes(container.stats?.memoryUsage)}
+                      </span>
+                    </td>
+                    <td className="px-3 py-4">
+                      <div className="flex items-center justify-center gap-2">
+                        {container.state !== 'running' ? (
+                          <ActionButton
+                            action="start"
+                            onClick={() => openConfirm(container, 'start')}
+                            loading={actionLoading === `${container.id}-start`}
+                          />
+                        ) : (
+                          <ActionButton
+                            action="stop"
+                            onClick={() => openConfirm(container, 'stop')}
+                            loading={actionLoading === `${container.id}-stop`}
+                          />
+                        )}
                         <ActionButton
-                          action="start"
-                          onClick={() => openConfirm(container, 'start')}
-                          loading={actionLoading === `${container.id}-start`}
+                          action="restart"
+                          onClick={() => openConfirm(container, 'restart')}
+                          loading={actionLoading === `${container.id}-restart`}
                         />
-                      ) : (
                         <ActionButton
-                          action="stop"
-                          onClick={() => openConfirm(container, 'stop')}
-                          loading={actionLoading === `${container.id}-stop`}
+                          action="remove"
+                          onClick={() => openConfirm(container, 'remove')}
+                          loading={actionLoading === `${container.id}-remove`}
                         />
-                      )}
-                      <ActionButton
-                        action="restart"
-                        onClick={() => openConfirm(container, 'restart')}
-                        loading={actionLoading === `${container.id}-restart`}
-                      />
-                      <ActionButton
-                        action="remove"
-                        onClick={() => openConfirm(container, 'remove')}
-                        loading={actionLoading === `${container.id}-remove`}
-                      />
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
       )}
 
       <ConfirmModal
