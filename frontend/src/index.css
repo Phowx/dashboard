@@ -30,6 +30,21 @@
   --chart-grid: rgba(238, 244, 247, 0.09);
   --tooltip-bg: rgba(10, 14, 17, 0.96);
   --grid-line: rgba(255, 255, 255, 0.034);
+  --liquid-border: rgba(255, 255, 255, 0.1);
+  --liquid-surface:
+    radial-gradient(circle at 16% 18%, rgba(87, 208, 239, 0.08), transparent 30%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.085), rgba(255, 255, 255, 0.02) 42%, rgba(255, 255, 255, 0.01) 100%),
+    rgba(12, 17, 23, 0.24);
+  --liquid-overlay:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.09), transparent 34%),
+    radial-gradient(circle at 14% 18%, rgba(255, 255, 255, 0.08), transparent 30%);
+  --liquid-sheen: linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.015));
+  --liquid-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    inset 0 -12px 18px rgba(3, 6, 9, 0.16),
+    0 10px 24px rgba(0, 0, 0, 0.1);
+  --liquid-backdrop: blur(24px) saturate(165%);
+  --liquid-sheen-opacity: 0.52;
 }
 
 .light {
@@ -56,6 +71,21 @@
   --chart-grid: rgba(17, 24, 28, 0.08);
   --tooltip-bg: rgba(251, 253, 252, 0.98);
   --grid-line: rgba(17, 24, 28, 0.045);
+  --liquid-border: rgba(255, 255, 255, 0.56);
+  --liquid-surface:
+    radial-gradient(circle at 18% 20%, rgba(255, 255, 255, 0.92), transparent 36%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.78), rgba(255, 255, 255, 0.42) 48%, rgba(255, 255, 255, 0.24) 100%),
+    rgba(244, 248, 245, 0.28);
+  --liquid-overlay:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.22), transparent 36%),
+    radial-gradient(circle at 14% 18%, rgba(255, 255, 255, 0.2), transparent 34%);
+  --liquid-sheen: linear-gradient(180deg, rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0.04));
+  --liquid-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.82),
+    inset 0 -14px 18px rgba(197, 209, 205, 0.18),
+    0 12px 28px rgba(28, 38, 42, 0.08);
+  --liquid-backdrop: blur(24px) saturate(185%);
+  --liquid-sheen-opacity: 0.74;
 }
 
 html {
@@ -240,35 +270,39 @@ body::after {
   width: fit-content;
   min-width: 176px;
   padding: 0.36rem 0.7rem 0.36rem 0.36rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--liquid-border);
   border-radius: 999px;
-  background:
-    radial-gradient(circle at 16% 18%, rgba(87, 208, 239, 0.09), transparent 30%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.085), rgba(255, 255, 255, 0.02) 42%, rgba(255, 255, 255, 0.01) 100%),
-    rgba(12, 17, 23, 0.24);
-  backdrop-filter: blur(24px) saturate(165%);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.12),
-    inset 0 -12px 18px rgba(3, 6, 9, 0.16),
-    0 10px 24px rgba(0, 0, 0, 0.1);
+  background: var(--liquid-surface);
+  backdrop-filter: var(--liquid-backdrop);
+  box-shadow: var(--liquid-shadow);
   justify-self: start;
 }
 
 .toolbar-brand::before,
-.dashboard-toolbar .status-pill::before {
+.status-pill::before,
+.theme-menu::before,
+.glass-card::before,
+.process-row::before,
+.mobile-stat-card::before,
+.signal-icon::before,
+.shortcut-icon-wrap::before {
   content: '';
   position: absolute;
   inset: 1px;
   border-radius: inherit;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.09), transparent 34%),
-    radial-gradient(circle at 14% 18%, rgba(255, 255, 255, 0.08), transparent 30%);
+  background: var(--liquid-overlay);
   opacity: 0.72;
   pointer-events: none;
 }
 
 .toolbar-brand::after,
-.dashboard-toolbar .status-pill::after {
+.status-pill::after,
+.theme-menu::after,
+.glass-card::after,
+.process-row::after,
+.mobile-stat-card::after,
+.signal-icon::after,
+.shortcut-icon-wrap::after {
   content: '';
   position: absolute;
   left: 18%;
@@ -276,9 +310,9 @@ body::after {
   top: 7%;
   height: 38%;
   border-radius: 999px;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.015));
+  background: var(--liquid-sheen);
   filter: blur(12px);
-  opacity: 0.52;
+  opacity: var(--liquid-sheen-opacity);
   pointer-events: none;
 }
 
@@ -292,19 +326,6 @@ body::after {
   width: 100%;
   min-height: 66px;
   padding: 0.48rem 0;
-}
-
-.light .toolbar-brand {
-  border-color: rgba(255, 255, 255, 0.56);
-  background:
-    radial-gradient(circle at 18% 20%, rgba(255, 255, 255, 0.92), transparent 36%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.78), rgba(255, 255, 255, 0.42) 48%, rgba(255, 255, 255, 0.24) 100%),
-    rgba(244, 248, 245, 0.28);
-  backdrop-filter: blur(24px) saturate(185%);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.82),
-    inset 0 -14px 18px rgba(197, 209, 205, 0.18),
-    0 12px 28px rgba(28, 38, 42, 0.08);
 }
 
 .section-kicker,
@@ -329,10 +350,12 @@ body::after {
   position: relative;
   isolation: isolate;
   overflow: hidden;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--liquid-border);
   border-radius: 999px;
   padding: 0.7rem 0.95rem;
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--liquid-surface);
+  backdrop-filter: var(--liquid-backdrop);
+  box-shadow: var(--liquid-shadow);
   color: var(--text-secondary);
   font-family: var(--font-mono);
   font-size: 0.72rem;
@@ -361,32 +384,6 @@ body::after {
   gap: 0;
 }
 
-.dashboard-toolbar .status-pill {
-  border-color: rgba(255, 255, 255, 0.1);
-  background:
-    radial-gradient(circle at 16% 18%, rgba(255, 180, 84, 0.08), transparent 32%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.085), rgba(255, 255, 255, 0.02) 42%, rgba(255, 255, 255, 0.01) 100%),
-    rgba(12, 17, 23, 0.24);
-  backdrop-filter: blur(24px) saturate(165%);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.12),
-    inset 0 -12px 18px rgba(3, 6, 9, 0.16),
-    0 10px 24px rgba(0, 0, 0, 0.1);
-}
-
-.light .dashboard-toolbar .status-pill {
-  border-color: rgba(255, 255, 255, 0.52);
-  background:
-    radial-gradient(circle at 18% 20%, rgba(255, 255, 255, 0.92), transparent 36%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.78), rgba(255, 255, 255, 0.42) 48%, rgba(255, 255, 255, 0.24) 100%),
-    rgba(244, 248, 245, 0.28);
-  backdrop-filter: blur(24px) saturate(185%);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.82),
-    inset 0 -14px 18px rgba(197, 209, 205, 0.18),
-    0 12px 28px rgba(28, 38, 42, 0.08);
-}
-
 .theme-switcher {
   position: relative;
 }
@@ -396,15 +393,27 @@ body::after {
   right: 0;
   top: calc(100% + 0.7rem);
   min-width: 164px;
+  isolation: isolate;
+  overflow: hidden;
   padding: 0.4rem;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--liquid-border);
   border-radius: 18px;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 40%),
-    var(--bg-panel-soft);
-  backdrop-filter: blur(18px);
-  box-shadow: var(--shadow-panel);
+  background: var(--liquid-surface);
+  backdrop-filter: var(--liquid-backdrop);
+  box-shadow: var(--liquid-shadow);
   z-index: 20;
+}
+
+.toolbar-brand > *,
+.status-pill > *,
+.theme-menu > *,
+.glass-card > *,
+.process-row > *,
+.mobile-stat-card > *,
+.signal-icon > *,
+.shortcut-icon-wrap > * {
+  position: relative;
+  z-index: 1;
 }
 
 .theme-menu-item {
@@ -591,10 +600,16 @@ body::after {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   height: 2.1rem;
   width: 2.1rem;
   border-radius: 14px;
-  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--liquid-border);
+  background: var(--liquid-surface);
+  backdrop-filter: var(--liquid-backdrop);
+  box-shadow: var(--liquid-shadow);
 }
 
 .signal-value {
@@ -614,30 +629,16 @@ body::after {
 .glass-card {
   position: relative;
   overflow: hidden;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--liquid-border);
   border-radius: 24px;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.018) 34%, rgba(255, 255, 255, 0.01) 100%),
-    linear-gradient(145deg, rgba(13, 19, 24, 0.78), rgba(8, 12, 16, 0.54));
-  backdrop-filter: blur(22px) saturate(128%);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.06),
-    0 18px 40px rgba(0, 0, 0, 0.2);
+  background: var(--liquid-surface);
+  backdrop-filter: var(--liquid-backdrop);
+  box-shadow: var(--liquid-shadow);
   transition:
     transform 0.2s ease,
     border-color 0.2s ease,
     box-shadow 0.2s ease,
     background 0.2s ease;
-}
-
-.glass-card::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.035), transparent 24%),
-    radial-gradient(circle at top left, rgba(255, 255, 255, 0.03), transparent 30%);
-  pointer-events: none;
 }
 
 .glass-card:hover {
@@ -646,27 +647,6 @@ body::after {
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.08),
     0 22px 46px rgba(0, 0, 0, 0.24);
-}
-
-.light .glass-card {
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.62), rgba(255, 255, 255, 0.3) 34%, rgba(255, 255, 255, 0.22) 100%),
-    linear-gradient(145deg, rgba(246, 249, 245, 0.68), rgba(230, 236, 232, 0.46));
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.72),
-    0 18px 34px rgba(28, 38, 42, 0.08);
-}
-
-.light .glass-card::before {
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.34), transparent 24%),
-    radial-gradient(circle at top left, rgba(255, 255, 255, 0.24), transparent 32%);
-}
-
-.light .glass-card:hover {
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.78),
-    0 22px 40px rgba(28, 38, 42, 0.1);
 }
 
 .surface-title {
@@ -727,8 +707,12 @@ body::after {
 .network-row,
 .mobile-stat-card,
 .process-row {
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  background: rgba(255, 255, 255, 0.025);
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--liquid-border);
+  background: var(--liquid-surface);
+  backdrop-filter: var(--liquid-backdrop);
+  box-shadow: var(--liquid-shadow);
 }
 
 .network-speed-list {
@@ -802,8 +786,7 @@ body::after {
   min-height: auto;
   flex-direction: column;
   gap: 0.7rem;
-  padding: 0.95rem 3.35rem 0.95rem 0.95rem;
-  transition: padding-right 0.18s ease;
+  padding: 0.95rem 0.95rem 0.95rem 0.95rem;
 }
 
 .shortcut-column {
@@ -851,16 +834,18 @@ body::after {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   height: 2.65rem;
   width: 2.65rem;
   border-radius: 16px;
+  border: 1px solid var(--liquid-border);
   background:
-    radial-gradient(circle at 28% 24%, rgba(87, 208, 239, 0.18), transparent 40%),
-    linear-gradient(145deg, rgba(19, 28, 36, 0.94), rgba(10, 15, 19, 0.92));
-  border: 1px solid rgba(87, 208, 239, 0.16);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.08),
-    0 12px 24px rgba(0, 0, 0, 0.16);
+    radial-gradient(circle at 28% 24%, rgba(87, 208, 239, 0.12), transparent 40%),
+    var(--liquid-surface);
+  backdrop-filter: var(--liquid-backdrop);
+  box-shadow: var(--liquid-shadow);
 }
 
 .shortcut-icon-wrap svg {
@@ -870,16 +855,18 @@ body::after {
 
 .light .shortcut-icon-wrap {
   background:
-    radial-gradient(circle at 24% 24%, rgba(185, 121, 34, 0.12), transparent 40%),
-    linear-gradient(145deg, rgba(248, 250, 246, 0.96), rgba(229, 235, 231, 0.96));
-  border-color: rgba(24, 33, 37, 0.1);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.62),
-    0 10px 20px rgba(28, 38, 42, 0.08);
+    radial-gradient(circle at 24% 24%, rgba(185, 121, 34, 0.1), transparent 40%),
+    var(--liquid-surface);
 }
 
 .light .shortcut-icon-wrap svg {
   color: rgba(17, 24, 28, 0.84);
+}
+
+.shortcut-card-copy {
+  flex: 1 1 auto;
+  max-width: calc(100% - 3rem);
+  transition: max-width 0.18s ease;
 }
 
 .shortcut-name {
@@ -990,9 +977,9 @@ body::after {
   transition: opacity 0.18s ease, transform 0.18s ease;
 }
 
-.shortcut-sort-item:hover .shortcut-card,
-.shortcut-sort-item:focus-within .shortcut-card {
-  padding-right: 6.6rem;
+.shortcut-sort-item:hover .shortcut-card-copy,
+.shortcut-sort-item:focus-within .shortcut-card-copy {
+  max-width: calc(100% - 7rem);
 }
 
 .shortcut-sort-item:hover .shortcut-card-secondary-actions,
@@ -1057,6 +1044,10 @@ body::after {
     padding-right: 0.95rem;
   }
 
+  .shortcut-card-copy {
+    max-width: 100%;
+  }
+
   .shortcut-card-actions {
     position: static;
     margin-top: 0.2rem;
@@ -1069,9 +1060,9 @@ body::after {
     pointer-events: auto;
   }
 
-  .shortcut-sort-item:hover .shortcut-card,
-  .shortcut-sort-item:focus-within .shortcut-card {
-    padding-right: 0.95rem;
+  .shortcut-sort-item:hover .shortcut-card-copy,
+  .shortcut-sort-item:focus-within .shortcut-card-copy {
+    max-width: 100%;
   }
 }
 
