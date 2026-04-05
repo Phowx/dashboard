@@ -231,12 +231,31 @@ function DashboardApp() {
 
       <main className="relative pb-10 pt-4">
         <div className="mx-auto max-w-[1480px] px-4 xl:px-6">
-          <div className="grid items-start gap-4 xl:gap-5 min-[1380px]:grid-cols-[minmax(0,1fr)_280px]">
+          <div className="grid items-start gap-4 xl:gap-5 min-[1380px]:grid-cols-[280px_minmax(0,1fr)]">
+            <m.section
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.45, delay: 0.14 }}
+              className="min-w-0 min-[1380px]:self-start"
+            >
+              <Suspense
+                fallback={
+                  <SectionFallback
+                    title="Launchpad Loading"
+                    description="Preparing the shortcuts panel."
+                    minHeight="min-h-[360px]"
+                  />
+                }
+              >
+                <Shortcuts />
+              </Suspense>
+            </m.section>
+
             <div className="min-w-0 grid gap-4 xl:gap-5">
               <m.section
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.45, delay: 0.16 }}
+                transition={{ duration: 0.45, delay: 0.18 }}
               >
                 <SystemMonitor />
               </m.section>
@@ -259,25 +278,6 @@ function DashboardApp() {
                 </Suspense>
               </m.section>
             </div>
-
-            <m.section
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.45, delay: 0.22 }}
-              className="min-w-0 min-[1380px]:self-start"
-            >
-              <Suspense
-                fallback={
-                  <SectionFallback
-                    title="Launchpad Loading"
-                    description="Preparing the shortcuts panel."
-                    minHeight="min-h-[360px]"
-                  />
-                }
-              >
-                <Shortcuts />
-              </Suspense>
-            </m.section>
           </div>
         </div>
       </main>

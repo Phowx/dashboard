@@ -134,6 +134,80 @@ function ShortcutCard({ shortcut, onClick, onEdit, onDelete, index, onDragStart,
   );
 }
 
+function MobileShortcutTile({
+  shortcut,
+  onOpen,
+  onDelete,
+  index,
+  onDragStart,
+  onDragEnd,
+  editMode,
+}) {
+  const Icon = ICONS[shortcut.icon] || Globe;
+  const dragControls = useDragControls();
+
+  return (
+    <Reorder.Item
+      value={shortcut}
+      dragListener={false}
+      dragControls={dragControls}
+      onDragStart={() => onDragStart(shortcut.id)}
+      onDragEnd={onDragEnd}
+      initial={{ opacity: 0, scale: 0.92, y: 10 }}
+      animate={{ opacity: 1, scale: 1, y: 0 }}
+      exit={{ opacity: 0, scale: 0.92, y: 10 }}
+      transition={{ delay: index * 0.03 }}
+      layout
+      whileDrag={{ scale: 1.03, zIndex: 14 }}
+      className="shortcut-mobile-item relative list-none"
+    >
+      <m.button
+        whileTap={{ scale: 0.97 }}
+        onClick={() => onOpen(shortcut)}
+        className={`glass-card shortcut-mobile-tile w-full text-center ${editMode ? 'shortcut-mobile-tile-editing' : ''}`}
+        type="button"
+      >
+        <div className="shortcut-icon-wrap shortcut-mobile-icon">
+          <Icon className="h-4 w-4 text-white" />
+        </div>
+        <p className="shortcut-mobile-label">{shortcut.name}</p>
+      </m.button>
+
+      {editMode ? (
+        <>
+          <m.button
+            whileTap={{ scale: 0.94 }}
+            onClick={event => {
+              event.stopPropagation();
+              onDelete(shortcut.id);
+            }}
+            className="shortcut-mobile-badge shortcut-mobile-delete"
+            type="button"
+            aria-label={`Delete ${shortcut.name}`}
+          >
+            <Trash2 className="h-3 w-3" />
+          </m.button>
+
+          <m.button
+            whileTap={{ scale: 0.94 }}
+            onPointerDown={event => {
+              event.preventDefault();
+              event.stopPropagation();
+              dragControls.start(event);
+            }}
+            onClick={event => event.stopPropagation()}
+            className="shortcut-mobile-badge shortcut-mobile-drag"
+            type="button"
+            aria-label={`Reorder ${shortcut.name}`}
+          >
+            <GripVertical className="h-3 w-3" />
+          </m.button>
+        </>
+      ) : null}
+    </Reorder.Item>
+  );
+}
+
 function ShortcutModal({ isOpen, onClose, onSubmit, formData, setFormData, isEditing }) {
   if (!isOpen) return null;
 
@@ -261,6 +335,7 @@ export default function Shortcuts() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [draggingId, setDraggingId] = useState(null);
+  const [mobileEditMode, setMobileEditMode] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     icon: 'globe',
@@ -410,47 +485,93 @@ export default function Shortcuts() {
     <div className="glass-card flex h-full min-h-0 flex-col p-4 sm:p-5 xl:p-6">
       <div className="shortcut-panel-header">
         <span className="section-kicker">LAUNCHPAD</span>
+        <div className="shortcut-panel-controls">
+          <m.button
+            whileTap={{ scale: 0.96 }}
+            onClick={() => setMobileEditMode(previous => !previous)}
+            className={`shortcut-edit-toggle md:hidden ${mobileEditMode ? 'shortcut-edit-toggle-active' : ''}`}
+            type="button"
+            aria-label={mobileEditMode ? 'Exit edit mode' : 'Enter edit mode'}
+          >
+            <Edit2 className="h-3.5 w-3.5" />
+          </m.button>
 
-        <m.button
-          whileHover={{ scale: 1.04 }}
-          whileTap={{ scale: 0.96 }}
-          onClick={openAddModal}
-          className="shortcut-add-button"
-          type="button"
-          aria-label="Add link"
-        >
-          <Plus className="h-3.5 w-3.5" />
-        </m.button>
+          <m.button
+            whileHover={{ scale: 1.04 }}
+            whileTap={{ scale: 0.96 }}
+            onClick={openAddModal}
+            className="shortcut-add-button"
+            type="button"
+            aria-label="Add link"
+          >
+            <Plus className="h-3.5 w-3.5" />
+          </m.button>
+        </div>
       </div>
 
       <div className="shortcut-column flex min-h-0 flex-1 flex-col">
         {shortcuts.length > 0 ? (
-          <Reorder.Group
-            axis="y"
-            values={shortcuts}
-            onReorder={setShortcuts}
-            className="shortcut-reorder-list"
-          >
-            <AnimatePresence>
-              {shortcuts.map((shortcut, index) => (
-                <ShortcutCard
-                  key={shortcut.id}
-                  shortcut={shortcut}
-                  index={index}
-                  onClick={() => {
-                    if (draggingId) {
-                      return;
-                    }
-                    handleShortcutClick(shortcut);
-                  }}
-                  onEdit={openEditModal}
-                  onDelete={handleDelete}
-                  onDragStart={setDraggingId}
-                  onDragEnd={handleReorderEnd}
-                />
-              ))}
-            </AnimatePresence>
-          </Reorder.Group>
+          <>
+            <Reorder.Group
+              axis="y"
+              values={shortcuts}
+              onReorder={setShortcuts}
+              className="shortcut-reorder-list hidden md:grid"
+            >
+              <AnimatePresence>
+                {shortcuts.map((shortcut, index) => (
+                  <ShortcutCard
+                    key={`desktop-${shortcut.id}`}
+                    shortcut={shortcut}
+                    index={index}
+                    onClick={() => {
+                      if (draggingId) {
+                        return;
+                      }
+                      handleShortcutClick(shortcut);
+                    }}
+                    onEdit={openEditModal}
+                    onDelete={handleDelete}
+                    onDragStart={setDraggingId}
+                    onDragEnd={handleReorderEnd}
+                  />
+                ))}
+              </AnimatePresence>
+            </Reorder.Group>
+
+            <Reorder.Group
+              axis="y"
+              values={shortcuts}
+              onReorder={setShortcuts}
+              className="shortcut-mobile-grid md:hidden"
+            >
+              <AnimatePresence>
+                {shortcuts.map((shortcut, index) => (
+                  <MobileShortcutTile
+                    key={`mobile-${shortcut.id}`}
+                    shortcut={shortcut}
+                    index={index}
+                    editMode={mobileEditMode}
+                    onOpen={item => {
+                      if (draggingId) {
+                        return;
+                      }
+
+                      if (mobileEditMode) {
+                        openEditModal(item);
+                        return;
+                      }
+
+                      handleShortcutClick(item);
+                    }}
+                    onDelete={handleDelete}
+                    onDragStart={setDraggingId}
+                    onDragEnd={handleReorderEnd}
+                  />
+                ))}
+              </AnimatePresence>
+            </Reorder.Group>
+          </>
         ) : (
           <m.div className="flex flex-1 flex-col items-center justify-center py-10 text-center" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
             <div
