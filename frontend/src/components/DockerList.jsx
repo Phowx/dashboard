@@ -8,7 +8,6 @@ import {
   RefreshCw,
   RotateCcw,
   Square,
-  Trash2,
   X,
 } from 'lucide-react';
 import { AnimatePresence, m } from 'framer-motion';
@@ -62,12 +61,11 @@ function ConfirmModal({ isOpen, onClose, onConfirm, containerName, action, isLoa
     start: { label: 'Start', color: 'var(--accent-green)', icon: Play },
     stop: { label: 'Stop', color: 'var(--accent-red)', icon: Square },
     restart: { label: 'Restart', color: 'var(--accent-cyan)', icon: RotateCcw },
-    remove: { label: 'Remove', color: 'var(--accent-red)', icon: Trash2 },
   };
 
   const config = actionConfig[action] || actionConfig.stop;
   const Icon = config.icon;
-  const isDanger = action === 'remove' || action === 'stop';
+  const isDanger = action === 'stop';
 
   return createPortal(
     <AnimatePresence>
@@ -143,7 +141,6 @@ function ActionButton({ action, onClick, loading, disabled }) {
     start: { icon: Play, color: 'var(--accent-green)', title: 'Start' },
     stop: { icon: Square, color: 'var(--accent-red)', title: 'Stop' },
     restart: { icon: RotateCcw, color: 'var(--accent-cyan)', title: 'Restart' },
-    remove: { icon: Trash2, color: 'var(--accent-red)', title: 'Remove' },
   }[action];
 
   const Icon = config.icon;
@@ -396,11 +393,6 @@ function DockerList() {
                     onClick={() => openConfirm(container, 'restart')}
                     loading={actionLoading === `${container.id}-restart`}
                   />
-                  <ActionButton
-                    action="remove"
-                    onClick={() => openConfirm(container, 'remove')}
-                    loading={actionLoading === `${container.id}-remove`}
-                  />
                 </div>
               </div>
             ))}
@@ -506,11 +498,6 @@ function DockerList() {
                           action="restart"
                           onClick={() => openConfirm(container, 'restart')}
                           loading={actionLoading === `${container.id}-restart`}
-                        />
-                        <ActionButton
-                          action="remove"
-                          onClick={() => openConfirm(container, 'remove')}
-                          loading={actionLoading === `${container.id}-remove`}
                         />
                       </div>
                     </td>
