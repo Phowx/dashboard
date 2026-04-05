@@ -11,7 +11,6 @@ import {
 } from 'lucide-react';
 import { AnimatePresence, domAnimation, LazyMotion, m } from 'framer-motion';
 import SystemMonitor from './components/SystemMonitor';
-import LiquidSurface from './components/LiquidSurface';
 import { LiveMetricsProvider, useLiveMetrics } from './context/LiveMetricsContext';
 
 const DockerList = lazy(() => import('./components/DockerList'));
@@ -151,53 +150,49 @@ function DashboardApp() {
         <div className="mx-auto max-w-[1480px] px-4 xl:px-6">
           <div className="dashboard-toolbar">
             <div className="toolbar-brand-lane">
-              <LiquidSurface variant="toolbarBrand" className="toolbar-brand-liquid" contentClassName="toolbar-brand-content">
+              <div className="toolbar-brand">
                 <div className="brand-mark">
                   <DashboardMark />
                 </div>
                 <span className="section-kicker">DASHBOARD</span>
-              </LiquidSurface>
+              </div>
             </div>
 
             <div className="toolbar-controls">
-              <LiquidSurface variant="toolbarPill" className="toolbar-pill-liquid" contentClassName="toolbar-pill-content">
+              <div className="status-pill toolbar-pill">
                 <Clock3 className="h-3.5 w-3.5" />
                 <strong>{formatUptimeCompact(uptime)}</strong>
-              </LiquidSurface>
+              </div>
 
-              <LiquidSurface variant="toolbarIcon" className="toolbar-icon-liquid" contentClassName="toolbar-icon-content">
-                <span aria-label={wsStatus === 'connected' ? 'Connected' : 'Reconnecting'}>
-                  {wsStatus === 'connected' ? (
-                    <Wifi className="h-3.5 w-3.5 live-indicator" style={{ color: 'var(--accent-green)' }} />
-                  ) : (
-                    <WifiOff className="h-3.5 w-3.5" style={{ color: 'var(--accent-red)' }} />
-                  )}
-                </span>
-              </LiquidSurface>
+              <div className="status-pill toolbar-icon-pill" aria-label={wsStatus === 'connected' ? 'Connected' : 'Reconnecting'}>
+                {wsStatus === 'connected' ? (
+                  <Wifi className="h-3.5 w-3.5 live-indicator" style={{ color: 'var(--accent-green)' }} />
+                ) : (
+                  <WifiOff className="h-3.5 w-3.5" style={{ color: 'var(--accent-red)' }} />
+                )}
+              </div>
 
               <div className="theme-switcher" ref={themeMenuRef}>
-                <LiquidSurface variant="toolbarIcon" className="toolbar-icon-liquid" contentClassName="toolbar-icon-button-shell">
-                  <m.button
-                    whileHover={{ scale: 1.04 }}
-                    whileTap={{ scale: 0.96 }}
-                    onClick={() => setThemeMenuOpen(prev => !prev)}
-                    className="toolbar-icon-button transition-colors"
-                    aria-label="Open theme menu"
-                    type="button"
-                  >
-                    <AnimatePresence mode="wait">
-                      <m.span
-                        key={themePreference}
-                        initial={{ rotate: -30, opacity: 0 }}
-                        animate={{ rotate: 0, opacity: 1 }}
-                        exit={{ rotate: 30, opacity: 0 }}
-                        transition={{ duration: 0.2 }}
-                      >
-                        {themeButtonIcon}
-                      </m.span>
-                    </AnimatePresence>
-                  </m.button>
-                </LiquidSurface>
+                <m.button
+                  whileHover={{ scale: 1.04 }}
+                  whileTap={{ scale: 0.96 }}
+                  onClick={() => setThemeMenuOpen(prev => !prev)}
+                  className="status-pill toolbar-icon-pill transition-colors"
+                  aria-label="Open theme menu"
+                  type="button"
+                >
+                  <AnimatePresence mode="wait">
+                    <m.span
+                      key={themePreference}
+                      initial={{ rotate: -30, opacity: 0 }}
+                      animate={{ rotate: 0, opacity: 1 }}
+                      exit={{ rotate: 30, opacity: 0 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      {themeButtonIcon}
+                    </m.span>
+                  </AnimatePresence>
+                </m.button>
 
                 <AnimatePresence>
                   {themeMenuOpen ? (

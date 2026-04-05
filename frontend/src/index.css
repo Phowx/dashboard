@@ -371,84 +371,6 @@ body::after {
   padding: 0.48rem 0;
 }
 
-.liquid-surface {
-  display: block;
-  min-width: 0;
-}
-
-.liquid-surface .glass {
-  width: 100%;
-}
-
-.liquid-surface-content {
-  width: 100%;
-}
-
-.toolbar-brand-liquid,
-.toolbar-pill-liquid,
-.toolbar-icon-liquid,
-.shortcut-add-liquid,
-.modal-close-liquid {
-  width: fit-content;
-}
-
-.toolbar-brand-content {
-  display: inline-flex;
-  min-width: 176px;
-  align-items: center;
-  gap: 0.85rem;
-  padding: 0.36rem 0.7rem 0.36rem 0.36rem;
-}
-
-.toolbar-pill-content {
-  display: inline-flex;
-  min-width: 110px;
-  align-items: center;
-  justify-content: center;
-  gap: 0.56rem;
-  padding: 0.7rem 0.95rem;
-  color: var(--text-secondary);
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
-.toolbar-pill-content strong {
-  font-family: var(--font-body);
-  font-size: 0.84rem;
-  letter-spacing: 0;
-  text-transform: none;
-  color: var(--text-primary);
-}
-
-.toolbar-icon-content,
-.toolbar-icon-button-shell {
-  display: inline-flex;
-  height: 46px;
-  width: 46px;
-  align-items: center;
-  justify-content: center;
-  color: var(--text-secondary);
-}
-
-.toolbar-icon-button,
-.modal-close-button {
-  display: inline-flex;
-  height: 100%;
-  width: 100%;
-  align-items: center;
-  justify-content: center;
-  border: 0;
-  background: transparent;
-  color: var(--text-secondary);
-}
-
-.toolbar-icon-button:hover,
-.modal-close-button:hover {
-  color: var(--text-primary);
-}
-
 .section-kicker,
 .signal-label,
 .mono-type {
@@ -910,25 +832,6 @@ body::after {
   padding: 0.95rem 0.95rem 0.95rem 0.95rem;
 }
 
-.shortcut-panel-liquid,
-.shortcut-card-liquid,
-.shortcut-modal-liquid,
-.docker-modal-liquid {
-  width: 100%;
-}
-
-.shortcut-panel-liquid {
-  height: 100%;
-}
-
-.shortcut-panel-inner {
-  display: flex;
-  height: 100%;
-  min-height: 100%;
-  flex-direction: column;
-  padding: 1rem 1rem 1rem 1rem;
-}
-
 .shortcut-column {
   min-height: 0;
 }
@@ -954,11 +857,6 @@ body::after {
   margin-bottom: 1rem;
 }
 
-.shortcut-card-shell {
-  position: relative;
-  width: 100%;
-}
-
 .shortcut-card-top,
 .shortcut-card-bottom {
   display: flex;
@@ -969,18 +867,6 @@ body::after {
 
 .shortcut-card-top {
   flex-wrap: nowrap;
-}
-
-.shortcut-card-button {
-  border: 0;
-  background: transparent;
-}
-
-.shortcut-card-button:focus-visible,
-.shortcut-add-button:focus-visible,
-.toolbar-icon-button:focus-visible,
-.modal-close-button:focus-visible {
-  outline: none;
 }
 
 .shortcut-card-bottom {
@@ -1131,14 +1017,6 @@ body::after {
   color: var(--accent-cyan);
 }
 
-.shortcut-add-shell {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 1.75rem;
-  height: 1.75rem;
-}
-
 .shortcut-card-actions {
   position: absolute;
   right: 0.82rem;
@@ -1205,19 +1083,6 @@ body::after {
   color: var(--accent-red);
 }
 
-.shortcut-modal-shell,
-.docker-modal-shell {
-  overflow: hidden;
-}
-
-.modal-close-shell {
-  display: inline-flex;
-  height: 2.6rem;
-  width: 2.6rem;
-  align-items: center;
-  justify-content: center;
-}
-
 @media (max-width: 767px) {
   .dashboard-toolbar {
     grid-template-columns: minmax(0, 1fr) auto;
@@ -1235,12 +1100,6 @@ body::after {
   }
 
   .toolbar-brand {
-    min-width: 132px;
-    gap: 0.55rem;
-    padding: 0.28rem 0.58rem 0.28rem 0.28rem;
-  }
-
-  .toolbar-brand-content {
     min-width: 132px;
     gap: 0.55rem;
     padding: 0.28rem 0.58rem 0.28rem 0.28rem;
@@ -1268,18 +1127,7 @@ body::after {
     min-width: auto;
   }
 
-  .toolbar-pill-content {
-    min-width: auto;
-    padding: 0.58rem 0.78rem;
-  }
-
   .toolbar-icon-pill {
-    width: 40px;
-    height: 40px;
-  }
-
-  .toolbar-icon-content,
-  .toolbar-icon-button-shell {
     width: 40px;
     height: 40px;
   }
@@ -1294,10 +1142,6 @@ body::after {
   .shortcut-card {
     padding-right: 5.9rem;
     min-height: 88px;
-  }
-
-  .shortcut-panel-inner {
-    padding: 0.95rem;
   }
 
   .shortcut-card-copy {

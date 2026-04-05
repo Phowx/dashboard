@@ -11,7 +11,6 @@ import {
   X,
 } from 'lucide-react';
 import { AnimatePresence, m } from 'framer-motion';
-import LiquidSurface from './LiquidSurface';
 
 const STACK_TONES = [
   { color: 'var(--accent-cyan)', bg: 'rgba(87, 208, 239, 0.12)', border: 'rgba(87, 208, 239, 0.26)' },
@@ -83,59 +82,53 @@ function ConfirmModal({ isOpen, onClose, onConfirm, containerName, action, isLoa
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.94, y: 22 }}
           transition={{ type: 'spring', stiffness: 280, damping: 26 }}
-          className="w-full max-w-md"
+          className="glass-card w-full max-w-md overflow-hidden"
           onClick={event => event.stopPropagation()}
         >
-          <LiquidSurface variant="modal" className="docker-modal-liquid" contentClassName="docker-modal-shell">
-            <div className="overflow-hidden">
-              <div className="border-b p-5" style={{ borderColor: 'var(--border-color)' }}>
-                <div className="mb-4 flex items-center justify-between">
-                  <span className="section-kicker">CONTAINER ACTION</span>
-                  <LiquidSurface variant="closeButton" className="modal-close-liquid" contentClassName="modal-close-shell">
-                    <button type="button" onClick={onClose} className="modal-close-button">
-                      <X className="h-3.5 w-3.5" />
-                    </button>
-                  </LiquidSurface>
-                </div>
+          <div className="border-b p-5" style={{ borderColor: 'var(--border-color)' }}>
+            <div className="mb-4 flex items-center justify-between">
+              <span className="section-kicker">CONTAINER ACTION</span>
+              <button type="button" onClick={onClose} className="status-pill">
+                <X className="h-3.5 w-3.5" />
+              </button>
+            </div>
 
-                <div className="flex items-start gap-4">
-                  <div
-                    className="signal-icon"
-                    style={{
-                      color: config.color,
-                      background: isDanger ? 'rgba(240, 122, 99, 0.12)' : 'rgba(77, 180, 200, 0.12)',
-                    }}
-                  >
-                    {isDanger ? <AlertTriangle className="h-4 w-4" /> : <Icon className="h-4 w-4" />}
-                  </div>
-                  <div>
-                    <h3 className="surface-title text-[1.6rem]">{config.label} Container</h3>
-                    <p className="mt-2 text-sm leading-6" style={{ color: 'var(--text-secondary)' }}>
-                      This will <span style={{ color: config.color }}>{config.label.toLowerCase()}</span>{' '}
-                      <strong style={{ color: 'var(--text-primary)' }}>{containerName}</strong>.
-                    </p>
-                  </div>
-                </div>
+            <div className="flex items-start gap-4">
+              <div
+                className="signal-icon"
+                style={{
+                  color: config.color,
+                  background: isDanger ? 'rgba(240, 122, 99, 0.12)' : 'rgba(77, 180, 200, 0.12)',
+                }}
+              >
+                {isDanger ? <AlertTriangle className="h-4 w-4" /> : <Icon className="h-4 w-4" />}
               </div>
-
-              <div className="flex gap-3 p-5">
-                <m.button whileTap={{ scale: 0.98 }} onClick={onClose} disabled={isLoading} className="btn-secondary flex-1">
-                  Cancel
-                </m.button>
-                <m.button
-                  whileTap={{ scale: 0.98 }}
-                  onClick={onConfirm}
-                  disabled={isLoading}
-                  className="btn-primary flex flex-1 items-center justify-center gap-2"
-                  type="button"
-                  style={{ opacity: isLoading ? 0.75 : 1 }}
-                >
-                  {isLoading ? <RefreshCw className="h-4 w-4 animate-spin" /> : <Icon className="h-4 w-4" />}
-                  Confirm
-                </m.button>
+              <div>
+                <h3 className="surface-title text-[1.6rem]">{config.label} Container</h3>
+                <p className="mt-2 text-sm leading-6" style={{ color: 'var(--text-secondary)' }}>
+                  This will <span style={{ color: config.color }}>{config.label.toLowerCase()}</span>{' '}
+                  <strong style={{ color: 'var(--text-primary)' }}>{containerName}</strong>.
+                </p>
               </div>
             </div>
-          </LiquidSurface>
+          </div>
+
+          <div className="flex gap-3 p-5">
+            <m.button whileTap={{ scale: 0.98 }} onClick={onClose} disabled={isLoading} className="btn-secondary flex-1">
+              Cancel
+            </m.button>
+            <m.button
+              whileTap={{ scale: 0.98 }}
+              onClick={onConfirm}
+              disabled={isLoading}
+              className="btn-primary flex flex-1 items-center justify-center gap-2"
+              type="button"
+              style={{ opacity: isLoading ? 0.75 : 1 }}
+            >
+              {isLoading ? <RefreshCw className="h-4 w-4 animate-spin" /> : <Icon className="h-4 w-4" />}
+              Confirm
+            </m.button>
+          </div>
         </m.div>
       </m.div>
     </AnimatePresence>,
