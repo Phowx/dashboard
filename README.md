@@ -54,25 +54,37 @@ npm run install:all
 npm run build
 ```
 
-### 2. 使用 systemd 托管
+### 2. 使用脚本安装 systemd 服务
 
-仓库里提供了示例服务文件 [deploy/systemd/dashboard.service](deploy/systemd/dashboard.service) 和启动脚本 [scripts/run-dashboard.sh](scripts/run-dashboard.sh)。
+仓库里提供了启动脚本 [scripts/run-dashboard.sh](scripts/run-dashboard.sh) 和一键安装脚本 [scripts/setup-systemd.sh](scripts/setup-systemd.sh)。
 
-建议部署目录示例：`/opt/dashboard`
-
-1. 把仓库放到服务器目录，例如 `/opt/dashboard`
-2. 根据实际情况修改 `deploy/systemd/dashboard.service` 里的：
-   - `User`
-   - `Group`
-   - `WorkingDirectory`
-   - `ExecStart`
-3. 复制服务文件到 systemd：
+最简单的方式：
 
 ```bash
-sudo cp deploy/systemd/dashboard.service /etc/systemd/system/dashboard.service
-sudo systemctl daemon-reload
-sudo systemctl enable --now dashboard
+./scripts/setup-systemd.sh --install-dir /opt/dashboard --service-user your-user
 ```
+
+这个脚本会自动：
+
+- 检查当前系统是不是 Linux + systemd
+- 检查 `node`、`npm`、`systemctl`
+- 输出 Node、npm、systemd、部署目录等环境信息
+- 检查 Docker socket 是否存在，以及服务用户是否大概率有 Docker 权限
+- 安装依赖
+- 构建前端
+- 生成 `/etc/systemd/system/dashboard.service`
+- 自动执行 `daemon-reload`、`enable` 和 `start`
+
+常用参数：
+
+```bash
+./scripts/setup-systemd.sh --service-name dashboard
+./scripts/setup-systemd.sh --install-dir /opt/dashboard --service-user mars
+./scripts/setup-systemd.sh --skip-install --skip-build
+./scripts/setup-systemd.sh --write-only
+```
+
+如果你更喜欢手动方式，也可以参考示例 unit 文件 [deploy/systemd/dashboard.service](deploy/systemd/dashboard.service)。
 
 ### 3. 常用命令
 
@@ -85,5 +97,6 @@ sudo journalctl -u dashboard -f
 ### 4. 注意事项
 
 - `scripts/run-dashboard.sh` 会检查 `frontend/dist` 是否存在，如果没有先构建会直接退出。
+- `scripts/setup-systemd.sh` 默认会调用 `npm run install:all` 和 `npm run build`。
 - 如果你用 Docker 套接字读取容器状态，运行该服务的用户需要有 Docker 权限。
-- 如果服务器上的 `node` 不在 systemd 的默认 PATH 里，把 `ExecStart` 改成你的 Node 绝对路径，或者直接在脚本里写死。
+- 安装脚本会把当前 `node` 的绝对路径写进 systemd 环境里，尽量避免 PATH 问题。
