@@ -298,32 +298,19 @@ function DockerList() {
   return (
     <div className="glass-card overflow-hidden">
       <div className="border-b p-3.5 sm:p-5 xl:p-6" style={{ borderColor: 'var(--border-color)' }}>
-        <div className="flex flex-col gap-3 xl:flex-row xl:items-start xl:justify-between">
-          <div>
-            <span className="section-kicker">CONTAINERS</span>
+        <div className="flex items-center justify-between gap-3">
+          <span className="section-kicker">CONTAINERS</span>
+
+          <div className="flex items-center gap-2 overflow-x-auto pb-1">
+            <span className="status-pill shrink-0 docker-summary-pill" style={{ color: 'var(--accent-green)' }}>
+              <strong>{stats.running}</strong>
+              <span>Running</span>
+            </span>
+            <span className="status-pill shrink-0 docker-summary-pill" style={{ color: 'var(--accent-red)' }}>
+              <strong>{stats.stopped}</strong>
+              <span>Stopped</span>
+            </span>
           </div>
-        </div>
-
-        <div className="mt-4 hidden flex-wrap gap-2 md:flex">
-          <span className="status-pill" style={{ color: 'var(--accent-green)' }}>
-            <strong>{stats.running}</strong>
-            <span>Running</span>
-          </span>
-          <span className="status-pill" style={{ color: 'var(--accent-red)' }}>
-            <strong>{stats.stopped}</strong>
-            <span>Stopped</span>
-          </span>
-        </div>
-
-        <div className="mt-4 flex items-center gap-2 overflow-x-auto pb-1 md:hidden">
-          <span className="status-pill shrink-0" style={{ color: 'var(--accent-green)' }}>
-            <strong>{stats.running}</strong>
-            <span>Running</span>
-          </span>
-          <span className="status-pill shrink-0" style={{ color: 'var(--accent-red)' }}>
-            <strong>{stats.stopped}</strong>
-            <span>Stopped</span>
-          </span>
         </div>
       </div>
 
