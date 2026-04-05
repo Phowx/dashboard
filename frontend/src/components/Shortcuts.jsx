@@ -76,13 +76,6 @@ function ShortcutCard({ shortcut, onClick, onEdit, onDelete, index }) {
           </div>
           <span className="status-pill">{shortcut.type === 'url' ? 'URL' : '命令'}</span>
         </div>
-
-        <div className="shortcut-card-bottom">
-          <p className="shortcut-caption">
-            {shortcut.type === 'url' ? '一键直达服务面板' : '保留一条随手可用的终端命令'}
-          </p>
-          <span className="shortcut-trace">{shortcut.type === 'url' ? 'Open Link' : 'View Command'}</span>
-        </div>
       </m.button>
 
       <div className="absolute right-3 top-3 flex gap-1.5 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
@@ -365,9 +358,6 @@ export default function Shortcuts() {
             </div>
             <h2 className="surface-title">快捷入口</h2>
           </div>
-          <p className="mt-3 max-w-md text-sm leading-6" style={{ color: 'var(--text-secondary)' }}>
-            这里不再做大卡片装饰，而是像工具架一样排出高频入口。点进去快，扫一眼也知道它通向哪里。
-          </p>
         </div>
 
         <m.button whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }} onClick={openAddModal} className="btn-primary self-start" type="button">
@@ -383,7 +373,7 @@ export default function Shortcuts() {
         </span>
       </div>
 
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2">
+      <div className="grid grid-cols-1 gap-3">
         <AnimatePresence>
           {shortcuts.map((shortcut, index) => (
             <ShortcutCard
@@ -407,7 +397,7 @@ export default function Shortcuts() {
             <Link className="h-6 w-6" style={{ color: 'var(--text-muted)' }} />
           </div>
           <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-            先加一个常用入口，让控制台更像你自己的桌面。
+            暂无快捷入口
           </p>
         </m.div>
       )}

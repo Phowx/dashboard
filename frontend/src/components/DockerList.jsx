@@ -247,9 +247,6 @@ function DockerList() {
               </div>
               <h2 className="surface-title">Docker 舱段</h2>
             </div>
-            <p className="mt-3 max-w-3xl text-sm leading-6" style={{ color: 'var(--text-secondary)' }}>
-              这里只保留最常用的动作和最关键的读数。目标不是取代 Portainer，而是让你在这块就能先做出第一反应。
-            </p>
           </div>
 
           <m.button

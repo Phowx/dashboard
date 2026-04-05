@@ -239,14 +239,12 @@ function SystemMonitor() {
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+      <div className="flex items-center justify-between gap-3">
         <div>
           <span className="section-kicker">SYSTEM TELEMETRY</span>
           <h2 className="surface-title mt-2">主机运行概览</h2>
         </div>
-        <p className="max-w-2xl text-sm leading-6" style={{ color: 'var(--text-secondary)' }}>
-          曲线负责盯瞬时波动，摘要块负责看资源压力，底部进程表负责追噪音来源。整块信息都应该服务于更快判断。
-        </p>
+        <span className="status-pill hidden sm:inline-flex">HOST</span>
       </div>
 
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-12">

@@ -162,6 +162,19 @@ body::after {
     0 16px 34px rgba(0, 0, 0, 0.18);
 }
 
+.page-title-wrap {
+  min-width: 0;
+}
+
+.header-title {
+  margin: 0.32rem 0 0;
+  color: var(--text-primary);
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+}
+
 .section-kicker,
 .signal-label,
 .mono-type {
@@ -506,8 +519,8 @@ body::after {
   display: flex;
   min-height: auto;
   flex-direction: column;
-  gap: 0.95rem;
-  padding: 1rem;
+  gap: 0.7rem;
+  padding: 0.95rem;
 }
 
 .shortcut-card-top,
@@ -518,6 +531,10 @@ body::after {
   gap: 0.9rem;
 }
 
+.shortcut-card-top {
+  flex-wrap: wrap;
+}
+
 .shortcut-card-bottom {
   align-items: center;
 }
@@ -526,8 +543,8 @@ body::after {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  height: 2.9rem;
-  width: 2.9rem;
+  height: 2.65rem;
+  width: 2.65rem;
   border-radius: 16px;
   background:
     radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.2), transparent 44%),
@@ -537,13 +554,13 @@ body::after {
 
 .shortcut-name {
   margin: 0;
-  font-size: 1.18rem;
+  font-size: 1.05rem;
   line-height: 1;
   color: var(--text-primary);
 }
 
 .shortcut-value {
-  margin: 0.35rem 0 0;
+  margin: 0.28rem 0 0;
   overflow: hidden;
   color: var(--text-muted);
   font-family: var(--font-mono);
@@ -753,11 +770,6 @@ tr:hover td {
   .btn-secondary {
     width: 100%;
     justify-content: center;
-  }
-
-  .shortcut-card-top,
-  .shortcut-card-bottom {
-    flex-direction: column;
   }
 
   .hero-chip {
