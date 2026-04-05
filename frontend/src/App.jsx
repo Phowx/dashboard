@@ -231,13 +231,12 @@ function DashboardApp() {
 
       <main className="relative pb-10 pt-4">
         <div className="mx-auto max-w-[1480px] px-4 xl:px-6">
-          <div className="grid gap-4 xl:gap-5">
-            <div className="grid grid-cols-12 items-start gap-4 xl:items-stretch xl:gap-5">
+          <div className="grid grid-cols-12 items-start gap-4 xl:gap-5">
+            <div className="col-span-12 grid gap-4 xl:col-span-9 2xl:col-span-9 xl:gap-5">
               <m.section
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.45, delay: 0.16 }}
-                className="col-span-12 xl:col-span-9 2xl:col-span-9"
               >
                 <SystemMonitor />
               </m.section>
@@ -245,19 +244,18 @@ function DashboardApp() {
               <m.section
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.45, delay: 0.22 }}
-                className="col-span-12 xl:col-span-3 2xl:col-span-3 xl:h-[304px]"
+                transition={{ duration: 0.45, delay: 0.28 }}
               >
                 <Suspense
                   fallback={
                     <SectionFallback
-                      title="Launchpad Loading"
-                      description="Preparing the shortcuts panel."
-                      minHeight="min-h-[304px]"
+                      title="Container Deck Loading"
+                      description="Preparing the container controls."
+                      minHeight="min-h-[320px]"
                     />
                   }
                 >
-                  <Shortcuts />
+                  <DockerList />
                 </Suspense>
               </m.section>
             </div>
@@ -265,18 +263,19 @@ function DashboardApp() {
             <m.section
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.45, delay: 0.28 }}
+              transition={{ duration: 0.45, delay: 0.22 }}
+              className="col-span-12 xl:col-span-3 2xl:col-span-3 xl:self-start"
             >
               <Suspense
                 fallback={
                   <SectionFallback
-                    title="Container Deck Loading"
-                    description="Preparing the container controls."
-                    minHeight="min-h-[320px]"
+                    title="Launchpad Loading"
+                    description="Preparing the shortcuts panel."
+                    minHeight="min-h-[360px]"
                   />
                 }
               >
-                <DockerList />
+                <Shortcuts />
               </Suspense>
             </m.section>
           </div>

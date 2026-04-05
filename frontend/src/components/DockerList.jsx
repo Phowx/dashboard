@@ -21,7 +21,7 @@ const STACK_TONES = [
   { color: '#7aa6ff', bg: 'rgba(122, 166, 255, 0.14)', border: 'rgba(122, 166, 255, 0.28)' },
 ];
 
-function StatusBadge({ state }) {
+function StatusBadge({ state, compact = false }) {
   const getStatusConfig = () => {
     switch (state) {
       case 'running':
@@ -39,8 +39,12 @@ function StatusBadge({ state }) {
 
   return (
     <span
-      className="inline-flex items-center gap-2 rounded-full px-2.5 py-1 mono-type text-[10px] uppercase tracking-[0.18em]"
+      className={`inline-flex items-center rounded-full mono-type text-[10px] uppercase tracking-[0.18em] ${
+        compact ? 'justify-center px-2 py-2' : 'gap-2 px-2.5 py-1'
+      }`}
       style={{ background: config.bg, color: config.color }}
+      title={config.label}
+      aria-label={config.label}
     >
       <span
         className="h-1.5 w-1.5 rounded-full"
@@ -49,7 +53,7 @@ function StatusBadge({ state }) {
           boxShadow: state === 'running' ? `0 0 10px ${config.color}` : 'none',
         }}
       />
-      {config.label}
+      {!compact ? config.label : null}
     </span>
   );
 }
@@ -399,27 +403,27 @@ function DockerList() {
           </div>
 
           <div className="hidden overflow-x-auto px-3 pb-3 sm:px-4 sm:pb-4 xl:px-6 xl:pb-6 md:block">
-            <table className="mt-4 w-full min-w-[1020px] overflow-hidden rounded-[24px]">
+            <table className="mt-4 w-full min-w-[880px] table-fixed overflow-hidden rounded-[24px]">
             <thead>
               <tr
                 className="mono-type text-[10px] uppercase tracking-[0.18em]"
                 style={{ color: 'var(--text-muted)' }}
               >
-                <th className="px-3 py-3 text-left font-medium">State</th>
-                <th className="px-3 py-3 text-left font-medium">Stack</th>
-                <th className="px-3 py-3 text-left font-medium">Container</th>
-                <th className="hidden px-3 py-3 text-left font-medium md:table-cell">Image</th>
-                <th className="px-3 py-3 text-left font-medium">Ports</th>
-                <th className="px-3 py-3 text-right font-medium">CPU</th>
-                <th className="px-3 py-3 text-right font-medium">Memory</th>
-                <th className="px-3 py-3 text-center font-medium">Actions</th>
+                <th className="w-[66px] px-3 py-3 text-left font-medium">State</th>
+                <th className="w-[148px] px-3 py-3 text-left font-medium">Stack</th>
+                <th className="w-[168px] px-3 py-3 text-left font-medium">Container</th>
+                <th className="hidden w-[180px] px-3 py-3 text-left font-medium md:table-cell">Image</th>
+                <th className="w-[158px] px-3 py-3 text-left font-medium">Ports</th>
+                <th className="w-[78px] px-3 py-3 text-right font-medium">CPU</th>
+                <th className="w-[86px] px-3 py-3 text-right font-medium">Memory</th>
+                <th className="w-[118px] px-3 py-3 text-center font-medium">Actions</th>
               </tr>
             </thead>
               <tbody className="divide-y" style={{ divideColor: 'var(--border-color)' }}>
                 {sortedContainers.map(container => (
                   <tr key={container.id} className="transition-colors duration-200">
                     <td className="px-3 py-4 align-top">
-                      <StatusBadge state={container.state} />
+                      <StatusBadge state={container.state} compact />
                     </td>
                     <td className="px-3 py-4">
                       <div className="min-w-0 flex items-center gap-2">
@@ -458,12 +462,12 @@ function DockerList() {
                       </div>
                     </td>
                     <td className="hidden px-3 py-4 md:table-cell">
-                      <span className="text-xs leading-6" style={{ color: 'var(--text-secondary)' }}>
+                      <span className="block break-words text-xs leading-5" style={{ color: 'var(--text-secondary)' }}>
                         {container.image || '-'}
                       </span>
                     </td>
                     <td className="px-3 py-4">
-                      <span className="text-xs mono-type" style={{ color: 'var(--text-secondary)' }}>
+                      <span className="block break-all text-xs leading-5 mono-type" style={{ color: 'var(--text-secondary)' }}>
                         {container.ports || '-'}
                       </span>
                     </td>

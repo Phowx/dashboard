@@ -423,7 +423,7 @@ export default function Shortcuts() {
         </m.button>
       </div>
 
-      <div className="shortcut-column flex min-h-0 flex-1 flex-col xl:overflow-y-auto xl:pr-1">
+      <div className="shortcut-column flex min-h-0 flex-1 flex-col">
         {shortcuts.length > 0 ? (
           <Reorder.Group
             axis="y"
