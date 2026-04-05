@@ -84,13 +84,11 @@ function DashboardApp() {
         <div className="mx-auto max-w-[1480px]">
           <div className="chrome-bar px-4 py-3 sm:px-5">
             <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-              <div className="flex items-center gap-4">
+              <div className="toolbar-brand">
                 <div className="brand-mark">
                   <Activity className="h-5 w-5 text-white" />
                 </div>
-                <div className="page-title-wrap">
-                  <span className="section-kicker">PRIVATE INFRASTRUCTURE</span>
-                </div>
+                <span className="section-kicker">DASHBOARD</span>
               </div>
 
               <div className="flex flex-wrap items-center gap-2.5">

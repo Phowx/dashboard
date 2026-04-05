@@ -11,7 +11,7 @@ import {
 
 export default function RealtimeChart({ data }) {
   return (
-    <div className="glass-card chart-panel p-3.5 sm:p-4 xl:p-4">
+    <div className="glass-card chart-panel h-full flex flex-col p-3.5 sm:p-4 xl:p-4">
       <div className="mb-3 flex items-center justify-between gap-3">
         <span className="status-pill chart-tag">LOAD</span>
         <div className="flex flex-wrap gap-2">
@@ -26,9 +26,9 @@ export default function RealtimeChart({ data }) {
         </div>
       </div>
 
-      <div className="h-44 sm:h-48 xl:h-52">
+      <div className="chart-frame min-h-[180px] flex-1">
         <ResponsiveContainer width="100%" height="100%">
-          <AreaChart data={data} margin={{ top: 6, right: 4, bottom: 0, left: 6 }}>
+          <AreaChart data={data} margin={{ top: 6, right: 4, bottom: 0, left: 2 }}>
             <defs>
               <linearGradient id="cpuFill" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stopColor="var(--accent-cyan)" stopOpacity={0.32} />
@@ -54,7 +54,7 @@ export default function RealtimeChart({ data }) {
               axisLine={false}
               tickLine={false}
               tickMargin={8}
-              width={34}
+              width={40}
               tickFormatter={value => `${value}%`}
             />
             <Tooltip

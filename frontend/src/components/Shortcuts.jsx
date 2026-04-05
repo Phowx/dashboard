@@ -354,9 +354,15 @@ export default function Shortcuts() {
           <span className="section-kicker">LAUNCHPAD</span>
         </div>
 
-        <m.button whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }} onClick={openAddModal} className="btn-primary self-start" type="button">
+        <m.button
+          whileHover={{ scale: 1.04 }}
+          whileTap={{ scale: 0.96 }}
+          onClick={openAddModal}
+          className="btn-primary shortcut-add-button self-start"
+          type="button"
+          aria-label="Add link"
+        >
           <Plus className="h-3.5 w-3.5" />
-          Add Link
         </m.button>
       </div>
 

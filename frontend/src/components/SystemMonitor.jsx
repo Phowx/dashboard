@@ -122,8 +122,8 @@ function NetworkStats({ network }) {
 
 function ProcessTable({ sectionLabel, data, metricKey, icon: Icon, color }) {
   return (
-    <div className="glass-card p-3.5 sm:p-4 h-full">
-      <div className="mb-3 flex items-center justify-between gap-3">
+    <div className="glass-card p-3 sm:p-3.5 h-full">
+      <div className="mb-2.5 flex items-center justify-between gap-3">
         <div className="flex items-center gap-3">
           <div className="signal-icon" style={{ color }}>
             <Icon className="h-4 w-4" />
@@ -133,7 +133,7 @@ function ProcessTable({ sectionLabel, data, metricKey, icon: Icon, color }) {
         <span className="status-pill">TOP 5</span>
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-1.5">
         {data.map((process, index) => {
           const value = process[metricKey];
 
