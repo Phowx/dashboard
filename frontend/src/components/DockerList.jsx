@@ -230,6 +230,14 @@ function DockerList() {
     return `${mb.toFixed(0)} M`;
   };
 
+  const getPortEntries = ports => {
+    if (!ports) return [];
+    return String(ports)
+      .split(',')
+      .map(entry => entry.trim())
+      .filter(Boolean);
+  };
+
   const stats = {
     total: containers.length,
     running: containers.filter(container => container.state === 'running').length,
@@ -372,8 +380,16 @@ function DockerList() {
                   </div>
                   <div className="mobile-stat-card col-span-2">
                     <span className="section-kicker">PORTS</span>
-                    <strong className="break-all text-left" style={{ color: 'var(--text-primary)' }}>
-                      {container.ports || '-'}
+                    <strong className="text-left" style={{ color: 'var(--text-primary)' }}>
+                      {getPortEntries(container.ports).length > 0 ? (
+                        getPortEntries(container.ports).map(entry => (
+                          <span key={`${container.id}-${entry}`} className="block">
+                            {entry}
+                          </span>
+                        ))
+                      ) : (
+                        '-'
+                      )}
                     </strong>
                   </div>
                 </div>
@@ -467,9 +483,17 @@ function DockerList() {
                       </span>
                     </td>
                     <td className="px-3 py-4">
-                      <span className="block break-all text-xs leading-5 mono-type" style={{ color: 'var(--text-secondary)' }}>
-                        {container.ports || '-'}
-                      </span>
+                      <div className="space-y-1 text-xs leading-5 mono-type" style={{ color: 'var(--text-secondary)' }}>
+                        {getPortEntries(container.ports).length > 0 ? (
+                          getPortEntries(container.ports).map(entry => (
+                            <span key={`${container.id}-${entry}`} className="block whitespace-nowrap">
+                              {entry}
+                            </span>
+                          ))
+                        ) : (
+                          <span className="block">-</span>
+                        )}
+                      </div>
                     </td>
                     <td className="px-3 py-4 text-right">
                       <span className="text-sm font-semibold" style={{ color: 'var(--accent-cyan)' }}>
