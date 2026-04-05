@@ -148,7 +148,7 @@ function ActionButton({ action, onClick, loading, disabled, compact = false }) {
   }[action];
 
   const Icon = config.icon;
-  const buttonSize = compact ? 'h-8 w-8' : 'h-9 w-9';
+  const buttonSize = compact ? 'h-7 w-7' : 'h-9 w-9';
   const iconSize = compact ? 'h-3 w-3' : 'h-3.5 w-3.5';
 
   return (
@@ -297,25 +297,14 @@ function DockerList() {
 
   return (
     <div className="glass-card overflow-hidden">
-      <div className="border-b p-4 sm:p-5 xl:p-6" style={{ borderColor: 'var(--border-color)' }}>
-        <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
+      <div className="border-b p-3.5 sm:p-5 xl:p-6" style={{ borderColor: 'var(--border-color)' }}>
+        <div className="flex flex-col gap-3 xl:flex-row xl:items-start xl:justify-between">
           <div>
             <span className="section-kicker">CONTAINERS</span>
           </div>
-
-          <m.button
-            whileHover={{ scale: 1.04 }}
-            whileTap={{ scale: 0.96 }}
-            onClick={fetchContainers}
-            className="status-pill hidden self-start md:inline-flex"
-            type="button"
-          >
-            <RefreshCw className="h-3.5 w-3.5" />
-            <span>Refresh</span>
-          </m.button>
         </div>
 
-        <div className="mt-5 hidden flex-wrap gap-2 md:flex">
+        <div className="mt-4 hidden flex-wrap gap-2 md:flex">
           <span className="status-pill">
             <strong>{stats.total}</strong>
             <span>Total</span>
@@ -334,16 +323,7 @@ function DockerList() {
           </span>
         </div>
 
-        <div className="mt-5 flex items-center gap-2 overflow-x-auto pb-1 md:hidden">
-          <m.button
-            whileTap={{ scale: 0.96 }}
-            onClick={fetchContainers}
-            className="status-pill shrink-0"
-            type="button"
-          >
-            <RefreshCw className="h-3.5 w-3.5" />
-            <span>Refresh</span>
-          </m.button>
+        <div className="mt-4 flex items-center gap-2 overflow-x-auto pb-1 md:hidden">
           <span className="status-pill shrink-0" style={{ color: 'var(--accent-green)' }}>
             <strong>{stats.running}</strong>
             <span>Running</span>
@@ -366,10 +346,10 @@ function DockerList() {
         </div>
       ) : (
         <>
-          <div className="mt-4 grid gap-3 px-3 pb-3 md:hidden">
+          <div className="mt-3 grid gap-2.5 px-3 pb-3 md:hidden">
             {sortedContainers.map(container => (
-              <div key={container.id} className="glass-card p-4">
-                <div className="flex items-start justify-between gap-3">
+              <div key={container.id} className="glass-card p-3.5">
+                <div className="flex items-start justify-between gap-2.5">
                   <div className="min-w-0">
                     {container.composeProject ? (
                       (() => {
@@ -417,7 +397,7 @@ function DockerList() {
                   </div>
                 </div>
 
-                <div className="mt-3 flex items-start justify-between gap-3">
+                <div className="mt-2.5 flex items-start justify-between gap-2.5">
                   <div className="min-w-0">
                     <div className="flex items-center gap-2">
                       {container.composeProject && (() => {
@@ -430,14 +410,14 @@ function DockerList() {
                         {container.composeService || container.name}
                       </span>
                     </div>
-                    <p className="mt-1 text-[11px] mono-type" style={{ color: 'var(--text-muted)' }}>
+                    <p className="mt-0.5 text-[10px] mono-type leading-4" style={{ color: 'var(--text-muted)' }}>
                       {container.image || '-'}
                     </p>
                   </div>
                   <StatusBadge state={container.state} />
                 </div>
 
-                <div className="mt-3 grid grid-cols-2 gap-2.5">
+                <div className="mt-2.5 grid grid-cols-2 gap-2">
                   <div className="mobile-stat-card">
                     <span className="section-kicker">CPU</span>
                     <strong style={{ color: 'var(--accent-cyan)' }}>
@@ -452,7 +432,7 @@ function DockerList() {
                   </div>
                   <div className="mobile-stat-card col-span-2">
                     <span className="section-kicker">PORTS</span>
-                    <strong className="text-left" style={{ color: 'var(--text-primary)' }}>
+                    <strong className="text-left leading-5" style={{ color: 'var(--text-primary)' }}>
                       {getPortEntries(container.ports).length > 0 ? (
                         getPortEntries(container.ports).map(entry => (
                           <span key={`${container.id}-${entry}`} className="block">
