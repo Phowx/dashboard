@@ -145,9 +145,9 @@ function DashboardApp() {
         initial={{ opacity: 0, y: -24 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.45, ease: 'easeOut' }}
-        className="relative z-10 px-4 pt-4 xl:px-6"
+        className="relative z-10 pt-4"
       >
-        <div className="mx-auto max-w-[1480px]">
+        <div className="mx-auto max-w-[1480px] px-4 xl:px-6">
           <div className="dashboard-toolbar">
             <div className="toolbar-brand-lane">
               <div className="toolbar-brand">
@@ -229,54 +229,56 @@ function DashboardApp() {
         </div>
       </m.header>
 
-      <main className="relative mx-auto max-w-[1480px] px-4 pb-10 pt-4 xl:px-6">
-        <div className="grid grid-cols-12 gap-4 xl:gap-5">
-          <m.section
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.45, delay: 0.16 }}
-            className="col-span-12 xl:col-span-9 2xl:col-span-9"
-          >
-            <SystemMonitor />
-          </m.section>
-
-          <m.section
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.45, delay: 0.22 }}
-            className="col-span-12 h-full xl:col-span-3 2xl:col-span-3 xl:self-stretch"
-          >
-            <Suspense
-              fallback={
-                <SectionFallback
-                  title="Launchpad Loading"
-                  description="Preparing the shortcuts panel."
-                  minHeight="min-h-[360px]"
-                />
-              }
+      <main className="relative pb-10 pt-4">
+        <div className="mx-auto max-w-[1480px] px-4 xl:px-6">
+          <div className="grid grid-cols-12 gap-4 xl:gap-5">
+            <m.section
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.45, delay: 0.16 }}
+              className="col-span-12 xl:col-span-9 2xl:col-span-9"
             >
-              <Shortcuts />
-            </Suspense>
-          </m.section>
+              <SystemMonitor />
+            </m.section>
 
-          <m.section
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.45, delay: 0.28 }}
-            className="col-span-12"
-          >
-            <Suspense
-              fallback={
-                <SectionFallback
-                  title="Container Deck Loading"
-                  description="Preparing the container controls."
-                  minHeight="min-h-[320px]"
-                />
-              }
+            <m.section
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.45, delay: 0.22 }}
+              className="col-span-12 h-full xl:col-span-3 2xl:col-span-3 xl:self-stretch"
             >
-              <DockerList />
-            </Suspense>
-          </m.section>
+              <Suspense
+                fallback={
+                  <SectionFallback
+                    title="Launchpad Loading"
+                    description="Preparing the shortcuts panel."
+                    minHeight="min-h-[360px]"
+                  />
+                }
+              >
+                <Shortcuts />
+              </Suspense>
+            </m.section>
+
+            <m.section
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.45, delay: 0.28 }}
+              className="col-span-12"
+            >
+              <Suspense
+                fallback={
+                  <SectionFallback
+                    title="Container Deck Loading"
+                    description="Preparing the container controls."
+                    minHeight="min-h-[320px]"
+                  />
+                }
+              >
+                <DockerList />
+              </Suspense>
+            </m.section>
+          </div>
         </div>
       </main>
     </div>
