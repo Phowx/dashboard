@@ -1,19 +1,29 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { Container, Play, Square, RotateCcw, Trash2, RefreshCw, AlertTriangle, X, Layers } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import {
+  AlertTriangle,
+  Container,
+  Layers,
+  Play,
+  RefreshCw,
+  RotateCcw,
+  Square,
+  Trash2,
+  X,
+} from 'lucide-react';
+import { AnimatePresence, motion } from 'framer-motion';
 
 function StatusBadge({ state }) {
   const getStatusConfig = () => {
     switch (state) {
       case 'running':
-        return { color: 'var(--accent-green)', bg: 'rgba(34, 197, 94, 0.15)', label: '运行中' };
+        return { color: 'var(--accent-green)', bg: 'rgba(138, 214, 142, 0.14)', label: '运行中' };
       case 'exited':
-        return { color: 'var(--accent-red)', bg: 'rgba(239, 68, 68, 0.15)', label: '已停止' };
+        return { color: 'var(--accent-red)', bg: 'rgba(240, 122, 99, 0.14)', label: '已停止' };
       case 'paused':
-        return { color: 'var(--accent-yellow)', bg: 'rgba(234, 179, 8, 0.15)', label: '已暂停' };
+        return { color: 'var(--accent-yellow)', bg: 'rgba(216, 168, 95, 0.14)', label: '已暂停' };
       default:
-        return { color: 'var(--text-muted)', bg: 'var(--bg-tertiary)', label: state || '未知' };
+        return { color: 'var(--text-muted)', bg: 'rgba(255, 255, 255, 0.05)', label: state || '未知' };
     }
   };
 
@@ -21,14 +31,14 @@ function StatusBadge({ state }) {
 
   return (
     <span
-      className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium"
+      className="inline-flex items-center gap-2 rounded-full px-2.5 py-1 mono-type text-[10px] uppercase tracking-[0.18em]"
       style={{ background: config.bg, color: config.color }}
     >
       <span
-        className="w-1.5 h-1.5 rounded-full"
+        className="h-1.5 w-1.5 rounded-full"
         style={{
           background: config.color,
-          boxShadow: state === 'running' ? `0 0 4px ${config.color}` : 'none'
+          boxShadow: state === 'running' ? `0 0 10px ${config.color}` : 'none',
         }}
       />
       {config.label}
@@ -42,7 +52,7 @@ function ConfirmModal({ isOpen, onClose, onConfirm, containerName, action, isLoa
   const actionConfig = {
     start: { label: '启动', color: 'var(--accent-green)', icon: Play },
     stop: { label: '停止', color: 'var(--accent-red)', icon: Square },
-    restart: { label: '重启', color: 'var(--accent-blue)', icon: RotateCcw },
+    restart: { label: '重启', color: 'var(--accent-cyan)', icon: RotateCcw },
     remove: { label: '删除', color: 'var(--accent-red)', icon: Trash2 },
   };
 
@@ -57,66 +67,58 @@ function ConfirmModal({ isOpen, onClose, onConfirm, containerName, action, isLoa
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         className="fixed inset-0 z-[9999] flex items-center justify-center p-4"
-        style={{ background: 'rgba(0, 0, 0, 0.7)', backdropFilter: 'blur(4px)' }}
+        style={{ background: 'rgba(8, 10, 9, 0.72)', backdropFilter: 'blur(10px)' }}
         onClick={onClose}
       >
         <motion.div
-          initial={{ opacity: 0, scale: 0.9, y: 20 }}
+          initial={{ opacity: 0, scale: 0.94, y: 22 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.9, y: 20 }}
-          transition={{ type: "spring", stiffness: 300 }}
-          className="glass-card w-full max-w-sm overflow-hidden"
-          onClick={e => e.stopPropagation()}
+          exit={{ opacity: 0, scale: 0.94, y: 22 }}
+          transition={{ type: 'spring', stiffness: 280, damping: 26 }}
+          className="glass-card w-full max-w-md overflow-hidden"
+          onClick={event => event.stopPropagation()}
         >
-          <div className="p-5 text-center">
-            <div
-              className="w-12 h-12 rounded-full mx-auto mb-4 flex items-center justify-center"
-              style={{ background: isDanger ? 'rgba(239, 68, 68, 0.15)' : 'rgba(59, 130, 246, 0.15)' }}
-            >
-              {isDanger ? (
-                <AlertTriangle className="w-6 h-6" style={{ color: config.color }} />
-              ) : (
-                <Icon className="w-6 h-6" style={{ color: config.color }} />
-              )}
+          <div className="border-b p-5" style={{ borderColor: 'var(--border-color)' }}>
+            <div className="mb-4 flex items-center justify-between">
+              <span className="section-kicker">CONTAINER ACTION</span>
+              <button type="button" onClick={onClose} className="status-pill">
+                <X className="h-3.5 w-3.5" />
+              </button>
             </div>
-            <h3 className="text-base font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>
-              确认{config.label}
-            </h3>
-            <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-              确定要<span style={{ color: config.color }}>{config.label}</span>容器
-            </p>
-            <p className="text-sm font-medium mt-1 truncate" style={{ color: 'var(--text-primary)' }}>
-              {containerName}
-            </p>
+
+            <div className="flex items-start gap-4">
+              <div
+                className="signal-icon"
+                style={{
+                  color: config.color,
+                  background: isDanger ? 'rgba(240, 122, 99, 0.12)' : 'rgba(77, 180, 200, 0.12)',
+                }}
+              >
+                {isDanger ? <AlertTriangle className="h-4 w-4" /> : <Icon className="h-4 w-4" />}
+              </div>
+              <div>
+                <h3 className="surface-title text-[1.6rem]">确认{config.label}</h3>
+                <p className="mt-2 text-sm leading-6" style={{ color: 'var(--text-secondary)' }}>
+                  你将对容器 <strong style={{ color: 'var(--text-primary)' }}>{containerName}</strong> 执行
+                  <span style={{ color: config.color }}> {config.label}</span> 操作。
+                </p>
+              </div>
+            </div>
           </div>
-          <div className="flex gap-3 p-4 border-t" style={{ borderColor: 'var(--border-color)' }}>
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={onClose}
-              disabled={isLoading}
-              className="btn-secondary flex-1"
-            >
+
+          <div className="flex gap-3 p-5">
+            <motion.button whileTap={{ scale: 0.98 }} onClick={onClose} disabled={isLoading} className="btn-secondary flex-1">
               取消
             </motion.button>
             <motion.button
-              whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={onConfirm}
               disabled={isLoading}
-              className="flex-1 py-2 px-4 rounded-lg font-medium text-white flex items-center justify-center gap-2 transition-all"
-              style={{
-                background: isDanger
-                  ? 'linear-gradient(135deg, var(--accent-red), #dc2626)'
-                  : 'linear-gradient(135deg, var(--accent-blue), var(--accent-cyan))',
-                opacity: isLoading ? 0.7 : 1
-              }}
+              className="btn-primary flex flex-1 items-center justify-center gap-2"
+              type="button"
+              style={{ opacity: isLoading ? 0.75 : 1 }}
             >
-              {isLoading ? (
-                <RefreshCw className="w-4 h-4 animate-spin" />
-              ) : (
-                <Icon className="w-4 h-4" />
-              )}
+              {isLoading ? <RefreshCw className="h-4 w-4 animate-spin" /> : <Icon className="h-4 w-4" />}
               确认
             </motion.button>
           </div>
@@ -131,7 +133,7 @@ function ActionButton({ action, onClick, loading, disabled }) {
   const config = {
     start: { icon: Play, color: 'var(--accent-green)', title: '启动' },
     stop: { icon: Square, color: 'var(--accent-red)', title: '停止' },
-    restart: { icon: RotateCcw, color: 'var(--accent-blue)', title: '重启' },
+    restart: { icon: RotateCcw, color: 'var(--accent-cyan)', title: '重启' },
     remove: { icon: Trash2, color: 'var(--accent-red)', title: '删除' },
   }[action];
 
@@ -139,19 +141,20 @@ function ActionButton({ action, onClick, loading, disabled }) {
 
   return (
     <motion.button
-      whileHover={{ scale: 1.1 }}
-      whileTap={{ scale: 0.9 }}
+      whileHover={{ scale: 1.08 }}
+      whileTap={{ scale: 0.94 }}
       onClick={onClick}
       disabled={disabled}
-      className="p-1.5 rounded-lg transition-colors disabled:opacity-50"
-      style={{ color: config.color }}
+      className="inline-flex h-9 w-9 items-center justify-center rounded-full border transition-all disabled:opacity-50"
+      style={{
+        borderColor: 'var(--border-color)',
+        background: 'rgba(255, 255, 255, 0.04)',
+        color: config.color,
+      }}
       title={config.title}
+      type="button"
     >
-      {loading ? (
-        <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-      ) : (
-        <Icon className="w-3.5 h-3.5" />
-      )}
+      {loading ? <RefreshCw className="h-3.5 w-3.5 animate-spin" /> : <Icon className="h-3.5 w-3.5" />}
     </motion.button>
   );
 }
@@ -160,7 +163,12 @@ function DockerList() {
   const [containers, setContainers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(null);
-  const [confirmModal, setConfirmModal] = useState({ open: false, containerId: null, containerName: '', action: null });
+  const [confirmModal, setConfirmModal] = useState({
+    open: false,
+    containerId: null,
+    containerName: '',
+    action: null,
+  });
 
   const fetchContainers = async () => {
     try {
@@ -183,6 +191,7 @@ function DockerList() {
   const handleAction = async () => {
     const { containerId, action } = confirmModal;
     setActionLoading(`${containerId}-${action}`);
+
     try {
       await fetch(`/api/docker/containers/${containerId}/${action}`, { method: 'POST' });
       await fetchContainers();
@@ -199,11 +208,11 @@ function DockerList() {
       open: true,
       containerId: container.id,
       containerName: container.name,
-      action
+      action,
     });
   };
 
-  const formatBytes = (bytes) => {
+  const formatBytes = bytes => {
     if (!bytes || bytes === 0) return '-';
     const mb = bytes / (1024 * 1024);
     const gb = mb / 1024;
@@ -213,111 +222,141 @@ function DockerList() {
 
   const stats = {
     total: containers.length,
-    running: containers.filter(c => c.state === 'running').length,
-    stopped: containers.filter(c => c.state === 'exited').length,
-    paused: containers.filter(c => c.state === 'paused').length,
+    running: containers.filter(container => container.state === 'running').length,
+    stopped: containers.filter(container => container.state === 'exited').length,
+    paused: containers.filter(container => container.state === 'paused').length,
   };
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-32">
-        <RefreshCw className="w-6 h-6 animate-spin" style={{ color: 'var(--accent-blue)' }} />
+      <div className="glass-card flex h-40 items-center justify-center">
+        <RefreshCw className="h-6 w-6 animate-spin" style={{ color: 'var(--accent-cyan)' }} />
       </div>
     );
   }
 
   return (
     <div className="glass-card overflow-hidden">
-      <div className="flex items-center justify-between p-3 border-b" style={{ borderColor: 'var(--border-color)' }}>
-        <div className="flex items-center gap-2">
-          <Container className="w-4 h-4" style={{ color: 'var(--accent-cyan)' }} />
-          <h2 className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>Docker 容器</h2>
-          <div className="flex items-center gap-2 ml-3">
-            <span className="text-[10px] px-1.5 py-0.5 rounded" style={{ background: 'var(--bg-tertiary)', color: 'var(--text-muted)' }}>
-              {stats.total} 总
-            </span>
-            <span className="text-[10px] px-1.5 py-0.5 rounded" style={{ background: 'rgba(34, 197, 94, 0.15)', color: 'var(--accent-green)' }}>
-              {stats.running} 运行
-            </span>
-            <span className="text-[10px] px-1.5 py-0.5 rounded" style={{ background: 'rgba(239, 68, 68, 0.15)', color: 'var(--accent-red)' }}>
-              {stats.stopped} 停止
-            </span>
+      <div className="border-b p-4 sm:p-5 xl:p-6" style={{ borderColor: 'var(--border-color)' }}>
+        <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
+          <div>
+            <span className="section-kicker">CONTAINERS</span>
+            <div className="mt-3 flex items-center gap-3">
+              <div className="signal-icon" style={{ color: 'var(--accent-cyan)' }}>
+                <Container className="h-4 w-4" />
+              </div>
+              <h2 className="surface-title">Docker 舱段</h2>
+            </div>
+            <p className="mt-3 max-w-3xl text-sm leading-6" style={{ color: 'var(--text-secondary)' }}>
+              这里保留最常用的容器控制动作。你不需要切去 Portainer，只要在这一块就能判断运行态并快速处理异常。
+            </p>
           </div>
+
+          <motion.button
+            whileHover={{ scale: 1.04 }}
+            whileTap={{ scale: 0.96 }}
+            onClick={fetchContainers}
+            className="status-pill self-start"
+            type="button"
+          >
+            <RefreshCw className="h-3.5 w-3.5" />
+            <span>刷新容器</span>
+          </motion.button>
         </div>
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={fetchContainers}
-          className="p-1.5 rounded-lg transition-colors"
-          style={{ color: 'var(--text-muted)', background: 'var(--bg-tertiary)' }}
-        >
-          <RefreshCw className="w-3.5 h-3.5" />
-        </motion.button>
+
+        <div className="mt-5 flex flex-wrap gap-2">
+          <span className="status-pill">
+            <strong>{stats.total}</strong>
+            <span>总数</span>
+          </span>
+          <span className="status-pill" style={{ color: 'var(--accent-green)' }}>
+            <strong>{stats.running}</strong>
+            <span>运行</span>
+          </span>
+          <span className="status-pill" style={{ color: 'var(--accent-red)' }}>
+            <strong>{stats.stopped}</strong>
+            <span>停止</span>
+          </span>
+          <span className="status-pill" style={{ color: 'var(--accent-yellow)' }}>
+            <strong>{stats.paused}</strong>
+            <span>暂停</span>
+          </span>
+        </div>
       </div>
 
       {containers.length === 0 ? (
-        <div className="p-8 text-center">
-          <Container className="w-10 h-10 mx-auto mb-2" style={{ color: 'var(--text-muted)' }} />
-          <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>暂无容器</p>
+        <div className="p-10 text-center">
+          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full border" style={{ borderColor: 'var(--border-color)' }}>
+            <Container className="h-6 w-6" style={{ color: 'var(--text-muted)' }} />
+          </div>
+          <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+            当前没有可显示的容器。
+          </p>
         </div>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[800px]">
+        <div className="overflow-x-auto px-3 pb-3 sm:px-4 sm:pb-4 xl:px-6 xl:pb-6">
+          <table className="mt-4 w-full min-w-[920px] overflow-hidden rounded-[24px]">
             <thead>
-              <tr className="text-[10px] uppercase" style={{ background: 'var(--bg-tertiary)', color: 'var(--text-muted)' }}>
-                <th className="text-left py-2 px-3 font-medium w-20">状态</th>
-                <th className="text-left py-2 px-3 font-medium">名称</th>
-                <th className="text-left py-2 px-3 font-medium hidden md:table-cell">镜像</th>
-                <th className="text-left py-2 px-3 font-medium w-32">端口</th>
-                <th className="text-right py-2 px-3 font-medium w-16">CPU</th>
-                <th className="text-right py-2 px-3 font-medium w-16">内存</th>
-                <th className="text-center py-2 px-3 font-medium w-24">操作</th>
+              <tr
+                className="mono-type text-[10px] uppercase tracking-[0.18em]"
+                style={{ color: 'var(--text-muted)' }}
+              >
+                <th className="px-3 py-3 text-left font-medium">状态</th>
+                <th className="px-3 py-3 text-left font-medium">名称</th>
+                <th className="hidden px-3 py-3 text-left font-medium md:table-cell">镜像</th>
+                <th className="px-3 py-3 text-left font-medium">端口</th>
+                <th className="px-3 py-3 text-right font-medium">CPU</th>
+                <th className="px-3 py-3 text-right font-medium">内存</th>
+                <th className="px-3 py-3 text-center font-medium">操作</th>
               </tr>
             </thead>
             <tbody className="divide-y" style={{ divideColor: 'var(--border-color)' }}>
-              {containers.map((container) => (
-                <tr
-                  key={container.id}
-                  className="hover:bg-opacity-50 transition-colors"
-                  style={{ background: 'var(--bg-secondary)' }}
-                >
-                  <td className="py-2 px-3">
+              {containers.map(container => (
+                <tr key={container.id} className="transition-colors duration-200">
+                  <td className="px-3 py-4 align-top">
                     <StatusBadge state={container.state} />
                   </td>
-                  <td className="py-2 px-3">
-                    <div className="flex items-center gap-1.5 min-w-0">
-                      {container.composeProject && (
-                        <Layers className="w-3 h-3 shrink-0" style={{ color: 'var(--accent-cyan)' }} />
-                      )}
-                      <span className="text-xs font-medium break-all" style={{ color: 'var(--text-primary)' }}>
-                        {container.composeProject 
-                          ? `${container.composeProject}/${container.composeService || container.name}`
-                          : container.name}
-                      </span>
+                  <td className="px-3 py-4">
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2">
+                        {container.composeProject && (
+                          <Layers className="h-3.5 w-3.5 shrink-0" style={{ color: 'var(--accent-cyan)' }} />
+                        )}
+                        <span className="truncate text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
+                          {container.composeProject
+                            ? `${container.composeProject}/${container.composeService || container.name}`
+                            : container.name}
+                        </span>
+                      </div>
+                      <p className="mt-1 text-[11px] mono-type" style={{ color: 'var(--text-muted)' }}>
+                        {container.id}
+                      </p>
                     </div>
                   </td>
-                  <td className="py-2 px-3 hidden md:table-cell">
-                    <span className="text-xs break-all" style={{ color: 'var(--text-secondary)' }}>
+                  <td className="hidden px-3 py-4 md:table-cell">
+                    <span className="text-xs leading-6" style={{ color: 'var(--text-secondary)' }}>
                       {container.image || '-'}
                     </span>
                   </td>
-                  <td className="py-2 px-3">
-                    <span className="text-xs" style={{ color: 'var(--text-secondary)' }}>
+                  <td className="px-3 py-4">
+                    <span className="text-xs mono-type" style={{ color: 'var(--text-secondary)' }}>
                       {container.ports || '-'}
                     </span>
                   </td>
-                  <td className="py-2 px-3 text-right">
-                    <span className="text-xs font-medium" style={{ color: 'var(--accent-blue)' }}>
-                      {container.stats?.cpuPercent !== null && container.stats?.cpuPercent !== undefined ? `${container.stats.cpuPercent.toFixed(1)}%` : '-'}
+                  <td className="px-3 py-4 text-right">
+                    <span className="text-sm font-semibold" style={{ color: 'var(--accent-cyan)' }}>
+                      {container.stats?.cpuPercent !== null && container.stats?.cpuPercent !== undefined
+                        ? `${container.stats.cpuPercent.toFixed(1)}%`
+                        : '-'}
                     </span>
                   </td>
-                  <td className="py-2 px-3 text-right">
-                    <span className="text-xs font-medium" style={{ color: 'var(--accent-green)' }}>
+                  <td className="px-3 py-4 text-right">
+                    <span className="text-sm font-semibold" style={{ color: 'var(--accent-yellow)' }}>
                       {formatBytes(container.stats?.memoryUsage)}
                     </span>
                   </td>
-                  <td className="py-2 px-3">
-                    <div className="flex items-center justify-center gap-1">
+                  <td className="px-3 py-4">
+                    <div className="flex items-center justify-center gap-2">
                       {container.state !== 'running' ? (
                         <ActionButton
                           action="start"

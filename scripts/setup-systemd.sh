@@ -86,6 +86,10 @@ done
 [ -n "$SERVICE_NAME" ] || die "Service name cannot be empty"
 [ -n "$SERVICE_USER" ] || die "Service user cannot be empty. Use --service-user."
 
+if [ "$SERVICE_USER" = "your-user" ]; then
+  die "Replace the placeholder 'your-user' with a real Linux username, for example 'root' or 'dashboard'."
+fi
+
 if [ -z "$SERVICE_GROUP" ]; then
   SERVICE_GROUP="$(id -gn "$SERVICE_USER" 2>/dev/null || true)"
 fi

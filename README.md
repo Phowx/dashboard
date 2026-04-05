@@ -61,7 +61,7 @@ npm run build
 最简单的方式：
 
 ```bash
-./scripts/setup-systemd.sh --install-dir /opt/dashboard --service-user your-user
+./scripts/setup-systemd.sh --install-dir /opt/dashboard --service-user root --service-group root
 ```
 
 这个脚本会自动：

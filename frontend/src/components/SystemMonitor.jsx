@@ -1,40 +1,74 @@
-import React, { useState, useEffect } from 'react';
-import { Cpu, HardDrive, MemoryStick, Wifi, ArrowDown, ArrowUp, RefreshCw } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import {
+  ArrowDown,
+  ArrowUp,
+  Cpu,
+  HardDrive,
+  MemoryStick,
+  RefreshCw,
+  Wifi,
+} from 'lucide-react';
 import { motion } from 'framer-motion';
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
+import {
+  Area,
+  AreaChart,
+  CartesianGrid,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from 'recharts';
 import { useLiveMetrics } from '../context/LiveMetricsContext';
 
-function MetricCard({ icon: Icon, label, value, unit, subLabel, color }) {
+function formatBytes(bytes) {
+  if (!bytes || bytes === 0) return '0 B';
+  const kb = bytes / 1024;
+  const mb = kb / 1024;
+  const gb = mb / 1024;
+  if (gb >= 1) return `${gb.toFixed(1)} GB`;
+  if (mb >= 1) return `${mb.toFixed(1)} MB`;
+  return `${kb.toFixed(0)} KB`;
+}
+
+function MetricCard({ icon: Icon, label, value, unit, subLabel, color, progress }) {
   return (
     <motion.div
-      className="glass-card p-3"
-      initial={{ opacity: 0, scale: 0.95 }}
+      className="glass-card p-4"
+      initial={{ opacity: 0, scale: 0.96 }}
       animate={{ opacity: 1, scale: 1 }}
     >
-      <div className="flex items-center gap-2 mb-2">
-        <Icon className="w-3.5 h-3.5" style={{ color }} />
-        <span className="text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>{label}</span>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <span className="section-kicker">{label}</span>
+          <div className="mt-3 flex items-end gap-2">
+            <span className="metric-value" style={{ color }}>
+              {value}
+            </span>
+            <span className="metric-unit">{unit}</span>
+          </div>
+        </div>
+        <div className="signal-icon" style={{ color }}>
+          <Icon className="h-4 w-4" />
+        </div>
       </div>
-      <div className="flex items-baseline gap-1">
-        <span className="text-xl font-bold" style={{ color }}>{value}</span>
-        <span className="text-xs" style={{ color: 'var(--text-muted)' }}>{unit}</span>
+
+      <div className="metric-track">
+        <div
+          className="metric-fill"
+          style={{
+            width: `${Math.min(Math.max(Number(progress) || 0, 0), 100)}%`,
+            background: color,
+            boxShadow: `0 0 28px ${color}`,
+          }}
+        />
       </div>
-      <p className="text-[10px] mt-1" style={{ color: 'var(--text-muted)' }}>{subLabel}</p>
+
+      <p className="metric-subcopy">{subLabel}</p>
     </motion.div>
   );
 }
 
 function NetworkStats({ network }) {
-  const formatBytes = (bytes) => {
-    if (!bytes || bytes === 0) return '0 B';
-    const kb = bytes / 1024;
-    const mb = kb / 1024;
-    const gb = mb / 1024;
-    if (gb >= 1) return `${gb.toFixed(1)} GB`;
-    if (mb >= 1) return `${mb.toFixed(1)} MB`;
-    return `${kb.toFixed(0)} KB`;
-  };
-
   const formatSpeed = (bytesPerSec) => {
     if (!bytesPerSec || bytesPerSec === 0) return '0 B/s';
     const kb = bytesPerSec / 1024;
@@ -45,26 +79,42 @@ function NetworkStats({ network }) {
 
   return (
     <motion.div
-      className="glass-card p-3"
-      initial={{ opacity: 0, scale: 0.95 }}
+      className="glass-card p-4"
+      initial={{ opacity: 0, scale: 0.96 }}
       animate={{ opacity: 1, scale: 1 }}
     >
-      <div className="flex items-center gap-2 mb-2">
-        <Wifi className="w-3.5 h-3.5" style={{ color: 'var(--accent-cyan)' }} />
-        <span className="text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>网络</span>
-      </div>
-      <div className="grid grid-cols-2 gap-2">
-        <div className="flex items-center gap-1.5">
-          <ArrowDown className="w-3 h-3" style={{ color: 'var(--accent-green)' }} />
-          <span className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{formatSpeed(network?.rx_sec)}</span>
+      <div className="mb-4 flex items-start justify-between gap-3">
+        <div>
+          <span className="section-kicker">NETWORK</span>
+          <div className="mt-3 text-2xl font-semibold display-type" style={{ color: 'var(--text-primary)' }}>
+            双向吞吐
+          </div>
         </div>
-        <div className="flex items-center gap-1.5">
-          <ArrowUp className="w-3 h-3" style={{ color: 'var(--accent-blue)' }} />
-          <span className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{formatSpeed(network?.tx_sec)}</span>
+        <div className="signal-icon" style={{ color: 'var(--accent-cyan)' }}>
+          <Wifi className="h-4 w-4" />
         </div>
       </div>
-      <p className="text-[10px] mt-1.5" style={{ color: 'var(--text-muted)' }}>
-        ↓{formatBytes(network?.rx_bytes)} ↑{formatBytes(network?.tx_bytes)}
+
+      <div className="space-y-3">
+        <div className="network-row">
+          <div className="flex items-center gap-2">
+            <ArrowDown className="h-3.5 w-3.5" style={{ color: 'var(--accent-green)' }} />
+            <span className="network-label">下载</span>
+          </div>
+          <span className="network-value">{formatSpeed(network?.rx_sec)}</span>
+        </div>
+
+        <div className="network-row">
+          <div className="flex items-center gap-2">
+            <ArrowUp className="h-3.5 w-3.5" style={{ color: 'var(--accent-cyan)' }} />
+            <span className="network-label">上传</span>
+          </div>
+          <span className="network-value">{formatSpeed(network?.tx_sec)}</span>
+        </div>
+      </div>
+
+      <p className="metric-subcopy mt-4">
+        累计 ↓{formatBytes(network?.rx_bytes)} / ↑{formatBytes(network?.tx_bytes)}
       </p>
     </motion.div>
   );
@@ -72,21 +122,48 @@ function NetworkStats({ network }) {
 
 function ProcessTable({ title, data, icon: Icon, color }) {
   return (
-    <div className="glass-card p-3 h-full">
-      <div className="flex items-center gap-2 mb-2">
-        <Icon className="w-3.5 h-3.5" style={{ color }} />
-        <span className="text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>{title}</span>
-      </div>
-      <div className="space-y-1">
-        {data.map((p, i) => (
-          <div key={p.pid} className="flex items-center justify-between py-1 px-2 rounded" style={{ background: 'var(--bg-tertiary)' }}>
-            <div className="flex items-center gap-2 min-w-0 flex-1">
-              <span className="text-[10px] w-4 text-right" style={{ color: 'var(--text-muted)' }}>#{i + 1}</span>
-              <span className="text-xs truncate" style={{ color: 'var(--text-primary)' }}>{p.name}</span>
-            </div>
-            <span className="text-xs font-medium ml-2" style={{ color }}>{p[title.includes('CPU') ? 'cpu' : 'memory'].toFixed(1)}%</span>
+    <div className="glass-card p-4 h-full">
+      <div className="mb-4 flex items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <div className="signal-icon" style={{ color }}>
+            <Icon className="h-4 w-4" />
           </div>
-        ))}
+          <div>
+            <span className="section-kicker">{title}</span>
+            <h3 className="mt-2 text-xl display-type" style={{ color: 'var(--text-primary)' }}>
+              {title === 'CPU' ? '热点进程' : '内存占用'}
+            </h3>
+          </div>
+        </div>
+        <span className="status-pill">TOP 5</span>
+      </div>
+
+      <div className="space-y-2">
+        {data.map((process, index) => {
+          const value = process[title === 'CPU' ? 'cpu' : 'memory'];
+
+          return (
+            <div key={process.pid} className="process-row">
+              <div className="process-fill" style={{ width: `${Math.min(value, 100)}%`, background: color }} />
+              <div className="relative flex items-center justify-between gap-3">
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2">
+                    <span className="process-rank">#{index + 1}</span>
+                    <span className="truncate text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
+                      {process.name}
+                    </span>
+                  </div>
+                  <p className="mt-1 text-[11px] mono-type" style={{ color: 'var(--text-muted)' }}>
+                    PID {process.pid}
+                  </p>
+                </div>
+                <span className="process-value" style={{ color }}>
+                  {value.toFixed(1)}%
+                </span>
+              </div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
@@ -94,73 +171,87 @@ function ProcessTable({ title, data, icon: Icon, color }) {
 
 function RealtimeChart({ data }) {
   return (
-    <div className="glass-card p-3">
-      <div className="flex items-center justify-between mb-2">
-        <div className="flex items-center gap-2">
-          <div className="w-2 h-2 rounded-full" style={{ background: 'var(--accent-blue)' }} />
-          <span className="text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>实时监控</span>
+    <div className="glass-card p-4 sm:p-5 xl:p-6 h-full">
+      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <span className="section-kicker">SIGNAL WINDOW</span>
+          <h2 className="surface-title mt-2">实时负载曲线</h2>
         </div>
-        <div className="flex items-center gap-3 xl:gap-4">
-          <div className="flex items-center gap-1">
-            <div className="w-3 h-1.5 rounded-sm" style={{ background: 'var(--accent-blue)' }} />
-            <span className="text-[10px]" style={{ color: 'var(--text-muted)' }}>CPU</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <div className="w-3 h-1.5 rounded-sm" style={{ background: 'var(--accent-green)' }} />
-            <span className="text-[10px]" style={{ color: 'var(--text-muted)' }}>内存</span>
-          </div>
+        <div className="flex flex-wrap gap-2">
+          <span className="status-pill">
+            <span className="h-2 w-2 rounded-full" style={{ background: 'var(--accent-cyan)' }} />
+            CPU
+          </span>
+          <span className="status-pill">
+            <span className="h-2 w-2 rounded-full" style={{ background: 'var(--accent-yellow)' }} />
+            内存
+          </span>
         </div>
       </div>
-      <div className="h-40 sm:h-48 xl:h-44">
+
+      <div className="h-72 sm:h-80">
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={data} margin={{ top: 5, right: 5, bottom: 5, left: 0 }}>
-            <XAxis 
-              dataKey="time" 
-              hide={false}
-              tick={{ fontSize: 9, fill: 'var(--text-muted)' }}
-              axisLine={{ stroke: 'var(--border-color)' }}
-              tickLine={{ stroke: 'var(--border-color)' }}
-              interval="preserveStartEnd"
-              minTickGap={50}
+          <AreaChart data={data} margin={{ top: 10, right: 0, bottom: 0, left: -18 }}>
+            <defs>
+              <linearGradient id="cpuFill" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="var(--accent-cyan)" stopOpacity={0.32} />
+                <stop offset="100%" stopColor="var(--accent-cyan)" stopOpacity={0.02} />
+              </linearGradient>
+              <linearGradient id="memoryFill" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="var(--accent-yellow)" stopOpacity={0.28} />
+                <stop offset="100%" stopColor="var(--accent-yellow)" stopOpacity={0.02} />
+              </linearGradient>
+            </defs>
+            <CartesianGrid strokeDasharray="3 9" stroke="var(--chart-grid)" vertical={false} />
+            <XAxis
+              dataKey="time"
+              tick={{ fontSize: 10, fill: 'var(--text-muted)' }}
+              axisLine={false}
+              tickLine={false}
+              minTickGap={42}
             />
-            <YAxis 
-              domain={[0, 100]} 
-              hide={false}
-              tick={{ fontSize: 9, fill: 'var(--text-muted)' }}
-              axisLine={{ stroke: 'var(--border-color)' }}
-              tickLine={{ stroke: 'var(--border-color)' }}
-              width={25}
-              tickFormatter={(v) => `${v}%`}
+            <YAxis
+              domain={[0, 100]}
+              tick={{ fontSize: 10, fill: 'var(--text-muted)' }}
+              axisLine={false}
+              tickLine={false}
+              width={28}
+              tickFormatter={value => `${value}%`}
             />
             <Tooltip
               contentStyle={{
-                background: 'var(--bg-secondary)',
-                border: '1px solid var(--border-color)',
-                borderRadius: '6px',
-                fontSize: '10px'
+                background: 'var(--tooltip-bg)',
+                border: '1px solid var(--border-strong)',
+                borderRadius: '18px',
+                fontSize: '11px',
+                boxShadow: 'var(--shadow-panel)',
               }}
               labelStyle={{ color: 'var(--text-primary)' }}
-              formatter={(value) => [`${value}%`]}
+              formatter={value => [`${value}%`]}
             />
-            <Line
+            <Area
               type="monotone"
               dataKey="cpu"
-              stroke="var(--accent-blue)"
-              strokeWidth={1.5}
-              dot={false}
+              stroke="var(--accent-cyan)"
+              fill="url(#cpuFill)"
+              strokeWidth={2.5}
               name="CPU"
+              dot={false}
+              activeDot={{ r: 4 }}
               isAnimationActive={false}
             />
-            <Line
+            <Area
               type="monotone"
               dataKey="memory"
-              stroke="var(--accent-green)"
-              strokeWidth={1.5}
-              dot={false}
+              stroke="var(--accent-yellow)"
+              fill="url(#memoryFill)"
+              strokeWidth={2.5}
               name="内存"
+              dot={false}
+              activeDot={{ r: 4 }}
               isAnimationActive={false}
             />
-          </LineChart>
+          </AreaChart>
         </ResponsiveContainer>
       </div>
     </div>
@@ -179,10 +270,10 @@ function SystemMonitor() {
         time: new Date(timestamp).toLocaleTimeString('zh-CN', {
           hour: '2-digit',
           minute: '2-digit',
-          second: '2-digit'
+          second: '2-digit',
         }),
         cpu: parseFloat(Number(cpuUsage).toFixed(1)),
-        memory: parseFloat(memoryPercentage)
+        memory: parseFloat(memoryPercentage),
       };
 
       return [...prev, nextPoint].slice(-30);
@@ -219,84 +310,81 @@ function SystemMonitor() {
       }
 
       return {
-          ...prev,
-          uptime: liveMetrics.uptime,
-          cpu: { ...prev.cpu, usage: liveMetrics.cpu },
-          memory: {
-            ...prev.memory,
-            percentage: liveMetrics.memory.percentage,
-            used: liveMetrics.memory.used,
-            total: liveMetrics.memory.total
-          }
+        ...prev,
+        uptime: liveMetrics.uptime,
+        cpu: { ...prev.cpu, usage: liveMetrics.cpu },
+        memory: {
+          ...prev.memory,
+          percentage: liveMetrics.memory.percentage,
+          used: liveMetrics.memory.used,
+          total: liveMetrics.memory.total,
+        },
       };
     });
 
     appendChartPoint(liveMetrics.timestamp, liveMetrics.cpu, liveMetrics.memory.percentage);
   }, [liveMetrics]);
 
-  const formatBytes = (bytes) => {
-    if (!bytes || bytes === 0) return '0 B';
-    const kb = bytes / 1024;
-    const mb = kb / 1024;
-    const gb = mb / 1024;
-    if (gb >= 1) return `${gb.toFixed(1)} GB`;
-    if (mb >= 1) return `${mb.toFixed(1)} MB`;
-    return `${kb.toFixed(0)} KB`;
-  };
-
   if (loading || !metrics) {
     return (
-      <div className="flex items-center justify-center h-48">
-        <RefreshCw className="w-6 h-6 animate-spin" style={{ color: 'var(--accent-blue)' }} />
+      <div className="glass-card flex h-64 items-center justify-center">
+        <RefreshCw className="h-6 w-6 animate-spin" style={{ color: 'var(--accent-cyan)' }} />
       </div>
     );
   }
 
   return (
-    <div className="space-y-3">
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-        <MetricCard
-          icon={Cpu}
-          label="CPU"
-          value={metrics.cpu.usage.toFixed(1)}
-          unit="%"
-          subLabel={`${metrics.cpu.cores}核 | 负载${metrics.cpu.load?.toFixed(2) || '-'}`}
-          color="var(--accent-blue)"
-        />
-        <MetricCard
-          icon={MemoryStick}
-          label="内存"
-          value={metrics.memory.percentage}
-          unit="%"
-          subLabel={`${formatBytes(metrics.memory.used)}/${formatBytes(metrics.memory.total)}`}
-          color="var(--accent-green)"
-        />
-        <MetricCard
-          icon={HardDrive}
-          label="磁盘"
-          value={metrics.disk[0]?.percentage || 0}
-          unit="%"
-          subLabel={`${formatBytes(metrics.disk[0]?.used || 0)}/${formatBytes(metrics.disk[0]?.size || 0)}`}
-          color="var(--accent-purple)"
-        />
-        <NetworkStats network={metrics.network} />
+    <div className="space-y-4">
+      <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+        <div>
+          <span className="section-kicker">SYSTEM TELEMETRY</span>
+          <h2 className="surface-title mt-2">主机运行概览</h2>
+        </div>
+        <p className="max-w-2xl text-sm leading-6" style={{ color: 'var(--text-secondary)' }}>
+          实时曲线盯住波动，右侧四块读数负责给你最短路径的判断。哪怕只是瞟一眼，也知道系统是不是正在变吵。
+        </p>
       </div>
 
-      <RealtimeChart data={chartData} />
+      <div className="grid grid-cols-1 gap-4 xl:grid-cols-12">
+        <div className="xl:col-span-8">
+          <RealtimeChart data={chartData} />
+        </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-        <ProcessTable
-          title="CPU"
-          data={metrics.cpuProcesses || []}
-          icon={Cpu}
-          color="var(--accent-blue)"
-        />
-        <ProcessTable
-          title="内存"
-          data={metrics.memoryProcesses || []}
-          icon={MemoryStick}
-          color="var(--accent-green)"
-        />
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 xl:col-span-4 xl:grid-cols-2">
+          <MetricCard
+            icon={Cpu}
+            label="CPU"
+            value={metrics.cpu.usage.toFixed(1)}
+            unit="%"
+            subLabel={`${metrics.cpu.cores}核 / 负载 ${metrics.cpu.load?.toFixed(2) || '-'}`}
+            color="var(--accent-cyan)"
+            progress={metrics.cpu.usage}
+          />
+          <MetricCard
+            icon={MemoryStick}
+            label="MEMORY"
+            value={metrics.memory.percentage}
+            unit="%"
+            subLabel={`${formatBytes(metrics.memory.used)} / ${formatBytes(metrics.memory.total)}`}
+            color="var(--accent-yellow)"
+            progress={metrics.memory.percentage}
+          />
+          <MetricCard
+            icon={HardDrive}
+            label="DISK"
+            value={metrics.disk[0]?.percentage || 0}
+            unit="%"
+            subLabel={`${formatBytes(metrics.disk[0]?.used || 0)} / ${formatBytes(metrics.disk[0]?.size || 0)}`}
+            color="var(--accent-purple)"
+            progress={metrics.disk[0]?.percentage || 0}
+          />
+          <NetworkStats network={metrics.network} />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
+        <ProcessTable title="CPU" data={metrics.cpuProcesses || []} icon={Cpu} color="var(--accent-cyan)" />
+        <ProcessTable title="内存" data={metrics.memoryProcesses || []} icon={MemoryStick} color="var(--accent-yellow)" />
       </div>
     </div>
   );

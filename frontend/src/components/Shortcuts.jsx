@@ -1,7 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { Plus, Globe, Edit2, Trash2, X, Settings, LayoutGrid, Terminal, Command, Play, Link } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import {
+  Command,
+  Edit2,
+  Globe,
+  LayoutGrid,
+  Link,
+  Play,
+  Plus,
+  Settings,
+  Terminal,
+  Trash2,
+  X,
+} from 'lucide-react';
+import { AnimatePresence, motion } from 'framer-motion';
 
 const ICONS = {
   globe: Globe,
@@ -28,51 +40,69 @@ function ShortcutCard({ shortcut, onClick, onEdit, onDelete, index }) {
 
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.8 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.8 }}
-      transition={{ delay: index * 0.03 }}
+      initial={{ opacity: 0, scale: 0.9, y: 12 }}
+      animate={{ opacity: 1, scale: 1, y: 0 }}
+      exit={{ opacity: 0, scale: 0.9, y: 12 }}
+      transition={{ delay: index * 0.04 }}
       layout
       className="group relative"
     >
-      <motion.div
-        whileHover={{ scale: 1.08, y: -2 }}
-        whileTap={{ scale: 0.95 }}
+      <motion.button
+        whileHover={{ y: -4, scale: 1.02 }}
+        whileTap={{ scale: 0.98 }}
         onClick={onClick}
-        className="glass-card p-3 cursor-pointer flex flex-col items-center gap-2"
+        className="glass-card shortcut-card w-full text-left"
+        type="button"
       >
-        <div
-          className="w-9 h-9 rounded-lg flex items-center justify-center transition-shadow"
-          style={{
-            background: 'linear-gradient(135deg, var(--accent-blue), var(--accent-cyan))',
-            boxShadow: '0 2px 8px rgba(59, 130, 246, 0.25)'
-          }}
-        >
-          <Icon className="w-4 h-4 text-white" />
+        <div className="shortcut-card-top">
+          <div className="shortcut-icon-wrap">
+            <Icon className="h-5 w-5 text-white" />
+          </div>
+          <span className="status-pill">{shortcut.type === 'url' ? 'URL' : '命令'}</span>
         </div>
-        <span className="text-[11px] font-medium text-center truncate w-full" style={{ color: 'var(--text-primary)' }}>
-          {shortcut.name}
-        </span>
-      </motion.div>
 
-      <div className="absolute -top-1 -right-1 flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+        <div className="space-y-2">
+          <p className="shortcut-name">{shortcut.name}</p>
+          <p className="shortcut-caption">
+            {shortcut.type === 'url' ? '点击直达服务面板' : '保留一条随手可用的操作命令'}
+          </p>
+        </div>
+      </motion.button>
+
+      <div className="absolute right-3 top-3 flex gap-1.5 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
         <motion.button
-          whileHover={{ scale: 1.15 }}
-          whileTap={{ scale: 0.9 }}
-          onClick={(e) => { e.stopPropagation(); onEdit(shortcut); }}
-          className="w-5 h-5 rounded-md flex items-center justify-center shadow-lg"
-          style={{ background: 'var(--accent-blue)', color: 'white' }}
+          whileHover={{ scale: 1.08 }}
+          whileTap={{ scale: 0.94 }}
+          onClick={event => {
+            event.stopPropagation();
+            onEdit(shortcut);
+          }}
+          className="inline-flex h-8 w-8 items-center justify-center rounded-full border"
+          style={{
+            borderColor: 'var(--border-color)',
+            background: 'rgba(255, 255, 255, 0.06)',
+            color: 'var(--text-primary)',
+          }}
+          type="button"
         >
-          <Edit2 className="w-2.5 h-2.5" />
+          <Edit2 className="h-3.5 w-3.5" />
         </motion.button>
         <motion.button
-          whileHover={{ scale: 1.15 }}
-          whileTap={{ scale: 0.9 }}
-          onClick={(e) => { e.stopPropagation(); onDelete(shortcut.id); }}
-          className="w-5 h-5 rounded-md flex items-center justify-center shadow-lg"
-          style={{ background: 'var(--accent-red)', color: 'white' }}
+          whileHover={{ scale: 1.08 }}
+          whileTap={{ scale: 0.94 }}
+          onClick={event => {
+            event.stopPropagation();
+            onDelete(shortcut.id);
+          }}
+          className="inline-flex h-8 w-8 items-center justify-center rounded-full border"
+          style={{
+            borderColor: 'rgba(240, 122, 99, 0.28)',
+            background: 'rgba(240, 122, 99, 0.08)',
+            color: 'var(--accent-red)',
+          }}
+          type="button"
         >
-          <Trash2 className="w-2.5 h-2.5" />
+          <Trash2 className="h-3.5 w-3.5" />
         </motion.button>
       </div>
     </motion.div>
@@ -89,89 +119,78 @@ function ShortcutModal({ isOpen, onClose, onSubmit, formData, setFormData, isEdi
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         className="fixed inset-0 z-[9999] flex items-center justify-center p-4"
-        style={{ background: 'rgba(0, 0, 0, 0.7)', backdropFilter: 'blur(4px)' }}
+        style={{ background: 'rgba(8, 10, 9, 0.72)', backdropFilter: 'blur(10px)' }}
         onClick={onClose}
       >
         <motion.div
-          initial={{ opacity: 0, scale: 0.9, y: 20 }}
+          initial={{ opacity: 0, scale: 0.94, y: 18 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.9, y: 20 }}
-          transition={{ type: "spring", stiffness: 300 }}
-          className="glass-card w-full max-w-sm max-h-[90vh] flex flex-col"
-          onClick={e => e.stopPropagation()}
+          exit={{ opacity: 0, scale: 0.94, y: 18 }}
+          transition={{ type: 'spring', stiffness: 280, damping: 26 }}
+          className="glass-card flex max-h-[90vh] w-full max-w-md flex-col"
+          onClick={event => event.stopPropagation()}
         >
-          <div className="flex items-center justify-between p-4 border-b shrink-0" style={{ borderColor: 'var(--border-color)' }}>
-            <h3 className="text-base font-semibold" style={{ color: 'var(--text-primary)' }}>
-              {isEditing ? '编辑' : '添加'}快捷方式
-            </h3>
-            <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              onClick={onClose}
-              className="p-1.5 rounded-lg"
-              style={{ color: 'var(--text-muted)' }}
-            >
-              <X className="w-4 h-4" />
-            </motion.button>
+          <div className="border-b p-5" style={{ borderColor: 'var(--border-color)' }}>
+            <div className="mb-4 flex items-center justify-between">
+              <span className="section-kicker">SHORTCUT EDITOR</span>
+              <button type="button" onClick={onClose} className="status-pill">
+                <X className="h-3.5 w-3.5" />
+              </button>
+            </div>
+            <h3 className="surface-title text-[1.6rem]">{isEditing ? '编辑快捷方式' : '添加快捷方式'}</h3>
           </div>
 
-          <form onSubmit={onSubmit} className="flex flex-col flex-1 min-h-0">
-            <div className="p-4 space-y-4 overflow-y-auto flex-1">
+          <form onSubmit={onSubmit} className="flex min-h-0 flex-1 flex-col">
+            <div className="flex-1 space-y-4 overflow-y-auto p-5">
               <div>
-                <label className="block text-xs font-medium mb-1.5" style={{ color: 'var(--text-secondary)' }}>
-                  名称
-                </label>
+                <label className="section-kicker mb-2 block">名称</label>
                 <input
                   type="text"
                   value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  onChange={event => setFormData({ ...formData, name: event.target.value })}
                   className="input-field w-full text-sm"
-                  placeholder="例如：GitHub"
+                  placeholder="例如：Portainer"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-medium mb-1.5" style={{ color: 'var(--text-secondary)' }}>
-                  图标
-                </label>
-                <div className="grid grid-cols-7 gap-1.5">
+                <label className="section-kicker mb-2 block">图标</label>
+                <div className="grid grid-cols-7 gap-2">
                   {ICON_OPTIONS.map(({ key, icon: Icon }) => (
                     <motion.button
                       key={key}
                       type="button"
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.9 }}
+                      whileHover={{ scale: 1.08 }}
+                      whileTap={{ scale: 0.94 }}
                       onClick={() => setFormData({ ...formData, icon: key })}
-                      className="p-2 rounded-lg border transition-all flex items-center justify-center"
+                      className="flex items-center justify-center rounded-2xl border p-2.5 transition-all"
                       style={{
-                        background: formData.icon === key ? 'var(--accent-blue)' : 'var(--bg-tertiary)',
-                        borderColor: formData.icon === key ? 'var(--accent-blue)' : 'var(--border-color)',
-                        color: formData.icon === key ? 'white' : 'var(--text-muted)'
+                        background: formData.icon === key ? 'rgba(77, 180, 200, 0.14)' : 'rgba(255, 255, 255, 0.03)',
+                        borderColor: formData.icon === key ? 'rgba(77, 180, 200, 0.4)' : 'var(--border-color)',
+                        color: formData.icon === key ? 'var(--accent-cyan)' : 'var(--text-muted)',
                       }}
                     >
-                      <Icon className="w-4 h-4" />
+                      <Icon className="h-4 w-4" />
                     </motion.button>
                   ))}
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-medium mb-1.5" style={{ color: 'var(--text-secondary)' }}>
-                  类型
-                </label>
+                <label className="section-kicker mb-2 block">类型</label>
                 <div className="flex gap-2">
-                  {['url', 'command'].map((type) => (
+                  {['url', 'command'].map(type => (
                     <motion.button
                       key={type}
                       type="button"
                       whileTap={{ scale: 0.98 }}
                       onClick={() => setFormData({ ...formData, type })}
-                      className="flex-1 py-2 px-3 rounded-lg border text-xs font-medium transition-all"
+                      className="flex-1 rounded-2xl border px-3 py-2.5 text-xs font-medium transition-all"
                       style={{
-                        background: formData.type === type ? 'var(--accent-blue)' : 'var(--bg-tertiary)',
-                        borderColor: formData.type === type ? 'var(--accent-blue)' : 'var(--border-color)',
-                        color: formData.type === type ? 'white' : 'var(--text-secondary)'
+                        background: formData.type === type ? 'rgba(216, 168, 95, 0.14)' : 'rgba(255, 255, 255, 0.03)',
+                        borderColor: formData.type === type ? 'rgba(216, 168, 95, 0.36)' : 'var(--border-color)',
+                        color: formData.type === type ? 'var(--accent-yellow)' : 'var(--text-secondary)',
                       }}
                     >
                       {type === 'url' ? 'URL' : '命令'}
@@ -181,13 +200,13 @@ function ShortcutModal({ isOpen, onClose, onSubmit, formData, setFormData, isEdi
               </div>
 
               <div>
-                <label className="block text-xs font-medium mb-1.5" style={{ color: 'var(--text-secondary)' }}>
+                <label className="section-kicker mb-2 block">
                   {formData.type === 'url' ? 'URL 地址' : '命令内容'}
                 </label>
                 <input
                   type="text"
                   value={formData.value}
-                  onChange={(e) => setFormData({ ...formData, value: e.target.value })}
+                  onChange={event => setFormData({ ...formData, value: event.target.value })}
                   className="input-field w-full text-sm"
                   placeholder={formData.type === 'url' ? 'https://...' : '输入命令...'}
                   required
@@ -195,20 +214,11 @@ function ShortcutModal({ isOpen, onClose, onSubmit, formData, setFormData, isEdi
               </div>
             </div>
 
-            <div className="flex gap-3 p-4 border-t shrink-0" style={{ borderColor: 'var(--border-color)' }}>
-              <motion.button
-                type="button"
-                whileTap={{ scale: 0.98 }}
-                onClick={onClose}
-                className="btn-secondary flex-1 text-sm"
-              >
+            <div className="flex gap-3 border-t p-5" style={{ borderColor: 'var(--border-color)' }}>
+              <motion.button whileTap={{ scale: 0.98 }} type="button" onClick={onClose} className="btn-secondary flex-1">
                 取消
               </motion.button>
-              <motion.button
-                type="submit"
-                whileTap={{ scale: 0.98 }}
-                className="btn-primary flex-1 text-sm"
-              >
+              <motion.button whileTap={{ scale: 0.98 }} type="submit" className="btn-primary flex-1">
                 {isEditing ? '更新' : '创建'}
               </motion.button>
             </div>
@@ -248,8 +258,8 @@ export default function Shortcuts() {
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async event => {
+    event.preventDefault();
 
     try {
       const url = editingId ? `/api/shortcuts/${editingId}` : '/api/shortcuts';
@@ -270,7 +280,7 @@ export default function Shortcuts() {
     }
   };
 
-  const handleDelete = async (id) => {
+  const handleDelete = async id => {
     if (!confirm('确定要删除这个快捷方式吗？')) return;
 
     try {
@@ -286,7 +296,7 @@ export default function Shortcuts() {
     }
   };
 
-  const handleShortcutClick = (shortcut) => {
+  const handleShortcutClick = shortcut => {
     if (shortcut.type === 'url') {
       window.open(shortcut.value, '_blank');
     } else {
@@ -300,7 +310,7 @@ export default function Shortcuts() {
     setModalOpen(true);
   };
 
-  const openEditModal = (shortcut) => {
+  const openEditModal = shortcut => {
     setEditingId(shortcut.id);
     setFormData({
       name: shortcut.name,
@@ -319,37 +329,45 @@ export default function Shortcuts() {
 
   if (loading) {
     return (
-      <div className="glass-card p-4 flex items-center justify-center h-32">
-        <div className="w-5 h-5 border-2 rounded-full animate-spin"
-          style={{ borderColor: 'var(--border-color)', borderTopColor: 'var(--accent-blue)' }} />
+      <div className="glass-card flex h-40 items-center justify-center">
+        <div
+          className="h-6 w-6 animate-spin rounded-full border-2"
+          style={{ borderColor: 'var(--border-color)', borderTopColor: 'var(--accent-cyan)' }}
+        />
       </div>
     );
   }
 
   return (
-    <div className="glass-card p-3">
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-2">
-          <div className="p-1.5 rounded-lg" style={{ background: 'rgba(59, 130, 246, 0.15)' }}>
-            <LayoutGrid className="w-3.5 h-3.5" style={{ color: 'var(--accent-blue)' }} />
+    <div className="glass-card p-4 sm:p-5 xl:p-6">
+      <div className="mb-5 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <span className="section-kicker">LAUNCHPAD</span>
+          <div className="mt-3 flex items-center gap-3">
+            <div className="signal-icon" style={{ color: 'var(--accent-yellow)' }}>
+              <LayoutGrid className="h-4 w-4" />
+            </div>
+            <h2 className="surface-title">快捷入口</h2>
           </div>
-          <h2 className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>快捷方式</h2>
-          <span className="text-[10px] px-1.5 py-0.5 rounded" style={{ background: 'var(--bg-tertiary)', color: 'var(--text-muted)' }}>
-            {shortcuts.length}
-          </span>
+          <p className="mt-3 max-w-md text-sm leading-6" style={{ color: 'var(--text-secondary)' }}>
+            常用服务不必再翻书签栏。这里保留你最常点开的入口，像一排贴在控制台边上的物理拨片。
+          </p>
         </div>
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={openAddModal}
-          className="btn-primary flex items-center gap-1 text-xs py-1.5 px-2.5"
-        >
-          <Plus className="w-3 h-3" />
-          添加
+
+        <motion.button whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }} onClick={openAddModal} className="btn-primary self-start" type="button">
+          <Plus className="h-3.5 w-3.5" />
+          添加入口
         </motion.button>
       </div>
 
-      <div className="grid grid-cols-3 gap-2">
+      <div className="mb-4 flex flex-wrap gap-2">
+        <span className="status-pill">
+          <strong>{shortcuts.length}</strong>
+          <span>已保存入口</span>
+        </span>
+      </div>
+
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-2 2xl:grid-cols-3">
         <AnimatePresence>
           {shortcuts.map((shortcut, index) => (
             <ShortcutCard
@@ -365,17 +383,15 @@ export default function Shortcuts() {
       </div>
 
       {shortcuts.length === 0 && (
-        <motion.div
-          className="text-center py-6"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-        >
-          <div className="w-10 h-10 mx-auto mb-2 rounded-lg flex items-center justify-center"
-            style={{ background: 'var(--bg-tertiary)' }}>
-            <Link className="w-5 h-5" style={{ color: 'var(--text-muted)' }} />
+        <motion.div className="py-10 text-center" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+          <div
+            className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full border"
+            style={{ borderColor: 'var(--border-color)' }}
+          >
+            <Link className="h-6 w-6" style={{ color: 'var(--text-muted)' }} />
           </div>
-          <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
-            点击"添加"创建快捷方式
+          <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+            先加一个常用入口，让控制台更像你自己的桌面。
           </p>
         </motion.div>
       )}
