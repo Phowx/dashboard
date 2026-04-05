@@ -17,13 +17,13 @@ function StatusBadge({ state }) {
   const getStatusConfig = () => {
     switch (state) {
       case 'running':
-        return { color: 'var(--accent-green)', bg: 'rgba(138, 214, 142, 0.14)', label: '运行中' };
+        return { color: 'var(--accent-green)', bg: 'rgba(138, 214, 142, 0.14)', label: 'Running' };
       case 'exited':
-        return { color: 'var(--accent-red)', bg: 'rgba(240, 122, 99, 0.14)', label: '已停止' };
+        return { color: 'var(--accent-red)', bg: 'rgba(240, 122, 99, 0.14)', label: 'Stopped' };
       case 'paused':
-        return { color: 'var(--accent-yellow)', bg: 'rgba(216, 168, 95, 0.14)', label: '已暂停' };
+        return { color: 'var(--accent-yellow)', bg: 'rgba(216, 168, 95, 0.14)', label: 'Paused' };
       default:
-        return { color: 'var(--text-muted)', bg: 'rgba(255, 255, 255, 0.05)', label: state || '未知' };
+        return { color: 'var(--text-muted)', bg: 'rgba(255, 255, 255, 0.05)', label: state || 'Unknown' };
     }
   };
 
@@ -50,10 +50,10 @@ function ConfirmModal({ isOpen, onClose, onConfirm, containerName, action, isLoa
   if (!isOpen) return null;
 
   const actionConfig = {
-    start: { label: '启动', color: 'var(--accent-green)', icon: Play },
-    stop: { label: '停止', color: 'var(--accent-red)', icon: Square },
-    restart: { label: '重启', color: 'var(--accent-cyan)', icon: RotateCcw },
-    remove: { label: '删除', color: 'var(--accent-red)', icon: Trash2 },
+    start: { label: 'Start', color: 'var(--accent-green)', icon: Play },
+    stop: { label: 'Stop', color: 'var(--accent-red)', icon: Square },
+    restart: { label: 'Restart', color: 'var(--accent-cyan)', icon: RotateCcw },
+    remove: { label: 'Remove', color: 'var(--accent-red)', icon: Trash2 },
   };
 
   const config = actionConfig[action] || actionConfig.stop;
@@ -97,10 +97,10 @@ function ConfirmModal({ isOpen, onClose, onConfirm, containerName, action, isLoa
                 {isDanger ? <AlertTriangle className="h-4 w-4" /> : <Icon className="h-4 w-4" />}
               </div>
               <div>
-                <h3 className="surface-title text-[1.6rem]">确认{config.label}</h3>
+                <h3 className="surface-title text-[1.6rem]">{config.label} Container</h3>
                 <p className="mt-2 text-sm leading-6" style={{ color: 'var(--text-secondary)' }}>
-                  你将对容器 <strong style={{ color: 'var(--text-primary)' }}>{containerName}</strong> 执行
-                  <span style={{ color: config.color }}> {config.label}</span> 操作。
+                  This will <span style={{ color: config.color }}>{config.label.toLowerCase()}</span>{' '}
+                  <strong style={{ color: 'var(--text-primary)' }}>{containerName}</strong>.
                 </p>
               </div>
             </div>
@@ -108,7 +108,7 @@ function ConfirmModal({ isOpen, onClose, onConfirm, containerName, action, isLoa
 
           <div className="flex gap-3 p-5">
             <m.button whileTap={{ scale: 0.98 }} onClick={onClose} disabled={isLoading} className="btn-secondary flex-1">
-              取消
+              Cancel
             </m.button>
             <m.button
               whileTap={{ scale: 0.98 }}
@@ -119,7 +119,7 @@ function ConfirmModal({ isOpen, onClose, onConfirm, containerName, action, isLoa
               style={{ opacity: isLoading ? 0.75 : 1 }}
             >
               {isLoading ? <RefreshCw className="h-4 w-4 animate-spin" /> : <Icon className="h-4 w-4" />}
-              确认
+              Confirm
             </m.button>
           </div>
         </m.div>
@@ -131,10 +131,10 @@ function ConfirmModal({ isOpen, onClose, onConfirm, containerName, action, isLoa
 
 function ActionButton({ action, onClick, loading, disabled }) {
   const config = {
-    start: { icon: Play, color: 'var(--accent-green)', title: '启动' },
-    stop: { icon: Square, color: 'var(--accent-red)', title: '停止' },
-    restart: { icon: RotateCcw, color: 'var(--accent-cyan)', title: '重启' },
-    remove: { icon: Trash2, color: 'var(--accent-red)', title: '删除' },
+    start: { icon: Play, color: 'var(--accent-green)', title: 'Start' },
+    stop: { icon: Square, color: 'var(--accent-red)', title: 'Stop' },
+    restart: { icon: RotateCcw, color: 'var(--accent-cyan)', title: 'Restart' },
+    remove: { icon: Trash2, color: 'var(--accent-red)', title: 'Remove' },
   }[action];
 
   const Icon = config.icon;
@@ -245,7 +245,7 @@ function DockerList() {
               <div className="signal-icon" style={{ color: 'var(--accent-cyan)' }}>
                 <Container className="h-4 w-4" />
               </div>
-              <h2 className="surface-title">Docker 舱段</h2>
+              <h2 className="surface-title">Docker Fleet</h2>
             </div>
           </div>
 
@@ -257,26 +257,26 @@ function DockerList() {
             type="button"
           >
             <RefreshCw className="h-3.5 w-3.5" />
-            <span>刷新容器</span>
+            <span>Refresh</span>
           </m.button>
         </div>
 
         <div className="mt-5 flex flex-wrap gap-2">
           <span className="status-pill">
             <strong>{stats.total}</strong>
-            <span>总数</span>
+            <span>Total</span>
           </span>
           <span className="status-pill" style={{ color: 'var(--accent-green)' }}>
             <strong>{stats.running}</strong>
-            <span>运行</span>
+            <span>Running</span>
           </span>
           <span className="status-pill" style={{ color: 'var(--accent-red)' }}>
             <strong>{stats.stopped}</strong>
-            <span>停止</span>
+            <span>Stopped</span>
           </span>
           <span className="status-pill" style={{ color: 'var(--accent-yellow)' }}>
             <strong>{stats.paused}</strong>
-            <span>暂停</span>
+            <span>Paused</span>
           </span>
         </div>
       </div>
@@ -287,7 +287,7 @@ function DockerList() {
             <Container className="h-6 w-6" style={{ color: 'var(--text-muted)' }} />
           </div>
           <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-            当前没有可显示的容器。
+            No containers found.
           </p>
         </div>
       ) : (
@@ -324,11 +324,11 @@ function DockerList() {
                     </strong>
                   </div>
                   <div className="mobile-stat-card">
-                    <span className="section-kicker">内存</span>
+                    <span className="section-kicker">MEMORY</span>
                     <strong style={{ color: 'var(--accent-yellow)' }}>{formatBytes(container.stats?.memoryUsage)}</strong>
                   </div>
                   <div className="mobile-stat-card col-span-2">
-                    <span className="section-kicker">端口</span>
+                    <span className="section-kicker">PORTS</span>
                     <strong className="break-all text-left" style={{ color: 'var(--text-primary)' }}>
                       {container.ports || '-'}
                     </strong>
@@ -371,13 +371,13 @@ function DockerList() {
                 className="mono-type text-[10px] uppercase tracking-[0.18em]"
                 style={{ color: 'var(--text-muted)' }}
               >
-                <th className="px-3 py-3 text-left font-medium">状态</th>
-                <th className="px-3 py-3 text-left font-medium">名称</th>
-                <th className="hidden px-3 py-3 text-left font-medium md:table-cell">镜像</th>
-                <th className="px-3 py-3 text-left font-medium">端口</th>
+                <th className="px-3 py-3 text-left font-medium">State</th>
+                <th className="px-3 py-3 text-left font-medium">Name</th>
+                <th className="hidden px-3 py-3 text-left font-medium md:table-cell">Image</th>
+                <th className="px-3 py-3 text-left font-medium">Ports</th>
                 <th className="px-3 py-3 text-right font-medium">CPU</th>
-                <th className="px-3 py-3 text-right font-medium">内存</th>
-                <th className="px-3 py-3 text-center font-medium">操作</th>
+                <th className="px-3 py-3 text-right font-medium">Memory</th>
+                <th className="px-3 py-3 text-center font-medium">Actions</th>
               </tr>
             </thead>
               <tbody className="divide-y" style={{ divideColor: 'var(--border-color)' }}>

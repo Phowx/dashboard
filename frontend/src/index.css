@@ -425,6 +425,16 @@ body::after {
   line-height: 0.92;
 }
 
+.metrics-grid {
+  grid-auto-rows: minmax(0, 1fr);
+}
+
+.metric-card {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
 .metric-unit {
   margin-bottom: 0.32rem;
   font-size: 0.9rem;
@@ -465,7 +475,7 @@ body::after {
   justify-content: space-between;
   gap: 1rem;
   border-radius: 18px;
-  padding: 0.9rem 1rem;
+  padding: 0.75rem 0.9rem;
 }
 
 .network-label {
@@ -482,7 +492,7 @@ body::after {
   position: relative;
   overflow: hidden;
   border-radius: 18px;
-  padding: 0.95rem 1rem;
+  padding: 0.85rem 0.95rem;
 }
 
 .process-fill {
@@ -521,6 +531,10 @@ body::after {
   flex-direction: column;
   gap: 0.7rem;
   padding: 0.95rem;
+}
+
+.shortcut-column {
+  min-height: 0;
 }
 
 .shortcut-card-top,

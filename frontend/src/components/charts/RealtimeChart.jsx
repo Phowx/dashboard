@@ -15,7 +15,7 @@ export default function RealtimeChart({ data }) {
       <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <span className="section-kicker">SIGNAL WINDOW</span>
-          <h2 className="surface-title mt-2">实时负载曲线</h2>
+          <h2 className="surface-title mt-2">Realtime Load</h2>
         </div>
         <div className="flex flex-wrap gap-2">
           <span className="status-pill">
@@ -24,12 +24,12 @@ export default function RealtimeChart({ data }) {
           </span>
           <span className="status-pill">
             <span className="h-2 w-2 rounded-full" style={{ background: 'var(--accent-yellow)' }} />
-            内存
+            Memory
           </span>
         </div>
       </div>
 
-      <div className="h-72 sm:h-80">
+      <div className="h-64 sm:h-[18.5rem]">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={data} margin={{ top: 10, right: 0, bottom: 0, left: -18 }}>
             <defs>
@@ -86,7 +86,7 @@ export default function RealtimeChart({ data }) {
               stroke="var(--accent-yellow)"
               fill="url(#memoryFill)"
               strokeWidth={2.5}
-              name="内存"
+              name="Memory"
               dot={false}
               activeDot={{ r: 4 }}
               isAnimationActive={false}

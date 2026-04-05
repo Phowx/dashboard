@@ -84,15 +84,15 @@ function DashboardApp() {
                 </div>
                 <div className="page-title-wrap">
                   <span className="section-kicker">PRIVATE INFRASTRUCTURE</span>
-                  <p className="header-title">私人服务器控制台</p>
+                  <p className="header-title">Server Dashboard</p>
                 </div>
               </div>
 
               <div className="flex flex-wrap items-center gap-2.5">
                 <div className="status-pill">
                   <Clock3 className="h-3.5 w-3.5" />
-                  <span>{now.toLocaleDateString('zh-CN', { month: 'long', day: 'numeric' })}</span>
-                  <strong>{now.toLocaleTimeString('zh-CN', { hour12: false })}</strong>
+                  <span>{now.toLocaleDateString('en-GB', { month: 'short', day: '2-digit' })}</span>
+                  <strong>{now.toLocaleTimeString('en-GB', { hour12: false })}</strong>
                 </div>
 
                 <div className="status-pill">
@@ -101,7 +101,7 @@ function DashboardApp() {
                   ) : (
                     <WifiOff className="h-3.5 w-3.5" style={{ color: 'var(--accent-red)' }} />
                   )}
-                  <span>{wsStatus === 'connected' ? '实时同步中' : '重连中'}</span>
+                  <span>{wsStatus === 'connected' ? 'Live Sync' : 'Reconnecting'}</span>
                   <strong>{wsStatus === 'connected' ? cpuUsage : '--'}</strong>
                 </div>
 
@@ -136,7 +136,7 @@ function DashboardApp() {
                       </m.span>
                     )}
                   </AnimatePresence>
-                  <span>{theme === 'dark' ? '浅色视图' : '深色视图'}</span>
+                  <span>{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
                 </m.button>
               </div>
             </div>
@@ -159,13 +159,13 @@ function DashboardApp() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.45, delay: 0.22 }}
-            className="col-span-12 xl:col-span-4 2xl:col-span-4"
+            className="col-span-12 h-full xl:col-span-4 2xl:col-span-4 xl:self-stretch"
           >
             <Suspense
               fallback={
                 <SectionFallback
-                  title="快捷入口加载中"
-                  description="正在拆分懒加载区块，先让首屏更快落地。"
+                  title="Launchpad Loading"
+                  description="Preparing the shortcuts panel."
                   minHeight="min-h-[360px]"
                 />
               }
@@ -183,8 +183,8 @@ function DashboardApp() {
             <Suspense
               fallback={
                 <SectionFallback
-                  title="Docker 舱段加载中"
-                  description="容器控制区已拆成独立 chunk，减少首屏主包压力。"
+                  title="Container Deck Loading"
+                  description="Preparing the container controls."
                   minHeight="min-h-[320px]"
                 />
               }

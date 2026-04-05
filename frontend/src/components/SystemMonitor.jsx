@@ -26,7 +26,7 @@ function formatBytes(bytes) {
 function MetricCard({ icon: Icon, label, value, unit, subLabel, color, progress }) {
   return (
     <m.div
-      className="glass-card p-4"
+      className="glass-card metric-card h-full p-4"
       initial={{ opacity: 0, scale: 0.96 }}
       animate={{ opacity: 1, scale: 1 }}
     >
@@ -72,15 +72,15 @@ function NetworkStats({ network }) {
 
   return (
     <m.div
-      className="glass-card p-4"
+      className="glass-card metric-card h-full p-4"
       initial={{ opacity: 0, scale: 0.96 }}
       animate={{ opacity: 1, scale: 1 }}
     >
-      <div className="mb-4 flex items-start justify-between gap-3">
+      <div className="flex items-start justify-between gap-3">
         <div>
           <span className="section-kicker">NETWORK</span>
           <div className="mt-3 text-2xl font-semibold display-type" style={{ color: 'var(--text-primary)' }}>
-            双向吞吐
+            Throughput
           </div>
         </div>
         <div className="signal-icon" style={{ color: 'var(--accent-cyan)' }}>
@@ -88,11 +88,11 @@ function NetworkStats({ network }) {
         </div>
       </div>
 
-      <div className="space-y-3">
+      <div className="mt-4 space-y-3">
         <div className="network-row">
           <div className="flex items-center gap-2">
             <ArrowDown className="h-3.5 w-3.5" style={{ color: 'var(--accent-green)' }} />
-            <span className="network-label">下载</span>
+            <span className="network-label">RX</span>
           </div>
           <span className="network-value">{formatSpeed(network?.rx_sec)}</span>
         </div>
@@ -100,20 +100,20 @@ function NetworkStats({ network }) {
         <div className="network-row">
           <div className="flex items-center gap-2">
             <ArrowUp className="h-3.5 w-3.5" style={{ color: 'var(--accent-cyan)' }} />
-            <span className="network-label">上传</span>
+            <span className="network-label">TX</span>
           </div>
           <span className="network-value">{formatSpeed(network?.tx_sec)}</span>
         </div>
       </div>
 
-      <p className="metric-subcopy mt-4">
-        累计 ↓{formatBytes(network?.rx_bytes)} / ↑{formatBytes(network?.tx_bytes)}
+      <p className="metric-subcopy mt-auto pt-4">
+        Total {formatBytes(network?.rx_bytes)} in / {formatBytes(network?.tx_bytes)} out
       </p>
     </m.div>
   );
 }
 
-function ProcessTable({ title, data, icon: Icon, color }) {
+function ProcessTable({ sectionLabel, title, data, metricKey, icon: Icon, color }) {
   return (
     <div className="glass-card p-4 h-full">
       <div className="mb-4 flex items-center justify-between gap-3">
@@ -122,9 +122,9 @@ function ProcessTable({ title, data, icon: Icon, color }) {
             <Icon className="h-4 w-4" />
           </div>
           <div>
-            <span className="section-kicker">{title}</span>
+            <span className="section-kicker">{sectionLabel}</span>
             <h3 className="mt-2 text-xl display-type" style={{ color: 'var(--text-primary)' }}>
-              {title === 'CPU' ? '热点进程' : '内存占用'}
+              {title}
             </h3>
           </div>
         </div>
@@ -133,7 +133,7 @@ function ProcessTable({ title, data, icon: Icon, color }) {
 
       <div className="space-y-2">
         {data.map((process, index) => {
-          const value = process[title === 'CPU' ? 'cpu' : 'memory'];
+          const value = process[metricKey];
 
           return (
             <div key={process.pid} className="process-row">
@@ -171,7 +171,7 @@ function SystemMonitor() {
   const appendChartPoint = (timestamp, cpuUsage, memoryPercentage) => {
     setChartData(prev => {
       const nextPoint = {
-        time: new Date(timestamp).toLocaleTimeString('zh-CN', {
+        time: new Date(timestamp).toLocaleTimeString('en-GB', {
           hour: '2-digit',
           minute: '2-digit',
           second: '2-digit',
@@ -238,11 +238,11 @@ function SystemMonitor() {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       <div className="flex items-center justify-between gap-3">
         <div>
           <span className="section-kicker">SYSTEM TELEMETRY</span>
-          <h2 className="surface-title mt-2">主机运行概览</h2>
+          <h2 className="surface-title mt-2">Host Overview</h2>
         </div>
         <span className="status-pill hidden sm:inline-flex">HOST</span>
       </div>
@@ -251,11 +251,11 @@ function SystemMonitor() {
         <div className="xl:col-span-8">
           <Suspense
             fallback={
-              <div className="glass-card h-full min-h-[360px] p-4 sm:p-5 xl:p-6">
+              <div className="glass-card h-full min-h-[320px] p-4 sm:p-5 xl:p-6">
                 <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                   <div>
                     <span className="section-kicker">SIGNAL WINDOW</span>
-                    <h2 className="surface-title mt-2">实时负载曲线</h2>
+                    <h2 className="surface-title mt-2">Realtime Load</h2>
                   </div>
                   <div className="loading-orb" />
                 </div>
@@ -272,13 +272,13 @@ function SystemMonitor() {
           </Suspense>
         </div>
 
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 xl:col-span-4 xl:grid-cols-2">
+        <div className="metrics-grid grid grid-cols-2 gap-4 sm:grid-cols-4 xl:col-span-4 xl:grid-cols-2">
           <MetricCard
             icon={Cpu}
             label="CPU"
             value={metrics.cpu.usage.toFixed(1)}
             unit="%"
-            subLabel={`${metrics.cpu.cores}核 / 负载 ${metrics.cpu.load?.toFixed(2) || '-'}`}
+            subLabel={`${metrics.cpu.cores} cores / load ${metrics.cpu.load?.toFixed(2) || '-'}`}
             color="var(--accent-cyan)"
             progress={metrics.cpu.usage}
           />
@@ -305,8 +305,22 @@ function SystemMonitor() {
       </div>
 
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
-        <ProcessTable title="CPU" data={metrics.cpuProcesses || []} icon={Cpu} color="var(--accent-cyan)" />
-        <ProcessTable title="内存" data={metrics.memoryProcesses || []} icon={MemoryStick} color="var(--accent-yellow)" />
+        <ProcessTable
+          sectionLabel="CPU"
+          title="Top CPU Processes"
+          metricKey="cpu"
+          data={metrics.cpuProcesses || []}
+          icon={Cpu}
+          color="var(--accent-cyan)"
+        />
+        <ProcessTable
+          sectionLabel="MEMORY"
+          title="Memory Usage"
+          metricKey="memory"
+          data={metrics.memoryProcesses || []}
+          icon={MemoryStick}
+          color="var(--accent-yellow)"
+        />
       </div>
     </div>
   );

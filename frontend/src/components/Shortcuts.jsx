@@ -74,7 +74,7 @@ function ShortcutCard({ shortcut, onClick, onEdit, onDelete, index }) {
               <p className="shortcut-value">{getShortcutPreview(shortcut)}</p>
             </div>
           </div>
-          <span className="status-pill">{shortcut.type === 'url' ? 'URL' : '命令'}</span>
+          <span className="status-pill">{shortcut.type === 'url' ? 'URL' : 'CMD'}</span>
         </div>
       </m.button>
 
@@ -146,25 +146,25 @@ function ShortcutModal({ isOpen, onClose, onSubmit, formData, setFormData, isEdi
                 <X className="h-3.5 w-3.5" />
               </button>
             </div>
-            <h3 className="surface-title text-[1.6rem]">{isEditing ? '编辑快捷方式' : '添加快捷方式'}</h3>
+            <h3 className="surface-title text-[1.6rem]">{isEditing ? 'Edit Shortcut' : 'Add Shortcut'}</h3>
           </div>
 
           <form onSubmit={onSubmit} className="flex min-h-0 flex-1 flex-col">
             <div className="flex-1 space-y-4 overflow-y-auto p-5">
               <div>
-                <label className="section-kicker mb-2 block">名称</label>
+                <label className="section-kicker mb-2 block">Name</label>
                 <input
                   type="text"
                   value={formData.name}
                   onChange={event => setFormData({ ...formData, name: event.target.value })}
                   className="input-field w-full text-sm"
-                  placeholder="例如：Portainer"
+                  placeholder="Portainer"
                   required
                 />
               </div>
 
               <div>
-                <label className="section-kicker mb-2 block">图标</label>
+                <label className="section-kicker mb-2 block">Icon</label>
                 <div className="grid grid-cols-7 gap-2">
                   {ICON_OPTIONS.map(({ key, icon: Icon }) => (
                     <m.button
@@ -187,7 +187,7 @@ function ShortcutModal({ isOpen, onClose, onSubmit, formData, setFormData, isEdi
               </div>
 
               <div>
-                <label className="section-kicker mb-2 block">类型</label>
+                <label className="section-kicker mb-2 block">Type</label>
                 <div className="flex gap-2">
                   {['url', 'command'].map(type => (
                     <m.button
@@ -202,7 +202,7 @@ function ShortcutModal({ isOpen, onClose, onSubmit, formData, setFormData, isEdi
                         color: formData.type === type ? 'var(--accent-yellow)' : 'var(--text-secondary)',
                       }}
                     >
-                      {type === 'url' ? 'URL' : '命令'}
+                      {type === 'url' ? 'URL' : 'Command'}
                     </m.button>
                   ))}
                 </div>
@@ -210,14 +210,14 @@ function ShortcutModal({ isOpen, onClose, onSubmit, formData, setFormData, isEdi
 
               <div>
                 <label className="section-kicker mb-2 block">
-                  {formData.type === 'url' ? 'URL 地址' : '命令内容'}
+                  {formData.type === 'url' ? 'URL' : 'Command'}
                 </label>
                 <input
                   type="text"
                   value={formData.value}
                   onChange={event => setFormData({ ...formData, value: event.target.value })}
                   className="input-field w-full text-sm"
-                  placeholder={formData.type === 'url' ? 'https://...' : '输入命令...'}
+                  placeholder={formData.type === 'url' ? 'https://...' : 'Enter command...'}
                   required
                 />
               </div>
@@ -225,10 +225,10 @@ function ShortcutModal({ isOpen, onClose, onSubmit, formData, setFormData, isEdi
 
             <div className="flex gap-3 border-t p-5" style={{ borderColor: 'var(--border-color)' }}>
               <m.button whileTap={{ scale: 0.98 }} type="button" onClick={onClose} className="btn-secondary flex-1">
-                取消
+                Cancel
               </m.button>
               <m.button whileTap={{ scale: 0.98 }} type="submit" className="btn-primary flex-1">
-                {isEditing ? '更新' : '创建'}
+                {isEditing ? 'Update' : 'Create'}
               </m.button>
             </div>
           </form>
@@ -290,7 +290,7 @@ export default function Shortcuts() {
   };
 
   const handleDelete = async id => {
-    if (!confirm('确定要删除这个快捷方式吗？')) return;
+    if (!confirm('Delete this shortcut?')) return;
 
     try {
       const response = await fetch(`/api/shortcuts/${id}`, {
@@ -309,7 +309,7 @@ export default function Shortcuts() {
     if (shortcut.type === 'url') {
       window.open(shortcut.value, '_blank');
     } else {
-      alert(`命令: ${shortcut.value}`);
+      alert(`Command: ${shortcut.value}`);
     }
   };
 
@@ -348,7 +348,7 @@ export default function Shortcuts() {
   }
 
   return (
-    <div className="glass-card p-4 sm:p-5 xl:p-6">
+    <div className="glass-card flex h-full flex-col p-4 sm:p-5 xl:p-6">
       <div className="mb-5 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <span className="section-kicker">LAUNCHPAD</span>
@@ -356,51 +356,53 @@ export default function Shortcuts() {
             <div className="signal-icon" style={{ color: 'var(--accent-yellow)' }}>
               <LayoutGrid className="h-4 w-4" />
             </div>
-            <h2 className="surface-title">快捷入口</h2>
+            <h2 className="surface-title">Shortcuts</h2>
           </div>
         </div>
 
         <m.button whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }} onClick={openAddModal} className="btn-primary self-start" type="button">
           <Plus className="h-3.5 w-3.5" />
-          添加入口
+          Add Link
         </m.button>
       </div>
 
       <div className="mb-4 flex flex-wrap gap-2">
         <span className="status-pill">
           <strong>{shortcuts.length}</strong>
-          <span>已保存入口</span>
+          <span>Saved</span>
         </span>
       </div>
 
-      <div className="grid grid-cols-1 gap-3">
-        <AnimatePresence>
-          {shortcuts.map((shortcut, index) => (
-            <ShortcutCard
-              key={shortcut.id}
-              shortcut={shortcut}
-              index={index}
-              onClick={() => handleShortcutClick(shortcut)}
-              onEdit={openEditModal}
-              onDelete={handleDelete}
-            />
-          ))}
-        </AnimatePresence>
-      </div>
-
-      {shortcuts.length === 0 && (
-        <m.div className="py-10 text-center" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-          <div
-            className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full border"
-            style={{ borderColor: 'var(--border-color)' }}
-          >
-            <Link className="h-6 w-6" style={{ color: 'var(--text-muted)' }} />
+      <div className="shortcut-column flex flex-1 flex-col">
+        {shortcuts.length > 0 ? (
+          <div className="grid grid-cols-1 gap-3 content-start">
+            <AnimatePresence>
+              {shortcuts.map((shortcut, index) => (
+                <ShortcutCard
+                  key={shortcut.id}
+                  shortcut={shortcut}
+                  index={index}
+                  onClick={() => handleShortcutClick(shortcut)}
+                  onEdit={openEditModal}
+                  onDelete={handleDelete}
+                />
+              ))}
+            </AnimatePresence>
           </div>
-          <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-            暂无快捷入口
-          </p>
-        </m.div>
-      )}
+        ) : (
+          <m.div className="flex flex-1 flex-col items-center justify-center py-10 text-center" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+            <div
+              className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full border"
+              style={{ borderColor: 'var(--border-color)' }}
+            >
+              <Link className="h-6 w-6" style={{ color: 'var(--text-muted)' }} />
+            </div>
+            <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+              No shortcuts yet
+            </p>
+          </m.div>
+        )}
+      </div>
 
       <ShortcutModal
         isOpen={modalOpen}
