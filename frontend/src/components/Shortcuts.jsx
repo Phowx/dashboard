@@ -74,7 +74,6 @@ function ShortcutCard({ shortcut, onClick, onEdit, onDelete, index }) {
               <p className="shortcut-value" title={getShortcutPreview(shortcut)}>{getShortcutPreview(shortcut)}</p>
             </div>
           </div>
-          <span className="status-pill">{shortcut.type === 'url' ? 'URL' : 'CMD'}</span>
         </div>
       </m.button>
 

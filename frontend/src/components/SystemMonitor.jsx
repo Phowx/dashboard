@@ -246,8 +246,8 @@ function SystemMonitor() {
 
   return (
     <div className="space-y-3">
-      <div className="grid grid-cols-1 gap-4 xl:grid-cols-12">
-        <div className="xl:col-span-8 xl:self-start">
+      <div className="grid grid-cols-1 gap-4 xl:min-h-[322px] xl:grid-cols-12 xl:items-stretch">
+        <div className="xl:col-span-8 xl:h-full">
           <Suspense
             fallback={
               <div className="glass-card h-full min-h-[320px] p-4 sm:p-5 xl:p-6">
@@ -267,7 +267,7 @@ function SystemMonitor() {
           </Suspense>
         </div>
 
-        <div className="metrics-grid grid grid-cols-2 gap-4 sm:grid-cols-4 xl:col-span-4 xl:grid-cols-2 xl:self-start">
+        <div className="metrics-grid grid grid-cols-2 gap-4 sm:grid-cols-4 xl:col-span-4 xl:h-full xl:grid-cols-2 xl:grid-rows-2">
           <MetricCard
             icon={Cpu}
             label="CPU"

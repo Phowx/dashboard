@@ -13,6 +13,24 @@ import {
 } from 'lucide-react';
 import { AnimatePresence, m } from 'framer-motion';
 
+const STACK_TONES = [
+  { color: 'var(--accent-cyan)', bg: 'rgba(87, 208, 239, 0.12)', border: 'rgba(87, 208, 239, 0.26)' },
+  { color: 'var(--accent-yellow)', bg: 'rgba(255, 180, 84, 0.14)', border: 'rgba(255, 180, 84, 0.28)' },
+  { color: 'var(--accent-green)', bg: 'rgba(124, 214, 166, 0.14)', border: 'rgba(124, 214, 166, 0.28)' },
+  { color: '#de8bff', bg: 'rgba(222, 139, 255, 0.14)', border: 'rgba(222, 139, 255, 0.28)' },
+  { color: '#ff8a6a', bg: 'rgba(255, 138, 106, 0.14)', border: 'rgba(255, 138, 106, 0.28)' },
+  { color: '#7aa6ff', bg: 'rgba(122, 166, 255, 0.14)', border: 'rgba(122, 166, 255, 0.28)' },
+];
+
+function getStackTone(stackName) {
+  if (!stackName) {
+    return null;
+  }
+
+  const hash = [...stackName].reduce((sum, char) => sum + char.charCodeAt(0), 0);
+  return STACK_TONES[hash % STACK_TONES.length];
+}
+
 function StatusBadge({ state }) {
   const getStatusConfig = () => {
     switch (state) {
@@ -300,16 +318,34 @@ function DockerList() {
           <div className="mt-4 grid gap-3 px-3 pb-3 md:hidden">
             {sortedContainers.map(container => (
               <div key={container.id} className="glass-card p-4">
+                {container.composeProject && (() => {
+                  const stackTone = getStackTone(container.composeProject);
+                  return (
+                    <div className="mb-3">
+                      <span
+                        className="stack-pill"
+                        style={{
+                          color: stackTone.color,
+                          background: stackTone.bg,
+                          borderColor: stackTone.border,
+                        }}
+                      >
+                        {container.composeProject}
+                      </span>
+                    </div>
+                  );
+                })()}
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
                     <div className="flex items-center gap-2">
-                      {container.composeProject && (
-                        <Layers className="h-3.5 w-3.5 shrink-0" style={{ color: 'var(--accent-cyan)' }} />
-                      )}
+                      {container.composeProject && (() => {
+                        const stackTone = getStackTone(container.composeProject);
+                        return (
+                          <Layers className="h-3.5 w-3.5 shrink-0" style={{ color: stackTone?.color || 'var(--accent-cyan)' }} />
+                        );
+                      })()}
                       <span className="truncate text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
-                        {container.composeProject
-                          ? `${container.composeProject}/${container.composeService || container.name}`
-                          : container.name}
+                        {container.composeService || container.name}
                       </span>
                     </div>
                     <p className="mt-1 text-[11px] mono-type" style={{ color: 'var(--text-muted)' }}>
@@ -395,10 +431,24 @@ function DockerList() {
                     <td className="px-3 py-4">
                       <div className="min-w-0 flex items-center gap-2">
                         {container.composeProject ? (
-                          <>
-                            <Layers className="h-3.5 w-3.5 shrink-0" style={{ color: 'var(--accent-cyan)' }} />
-                            <span className="stack-pill">{container.composeProject}</span>
-                          </>
+                          (() => {
+                            const stackTone = getStackTone(container.composeProject);
+                            return (
+                              <>
+                                <Layers className="h-3.5 w-3.5 shrink-0" style={{ color: stackTone.color }} />
+                                <span
+                                  className="stack-pill"
+                                  style={{
+                                    color: stackTone.color,
+                                    background: stackTone.bg,
+                                    borderColor: stackTone.border,
+                                  }}
+                                >
+                                  {container.composeProject}
+                                </span>
+                              </>
+                            );
+                          })()
                         ) : (
                           <span className="stack-pill stack-pill-standalone">Standalone</span>
                         )}

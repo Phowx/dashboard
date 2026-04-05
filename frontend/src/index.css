@@ -821,10 +821,6 @@ tr:hover td {
     align-items: stretch;
     padding: 1.7rem;
   }
-
-  .metrics-grid > .metric-card {
-    aspect-ratio: 1 / 1;
-  }
 }
 
 @media (max-width: 767px) {
