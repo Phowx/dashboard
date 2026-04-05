@@ -189,6 +189,8 @@ body::after {
 
 .dashboard-toolbar-shell {
   padding: 0.58rem 0.7rem;
+  overflow: visible;
+  z-index: 12;
 }
 
 .toolbar-branding {
@@ -424,7 +426,7 @@ body::after {
   background: var(--liquid-surface);
   backdrop-filter: var(--liquid-backdrop);
   box-shadow: var(--liquid-shadow);
-  z-index: 20;
+  z-index: 40;
 }
 
 .status-pill > *,

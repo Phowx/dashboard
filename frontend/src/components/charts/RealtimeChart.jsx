@@ -13,7 +13,7 @@ export default function RealtimeChart({ data }) {
   return (
     <div className="glass-card chart-panel h-full flex flex-col p-3.5 sm:p-4 xl:p-4">
       <div className="mb-3 flex items-center justify-between gap-3">
-        <span className="status-pill chart-tag">LOAD</span>
+        <span className="status-pill chart-tag">USAGE</span>
         <div className="flex flex-wrap gap-2">
           <span className="status-pill">
             <span className="h-2 w-2 rounded-full" style={{ background: 'var(--accent-cyan)' }} />
