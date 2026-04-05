@@ -305,10 +305,6 @@ function DockerList() {
         </div>
 
         <div className="mt-4 hidden flex-wrap gap-2 md:flex">
-          <span className="status-pill">
-            <strong>{stats.total}</strong>
-            <span>Total</span>
-          </span>
           <span className="status-pill" style={{ color: 'var(--accent-green)' }}>
             <strong>{stats.running}</strong>
             <span>Running</span>
@@ -316,10 +312,6 @@ function DockerList() {
           <span className="status-pill" style={{ color: 'var(--accent-red)' }}>
             <strong>{stats.stopped}</strong>
             <span>Stopped</span>
-          </span>
-          <span className="status-pill" style={{ color: 'var(--accent-yellow)' }}>
-            <strong>{stats.paused}</strong>
-            <span>Paused</span>
           </span>
         </div>
 
