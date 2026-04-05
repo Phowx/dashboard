@@ -23,40 +23,32 @@ function formatBytes(bytes) {
   return `${kb.toFixed(0)} KB`;
 }
 
-function MetricCard({ icon: Icon, label, value, unit, subLabel, color, progress }) {
+function MetricCard({ icon: Icon, label, value, unit, subLabel, color }) {
   return (
     <m.div
       className="glass-card metric-card p-3.5 sm:p-4"
       initial={{ opacity: 0, scale: 0.96 }}
       animate={{ opacity: 1, scale: 1 }}
     >
-      <div className="flex items-start justify-between gap-4">
-        <div>
+      <div className="metric-card-content">
+        <div className="flex items-start justify-between gap-4">
           <span className="section-kicker">{label}</span>
-          <div className="mt-3 flex items-end gap-2">
+          <div className="signal-icon" style={{ color }}>
+            <Icon className="h-4 w-4" />
+          </div>
+        </div>
+
+        <div className="metric-card-body">
+          <div className="flex items-end gap-2">
             <span className="metric-value" style={{ color }}>
               {value}
             </span>
             <span className="metric-unit">{unit}</span>
           </div>
-        </div>
-        <div className="signal-icon" style={{ color }}>
-          <Icon className="h-4 w-4" />
+
+          <p className="metric-subcopy metric-card-summary">{subLabel}</p>
         </div>
       </div>
-
-      <div className="metric-track">
-        <div
-          className="metric-fill"
-          style={{
-            width: `${Math.min(Math.max(Number(progress) || 0, 0), 100)}%`,
-            background: color,
-            boxShadow: `0 0 28px ${color}`,
-          }}
-        />
-      </div>
-
-      <p className="metric-subcopy">{subLabel}</p>
     </m.div>
   );
 }
@@ -86,28 +78,32 @@ function NetworkStats({ network }) {
       initial={{ opacity: 0, scale: 0.96 }}
       animate={{ opacity: 1, scale: 1 }}
     >
-      <div className="flex items-start justify-between gap-4">
-        <span className="section-kicker">NETWORK</span>
-        <div className="signal-icon" style={{ color: 'var(--accent-cyan)' }}>
-          <Wifi className="h-4 w-4" />
+      <div className="metric-card-content">
+        <div className="flex items-start justify-between gap-4">
+          <span className="section-kicker">NETWORK</span>
+          <div className="signal-icon" style={{ color: 'var(--accent-cyan)' }}>
+            <Wifi className="h-4 w-4" />
+          </div>
+        </div>
+
+        <div className="metric-card-body network-card-body">
+          <div className="network-speed-list">
+            <div className="network-speed-row">
+              <ArrowDown className="h-3.5 w-3.5" style={{ color: 'var(--accent-green)' }} />
+              <span className="network-speed-value">{formatSpeed(network?.rx_sec)}</span>
+            </div>
+
+            <div className="network-speed-row">
+              <ArrowUp className="h-3.5 w-3.5" style={{ color: 'var(--accent-cyan)' }} />
+              <span className="network-speed-value">{formatSpeed(network?.tx_sec)}</span>
+            </div>
+          </div>
+
+          <p className="metric-subcopy metric-card-summary network-summary">
+            I {formatTrafficTotal(network?.rx_bytes)} / O {formatTrafficTotal(network?.tx_bytes)}
+          </p>
         </div>
       </div>
-
-      <div className="network-speed-list">
-        <div className="network-speed-row">
-          <ArrowDown className="h-3.5 w-3.5" style={{ color: 'var(--accent-green)' }} />
-          <span className="network-speed-value">{formatSpeed(network?.rx_sec)}</span>
-        </div>
-
-        <div className="network-speed-row">
-          <ArrowUp className="h-3.5 w-3.5" style={{ color: 'var(--accent-cyan)' }} />
-          <span className="network-speed-value">{formatSpeed(network?.tx_sec)}</span>
-        </div>
-      </div>
-
-      <p className="metric-subcopy network-summary mt-auto">
-        I {formatTrafficTotal(network?.rx_bytes)} / O {formatTrafficTotal(network?.tx_bytes)}
-      </p>
     </m.div>
   );
 }
@@ -273,7 +269,6 @@ function SystemMonitor() {
             unit="%"
             subLabel={`${metrics.cpu.cores} cores / load ${metrics.cpu.load?.toFixed(2) || '-'}`}
             color="var(--accent-cyan)"
-            progress={metrics.cpu.usage}
           />
           <MetricCard
             icon={MemoryStick}
@@ -282,7 +277,6 @@ function SystemMonitor() {
             unit="%"
             subLabel={`${formatBytes(metrics.memory.used)} / ${formatBytes(metrics.memory.total)}`}
             color="var(--accent-yellow)"
-            progress={metrics.memory.percentage}
           />
           <MetricCard
             icon={HardDrive}
@@ -291,7 +285,6 @@ function SystemMonitor() {
             unit="%"
             subLabel={`${formatBytes(metrics.disk[0]?.used || 0)} / ${formatBytes(metrics.disk[0]?.size || 0)}`}
             color="var(--accent-purple)"
-            progress={metrics.disk[0]?.percentage || 0}
           />
           <NetworkStats network={metrics.network} />
         </div>
