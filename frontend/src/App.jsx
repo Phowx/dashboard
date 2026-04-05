@@ -16,6 +16,7 @@ import { LiveMetricsProvider, useLiveMetrics } from './context/LiveMetricsContex
 
 const DockerList = lazy(() => import('./components/DockerList'));
 const Shortcuts = lazy(() => import('./components/Shortcuts'));
+const THEME_STORAGE_KEY = 'dashboard-theme-v2';
 
 function formatUptime(seconds) {
   const days = Math.floor(seconds / 86400);
@@ -52,7 +53,7 @@ function SectionFallback({ title, description, minHeight = 'min-h-[260px]' }) {
 function DashboardApp() {
   const [theme, setTheme] = useState(() => {
     if (typeof window !== 'undefined') {
-      return localStorage.getItem('theme') || 'dark';
+      return localStorage.getItem(THEME_STORAGE_KEY) || 'dark';
     }
     return 'dark';
   });
@@ -69,7 +70,7 @@ function DashboardApp() {
     } else {
       document.documentElement.classList.remove('light');
     }
-    localStorage.setItem('theme', theme);
+    localStorage.setItem(THEME_STORAGE_KEY, theme);
   }, [theme]);
 
   useEffect(() => {
@@ -110,6 +111,13 @@ function DashboardApp() {
       icon: ShieldCheck,
       accent: 'var(--accent-purple)',
     },
+  ];
+
+  const ribbonCards = [
+    { label: '链路', value: wsStatus === 'connected' ? '稳定' : '重连中', accent: signalCards[0].accent },
+    { label: 'CPU', value: cpuUsage, accent: 'var(--accent-cyan)' },
+    { label: '内存', value: memoryUsage, accent: 'var(--accent-yellow)' },
+    { label: '在线', value: formatUptime(uptime), accent: 'var(--accent-green)' },
   ];
 
   return (
@@ -196,16 +204,34 @@ function DashboardApp() {
           initial={{ opacity: 0, y: 18 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.55, delay: 0.08, ease: 'easeOut' }}
-          className="hero-panel mb-5"
+          className="command-deck mb-5"
         >
-          <div className="space-y-6">
-            <span className="section-kicker">OPERATIONS DESK</span>
-            <div className="space-y-4">
-              <h1 className="hero-title">私人服务器控制台</h1>
-              <p className="hero-subtitle">
-                把系统波动、容器运行状态和常用入口压缩进一张更安静的工作台。
-                它不是仪表盘堆砌，而是一眼就能判断有没有异常的控制桌面。
+          <div className="command-copy-column">
+            <div className="space-y-3">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="section-kicker">CONTROL ROOM / NODE 01</span>
+                <span className="command-inline-separator" />
+                <span className="mono-type text-[11px]" style={{ color: 'var(--text-muted)' }}>
+                  {now.toLocaleDateString('zh-CN', {
+                    month: '2-digit',
+                    day: '2-digit',
+                    weekday: 'short',
+                  })}
+                </span>
+              </div>
+              <h1 className="command-title">私人服务器控制台</h1>
+              <p className="command-copy">
+                这次把它收回到更像值班台的样子: 不抢戏，但要让负载波动、容器状态和常用入口在几秒内就能读懂。
               </p>
+            </div>
+
+            <div className="command-ribbon">
+              {ribbonCards.map(item => (
+                <div key={item.label} className="ribbon-chip">
+                  <span className="section-kicker">{item.label}</span>
+                  <strong style={{ color: item.accent }}>{item.value}</strong>
+                </div>
+              ))}
             </div>
 
             <div className="flex flex-wrap gap-3">
@@ -224,7 +250,23 @@ function DashboardApp() {
             </div>
           </div>
 
-          <div className="hero-signal-grid">
+          <div className="command-board">
+            <div className="command-board-header">
+              <div>
+                <span className="section-kicker">LIVE STATUS</span>
+                <h2 className="surface-title mt-2">运行信号</h2>
+              </div>
+              <div className="status-pill">
+                {wsStatus === 'connected' ? (
+                  <Wifi className="h-3.5 w-3.5 live-indicator" style={{ color: 'var(--accent-green)' }} />
+                ) : (
+                  <WifiOff className="h-3.5 w-3.5" style={{ color: 'var(--accent-red)' }} />
+                )}
+                <span>{wsStatus === 'connected' ? '实时广播正常' : '链路恢复中'}</span>
+              </div>
+            </div>
+
+            <div className="hero-signal-grid">
             {signalCards.map((item, index) => {
               const Icon = item.icon;
 
@@ -234,7 +276,7 @@ function DashboardApp() {
                   initial={{ opacity: 0, y: 16 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4, delay: 0.18 + index * 0.08 }}
-                  className="hero-signal-card"
+                  className={`hero-signal-card ${index === 0 ? 'hero-signal-card-primary' : ''}`}
                 >
                   <div className="flex items-start justify-between gap-3">
                     <span className="signal-label">{item.label}</span>
@@ -247,6 +289,7 @@ function DashboardApp() {
                 </m.div>
               );
             })}
+          </div>
           </div>
         </m.section>
 

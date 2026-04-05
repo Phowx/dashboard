@@ -35,6 +35,16 @@ const ICON_OPTIONS = [
   { key: 'link', icon: Link, label: 'Link' },
 ];
 
+function getShortcutPreview(shortcut) {
+  if (shortcut.type !== 'url') {
+    return shortcut.value;
+  }
+
+  return shortcut.value
+    .replace(/^https?:\/\//, '')
+    .replace(/\/$/, '');
+}
+
 function ShortcutCard({ shortcut, onClick, onEdit, onDelete, index }) {
   const Icon = ICONS[shortcut.icon] || Globe;
 
@@ -55,17 +65,23 @@ function ShortcutCard({ shortcut, onClick, onEdit, onDelete, index }) {
         type="button"
       >
         <div className="shortcut-card-top">
-          <div className="shortcut-icon-wrap">
-            <Icon className="h-5 w-5 text-white" />
+          <div className="flex min-w-0 items-center gap-3">
+            <div className="shortcut-icon-wrap">
+              <Icon className="h-5 w-5 text-white" />
+            </div>
+            <div className="min-w-0">
+              <p className="shortcut-name">{shortcut.name}</p>
+              <p className="shortcut-value">{getShortcutPreview(shortcut)}</p>
+            </div>
           </div>
           <span className="status-pill">{shortcut.type === 'url' ? 'URL' : '命令'}</span>
         </div>
 
-        <div className="space-y-2">
-          <p className="shortcut-name">{shortcut.name}</p>
+        <div className="shortcut-card-bottom">
           <p className="shortcut-caption">
-            {shortcut.type === 'url' ? '点击直达服务面板' : '保留一条随手可用的操作命令'}
+            {shortcut.type === 'url' ? '一键直达服务面板' : '保留一条随手可用的终端命令'}
           </p>
+          <span className="shortcut-trace">{shortcut.type === 'url' ? 'Open Link' : 'View Command'}</span>
         </div>
       </m.button>
 
@@ -350,7 +366,7 @@ export default function Shortcuts() {
             <h2 className="surface-title">快捷入口</h2>
           </div>
           <p className="mt-3 max-w-md text-sm leading-6" style={{ color: 'var(--text-secondary)' }}>
-            常用服务不必再翻书签栏。这里保留你最常点开的入口，像一排贴在控制台边上的物理拨片。
+            这里不再做大卡片装饰，而是像工具架一样排出高频入口。点进去快，扫一眼也知道它通向哪里。
           </p>
         </div>
 
@@ -367,7 +383,7 @@ export default function Shortcuts() {
         </span>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-2 2xl:grid-cols-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2">
         <AnimatePresence>
           {shortcuts.map((shortcut, index) => (
             <ShortcutCard

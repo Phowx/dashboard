@@ -248,7 +248,7 @@ function DockerList() {
               <h2 className="surface-title">Docker 舱段</h2>
             </div>
             <p className="mt-3 max-w-3xl text-sm leading-6" style={{ color: 'var(--text-secondary)' }}>
-              这里保留最常用的容器控制动作。你不需要切去 Portainer，只要在这一块就能判断运行态并快速处理异常。
+              这里只保留最常用的动作和最关键的读数。目标不是取代 Portainer，而是让你在这块就能先做出第一反应。
             </p>
           </div>
 

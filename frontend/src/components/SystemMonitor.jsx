@@ -245,7 +245,7 @@ function SystemMonitor() {
           <h2 className="surface-title mt-2">主机运行概览</h2>
         </div>
         <p className="max-w-2xl text-sm leading-6" style={{ color: 'var(--text-secondary)' }}>
-          实时曲线盯住波动，右侧四块读数负责给你最短路径的判断。哪怕只是瞟一眼，也知道系统是不是正在变吵。
+          曲线负责盯瞬时波动，摘要块负责看资源压力，底部进程表负责追噪音来源。整块信息都应该服务于更快判断。
         </p>
       </div>
 
