@@ -417,7 +417,7 @@ function DockerList() {
                   <StatusBadge state={container.state} />
                 </div>
 
-                <div className="mt-2.5 grid grid-cols-2 gap-2">
+                <div className="mt-2.5 grid grid-cols-[0.82fr_0.92fr_1.26fr] gap-2">
                   <div className="mobile-stat-card">
                     <span className="section-kicker">CPU</span>
                     <strong style={{ color: 'var(--accent-cyan)' }}>
@@ -430,7 +430,7 @@ function DockerList() {
                     <span className="section-kicker">MEMORY</span>
                     <strong style={{ color: 'var(--accent-yellow)' }}>{formatBytes(container.stats?.memoryUsage)}</strong>
                   </div>
-                  <div className="mobile-stat-card col-span-2">
+                  <div className="mobile-stat-card mobile-stat-card-ports">
                     <span className="section-kicker">PORTS</span>
                     <strong className="text-left leading-5" style={{ color: 'var(--text-primary)' }}>
                       {getPortEntries(container.ports).length > 0 ? (

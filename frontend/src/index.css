@@ -811,6 +811,7 @@ body::after {
 }
 
 .mobile-stat-card {
+  min-width: 0;
   border-radius: 18px;
   padding: 0.62rem 0.74rem;
 }
@@ -822,6 +823,13 @@ body::after {
   font-size: 0.94rem;
   line-height: 1.08;
   letter-spacing: -0.04em;
+}
+
+.mobile-stat-card-ports strong {
+  margin-top: 0.3rem;
+  font-size: 0.72rem;
+  line-height: 1.14;
+  letter-spacing: -0.02em;
 }
 
 .shortcut-card {
