@@ -79,7 +79,7 @@ function DashboardApp() {
         initial={{ opacity: 0, y: -24 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.45, ease: 'easeOut' }}
-        className="sticky top-4 z-50 px-4 xl:px-6"
+        className="fixed inset-x-0 top-4 z-50 px-4 xl:px-6"
       >
         <div className="mx-auto max-w-[1480px]">
           <div className="chrome-bar px-4 py-3 sm:px-5">
@@ -143,7 +143,7 @@ function DashboardApp() {
         </div>
       </m.header>
 
-      <main className="relative mx-auto max-w-[1480px] px-4 pb-10 pt-6 xl:px-6">
+      <main className="relative mx-auto max-w-[1480px] px-4 pb-10 pt-28 xl:px-6">
         <div className="grid grid-cols-12 gap-4 xl:gap-5">
           <m.section
             initial={{ opacity: 0, y: 16 }}

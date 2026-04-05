@@ -86,10 +86,8 @@ function NetworkStats({ network }) {
       initial={{ opacity: 0, scale: 0.96 }}
       animate={{ opacity: 1, scale: 1 }}
     >
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <span className="section-kicker">NETWORK</span>
-        </div>
+      <div className="flex items-center justify-between gap-3">
+        <span className="section-kicker">NETWORK</span>
         <div className="signal-icon" style={{ color: 'var(--accent-cyan)' }}>
           <Wifi className="h-4 w-4" />
         </div>
@@ -97,23 +95,19 @@ function NetworkStats({ network }) {
 
       <div className="mt-4 space-y-3">
         <div className="network-row">
-          <div className="flex items-center gap-2">
-            <ArrowDown className="h-3.5 w-3.5" style={{ color: 'var(--accent-green)' }} />
-            <span className="network-label">RX</span>
-          </div>
+          <ArrowDown className="h-3.5 w-3.5" style={{ color: 'var(--accent-green)' }} />
+          <span className="network-label">RX</span>
           <span className="network-value network-value-compact">{formatSpeed(network?.rx_sec)}</span>
         </div>
 
         <div className="network-row">
-          <div className="flex items-center gap-2">
-            <ArrowUp className="h-3.5 w-3.5" style={{ color: 'var(--accent-cyan)' }} />
-            <span className="network-label">TX</span>
-          </div>
+          <ArrowUp className="h-3.5 w-3.5" style={{ color: 'var(--accent-cyan)' }} />
+          <span className="network-label">TX</span>
           <span className="network-value network-value-compact">{formatSpeed(network?.tx_sec)}</span>
         </div>
       </div>
 
-      <p className="metric-subcopy network-summary mt-auto pt-4">
+      <p className="metric-subcopy network-summary mt-auto pt-3.5">
         I {formatTrafficTotal(network?.rx_bytes)} / O {formatTrafficTotal(network?.tx_bytes)}
       </p>
     </m.div>
@@ -170,17 +164,28 @@ function SystemMonitor() {
   const [chartData, setChartData] = useState([]);
   const { liveMetrics } = useLiveMetrics();
 
+  const createChartPoint = (timestamp, cpuUsage, memoryPercentage) => ({
+    time: new Date(timestamp).toLocaleTimeString('en-GB', {
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+    }),
+    cpu: parseFloat(Number(cpuUsage).toFixed(1)),
+    memory: parseFloat(memoryPercentage),
+  });
+
   const appendChartPoint = (timestamp, cpuUsage, memoryPercentage) => {
     setChartData(prev => {
-      const nextPoint = {
-        time: new Date(timestamp).toLocaleTimeString('en-GB', {
-          hour: '2-digit',
-          minute: '2-digit',
-          second: '2-digit',
-        }),
-        cpu: parseFloat(Number(cpuUsage).toFixed(1)),
-        memory: parseFloat(memoryPercentage),
-      };
+      const nextPoint = createChartPoint(timestamp, cpuUsage, memoryPercentage);
+
+      if (prev.length < 2) {
+        const seededHistory = Array.from({ length: 18 }, (_, index) => {
+          const seedTimestamp = new Date(new Date(timestamp).getTime() - (17 - index) * 2000).toISOString();
+          return createChartPoint(seedTimestamp, cpuUsage, memoryPercentage);
+        });
+
+        return seededHistory;
+      }
 
       return [...prev, nextPoint].slice(-30);
     });
